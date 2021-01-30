@@ -21,10 +21,9 @@ public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
     public boolean put(T t) {
         try {
             inputBuffer.put(t);
-//            logger.info("Put " + t + " to storage " + getClass().getSimpleName());
+            logger.info("Put " + t + " to storage " + getClass().getSimpleName());
             return true;
         } catch (InterruptedException e) {
-//            logger.info("Put failed" + t + " to storage " + getClass().getSimpleName());
             return false;
         }
     }
@@ -47,7 +46,14 @@ public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
         logRunning();
         while (isRunning()) {
             try {
-                outputBuffer.put(inputBuffer.poll(10, TimeUnit.MILLISECONDS));
+                T t = inputBuffer.poll(10, TimeUnit.MILLISECONDS);
+
+                if (t != null) {
+                    outputBuffer.put(t);
+                }
+                else {
+                    Thread.yield();
+                }
             } catch (InterruptedException e) {
             }
         }
@@ -67,13 +73,11 @@ public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
         try {
             T t = outputBuffer.poll(10, TimeUnit.MILLISECONDS);
             if (t != null) {
-//                logger.info("Get " + t + " from storage " + getClass().getSimpleName());
+                logger.info("Get " + t + " from storage " + getClass().getSimpleName());
                 return t;
             }
         } catch (InterruptedException e) {
         }
-
-//        logger.info("Cannot get item from storage " + getClass().getSimpleName());
         return null;
     }
 }

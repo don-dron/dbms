@@ -1,10 +1,11 @@
 package ru.bmstu.iu9.db.zvoa.dbms.query;
 
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbHandler;
+import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
 
-public class QueryHandler extends AbstractDbHandler<QueryRequest, QueryResponse> {
+public class QueryHandler extends AbstractDbHandler<Query, Query> {
     @Override
-    public QueryResponse execute(QueryRequest queryRequest) {
-        return new QueryResponse();
+    public Query execute(Query queryRequest) {
+        return queryRequest;
     }
 }

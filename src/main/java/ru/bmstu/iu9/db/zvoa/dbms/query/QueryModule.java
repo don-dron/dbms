@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import ru.bmstu.iu9.db.zvoa.dbms.DBMS;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
+import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
 
 public class QueryModule extends AbstractDbModule {
 
@@ -26,16 +27,21 @@ public class QueryModule extends AbstractDbModule {
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
+        if (isRunning()) {
+            return;
+        }
         setRunning();
         logRunning();
 
-        while (isRunning() && !isClosed()) {
-            QueryRequest request = queryRequestStorage.get();
+        while (!isClosed()) {
+            Query request = queryRequestStorage.get();
 
             if (request != null) {
-                QueryResponse response = queryHandler.execute(request);
+                Query response = queryHandler.execute(request);
                 queryResponseStorage.put(response);
+            } else {
+                Thread.yield();
             }
         }
     }

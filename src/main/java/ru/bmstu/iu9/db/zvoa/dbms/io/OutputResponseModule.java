@@ -4,8 +4,8 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
+import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryRequestStorage;
-import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponse;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponseStorage;
 
 public class OutputResponseModule<T> extends AbstractDbModule {
@@ -36,10 +36,14 @@ public class OutputResponseModule<T> extends AbstractDbModule {
         setRunning();
         logRunning();
         while (isRunning() && !isClosed()) {
-            QueryResponse response = queryResponseStorage.get();
+            Query response = queryResponseStorage.get();
 
             if (response != null) {
-                consumer.accept(responseHandler.execute(response));
+                T t = responseHandler.execute(response);
+                logger.info("Output module handle response " + t);
+                consumer.accept(t);
+            } else {
+                Thread.yield();
             }
         }
     }

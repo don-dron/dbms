@@ -1,13 +1,12 @@
 package ru.bmstu.iu9.db.zvoa.dbms.io.impl;
 
-import java.net.http.HttpResponse;
-
 import ru.bmstu.iu9.db.zvoa.dbms.io.ResponseHandler;
-import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponse;
+import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
 
-public class HttpResponseHandler  extends ResponseHandler<String> {
+public class HttpResponseHandler extends ResponseHandler<HttpResponse> {
     @Override
-    public String execute(QueryResponse o) {
-        return "response";
+    public HttpResponse execute(Query o) {
+        return new HttpResponse("Response",
+                ((DSQLQuery) o).getConnectionInformation());
     }
 }

@@ -1,14 +1,11 @@
 package ru.bmstu.iu9.db.zvoa.dbms.io.impl;
 
-import java.net.http.HttpRequest;
-
 import ru.bmstu.iu9.db.zvoa.dbms.io.RequestHandler;
-import ru.bmstu.iu9.db.zvoa.dbms.modules.IDbHandler;
-import ru.bmstu.iu9.db.zvoa.dbms.query.QueryRequest;
+import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
 
-public class HttpRequestHandler extends RequestHandler<String> {
+public class HttpRequestHandler extends RequestHandler<HttpRequest> {
     @Override
-    public QueryRequest execute(String o) {
-        return new QueryRequest();
+    public Query execute(HttpRequest o) {
+        return new DSQLQuery(o.getConnection());
     }
 }
