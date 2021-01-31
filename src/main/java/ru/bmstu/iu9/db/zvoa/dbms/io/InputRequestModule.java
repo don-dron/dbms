@@ -1,18 +1,17 @@
 package ru.bmstu.iu9.db.zvoa.dbms.io;
 
 import java.util.function.Supplier;
-import java.util.logging.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
-import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryRequestStorage;
 
 public class InputRequestModule<T> extends AbstractDbModule {
-
+    private final static Logger LOGGER = LoggerFactory.getLogger(InputRequestModule.class);
     private final Supplier<T> queryGenerator;
     private final QueryRequestStorage queryRequestStorage;
     private final RequestHandler<T> requestHandler;
-    private final Logger logger;
 
     public InputRequestModule(
             Supplier<T> requestGenerator,
@@ -21,49 +20,54 @@ public class InputRequestModule<T> extends AbstractDbModule {
         this.queryGenerator = requestGenerator;
         this.queryRequestStorage = queryRequestStorage;
         this.requestHandler = requestHandler;
-        this.logger = getLogger();
     }
 
     @Override
-    public synchronized void init() {
-        if (isInit()) {
-            return;
+    public void init() {
+        synchronized (this) {
+            if (isInit()) {
+                return;
+            }
+            setInit();
+            logInit();
         }
-        setInit();
-        logInit();
     }
 
     @Override
-    public synchronized void run() {
-        if (isRunning()) {
-            return;
+    public void run() {
+        synchronized (this) {
+            if (isRunning()) {
+                return;
+            }
+            setRunning();
+            logRunning();
         }
-        setRunning();
-        logRunning();
+
         while (isRunning()) {
-//            System.out.println(getClass().getSimpleName());
             T t = queryGenerator.get();
 
             if (t != null) {
-                logger.info("Input module handle request " + t);
+                LOGGER.info("Input module handle request " + t);
                 queryRequestStorage.put(requestHandler.execute(t));
             } else {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(10);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    LOGGER.warn(e.getMessage());
                 }
             }
         }
     }
 
     @Override
-    public synchronized void close() throws Exception {
-        if (isClosed()) {
-            return;
+    public void close() throws Exception {
+        synchronized (this) {
+            if (isClosed()) {
+                return;
+            }
+            setClosed();
+            logClose();
         }
-        setClosed();
-        logClose();
     }
 
     public QueryRequestStorage getQueryRequestStorage() {

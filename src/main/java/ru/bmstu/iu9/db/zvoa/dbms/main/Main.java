@@ -1,7 +1,11 @@
 package ru.bmstu.iu9.db.zvoa.dbms.main;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -32,32 +36,41 @@ public class Main {
     private static String ADDRESS = "127.0.0.1";
     private static int PORT = 38900;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        DBMSServer httpServer = new DBMSServer(PORT);
+
         QueryRequestStorage queryRequestStorage =
                 new QueryRequestStorage(queueSupplier.get(), queueSupplier.get());
         QueryResponseStorage queryResponseStorage =
                 new QueryResponseStorage(queueSupplier.get(), queueSupplier.get());
 
-        try (DBMSServer discardServer = new DBMSServer(PORT);
-             DBMS dbms = DBMS.Builder.newBuilder()
-                     .setQueryModule(QueryModule.Builder.newBuilder()
-                             .setQueryHandler(new QueryHandler())
-                             .setQueryRequestStorage(queryRequestStorage)
-                             .setQueryResponseStorage(queryResponseStorage)
-                             .build())
-                     .setInputModule(new InputRequestModule(discardServer,
-                             queryRequestStorage,
-                             new HttpRequestHandler()))
-                     .setOutputModule(new OutputResponseModule(discardServer,
-                             queryResponseStorage,
-                             new HttpResponseHandler()))
-                     .build()) {
-            dbms.init();
-            dbms.run();
+        DBMS dbms = DBMS.Builder.newBuilder()
+                .setQueryModule(QueryModule.Builder.newBuilder()
+                        .setQueryHandler(new QueryHandler())
+                        .setQueryRequestStorage(queryRequestStorage)
+                        .setQueryResponseStorage(queryResponseStorage)
+                        .build())
+                .setInputModule(new InputRequestModule(httpServer,
+                        queryRequestStorage,
+                        new HttpRequestHandler()))
+                .setOutputModule(new OutputResponseModule(httpServer,
+                        queryResponseStorage,
+                        new HttpResponseHandler()))
+                .build();
 
-            discardServer.init();
-            discardServer.run();
-        } catch (Exception exception) {
-        }
+        dbms.init();
+        httpServer.init();
+
+        Thread dbmsThread = new Thread(dbms::run);
+        dbmsThread.start();
+        Thread serverThread = new Thread(httpServer::run);
+        serverThread.start();
+
+        Thread.sleep(3600000);
+
+        httpServer.close();
+        dbms.close();
+        dbmsThread.join();
+        serverThread.join();
     }
 }

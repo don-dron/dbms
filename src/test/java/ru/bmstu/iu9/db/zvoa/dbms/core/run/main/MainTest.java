@@ -1,14 +1,12 @@
 package ru.bmstu.iu9.db.zvoa.dbms.core.run.main;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
@@ -26,7 +24,7 @@ import ru.bmstu.iu9.db.zvoa.dbms.query.QueryModule;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryRequestStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponseStorage;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MainTest {
     private static final String ADDRESS = "127.0.0.1";
@@ -71,46 +69,50 @@ public class MainTest {
         dbms.init();
         httpServer.init();
 
-
         Thread dbmsThread = new Thread(dbms::run);
         dbmsThread.start();
 
         Thread serverThread = new Thread(httpServer::run);
         serverThread.start();
 
-
         HttpClient httpClient = HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_2)
+                .version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
-        HttpRequest request = HttpRequest.newBuilder()
-                .setHeader("TTTT", "111")
-                .uri(URI.create("http://" + ADDRESS + ":" + PORT))
-                .build();
-        AtomicBoolean flag = new AtomicBoolean(false);
 
-        new Thread(() -> {
-            CompletableFuture<HttpResponse<String>> response =
-                    httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
-            try {
-                response.get().body();
-                flag.set(true);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        ExecutorService joinPool = new ThreadPoolExecutor(16, Integer.MAX_VALUE,
+                600L, TimeUnit.DAYS,
+                new SynchronousQueue<Runnable>());
 
-        while (!flag.get()) {
-            Thread.yield();
+        for (int i = 0; i < 10; i++) {
+            joinPool.execute(() -> {
+                assertTimeout(Duration.ofMillis(4000), () -> {
+                    for (int j = 0; j < 30; j++) {
+                        HttpRequest request = HttpRequest.newBuilder()
+                                .version(HttpClient.Version.HTTP_1_1)
+                                .uri(URI.create("http://" + ADDRESS + ":" + PORT))
+                                .build();
+
+                        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                        response.body();
+                    }
+                });
+            });
         }
-//        System.out.println(response.body());
+
+        joinPool.shutdown();
+        while (true) {
+            try {
+                if (joinPool.awaitTermination(1, TimeUnit.SECONDS)) {
+                    break;
+                }
+            } catch (InterruptedException e) {
+            }
+        }
 
         httpServer.close();
         dbms.close();
         dbmsThread.join();
         serverThread.join();
-
     }
 }

@@ -1,9 +1,6 @@
 package ru.bmstu.iu9.db.zvoa.dbms;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 
 import ru.bmstu.iu9.db.zvoa.dbms.io.InputRequestModule;
 import ru.bmstu.iu9.db.zvoa.dbms.io.OutputResponseModule;
@@ -23,22 +20,29 @@ public class DBMS extends AbstractDbModule {
         this.queryModule = builder.queryModule;
         this.inputModule = builder.inputModule;
         this.outputModule = builder.outputModule;
-
-
     }
 
     @Override
     public synchronized void init() {
-        if (isInit()) {
-            return;
+        synchronized (this) {
+            if (isInit()) {
+                return;
+            }
+            executorService = new ThreadPoolExecutor(16, Integer.MAX_VALUE,
+                    600L, TimeUnit.DAYS,
+                    new SynchronousQueue<Runnable>());
+            initModules();
+
+            executorService.shutdown();
         }
-        executorService = new ForkJoinPool
-                (10,
-                        ForkJoinPool.defaultForkJoinWorkerThreadFactory,
-                        null,
-                        false);
-        initModules();
-        executorService.shutdown();
+        while (true) {
+            try {
+                if (executorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                    break;
+                }
+            } catch (InterruptedException e) {
+            }
+        }
     }
 
     private void initModules() {
@@ -52,24 +56,32 @@ public class DBMS extends AbstractDbModule {
     }
 
     private void initModule(IDbModule module) {
-        executorService.submit(() -> module.init());
+        executorService.execute(() -> module.init());
     }
 
-    public synchronized void run() {
-        if (isRunning()) {
-            return;
+    public void run() {
+        synchronized (this) {
+            if (isRunning()) {
+                return;
+            }
+
+            executorService = new ThreadPoolExecutor(16, Integer.MAX_VALUE,
+                    600L, TimeUnit.DAYS,
+                    new SynchronousQueue<Runnable>());
+
+            runModules();
+            setRunning();
+            logRunning();
+            executorService.shutdown();
         }
-
-        executorService = new ForkJoinPool
-                (10,
-                        ForkJoinPool.defaultForkJoinWorkerThreadFactory,
-                        null,
-                        false);
-
-        runModules();
-        setRunning();
-        logRunning();
-        executorService.shutdown();
+        while (true) {
+            try {
+                if (executorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                    break;
+                }
+            } catch (InterruptedException e) {
+            }
+        }
     }
 
     private void runModules() {
@@ -81,16 +93,23 @@ public class DBMS extends AbstractDbModule {
     }
 
     private void runModule(IDbModule dbModule) {
-        executorService.submit(dbModule);
+        executorService.execute(dbModule);
     }
 
     @Override
-    public synchronized void close() throws Exception {
-        if (isClosed()) {
-            return;
+    public void close() throws Exception {
+        synchronized (this) {
+            if (isClosed()) {
+                return;
+            }
+            queryModule.close();
+            queryModule.getQueryRequestStorage().close();
+            queryModule.getQueryResponseStorage().close();
+            inputModule.close();
+            outputModule.close();
+            setClosed();
+            logClose();
         }
-        setClosed();
-        logClose();
     }
 
     public static class Builder {

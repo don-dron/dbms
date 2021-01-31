@@ -1,6 +1,5 @@
 package ru.bmstu.iu9.db.zvoa.dbms.io.impl;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -10,25 +9,25 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.logging.Logger;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.*;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.CharsetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 
 public class DBMSServer extends AbstractDbModule
         implements Consumer<HttpResponse>, Supplier<HttpRequest> {
-    private Logger logger = Logger.getLogger(getClass().getName());
+    private final static Logger LOGGER = LoggerFactory.getLogger(DBMSServer.class);
 
     private final Map<Connection, BlockingQueue<HttpRequest>> requests = new ConcurrentHashMap<>();
     private final Map<Connection, BlockingQueue<HttpResponse>> responses = new ConcurrentHashMap<>();
@@ -45,6 +44,7 @@ public class DBMSServer extends AbstractDbModule
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
     private ServerBootstrap serverBootstrap;
+    private ChannelFuture serverFuture;
     private int port;
 
     public DBMSServer(int port) {
@@ -55,9 +55,8 @@ public class DBMSServer extends AbstractDbModule
     public void accept(HttpResponse response) {
         try {
             Connection connection = response.getConnection();
-            logger.info("Response " + response + " accept by OutputModule.");
+            LOGGER.info("Response " + response + " accept by OutputModule.");
             responses.get(connection).put(response);
-            connection.notifyAll();
         } catch (InterruptedException e) {
         }
     }
@@ -75,7 +74,7 @@ public class DBMSServer extends AbstractDbModule
                     HttpRequest httpRequest = httpRequests.poll(10, TimeUnit.MILLISECONDS);
 
                     if (httpRequest != null) {
-                        logger.info("Request " + httpRequest + " get by InputModule.");
+                        LOGGER.info("Request " + httpRequest + " get by InputModule.");
 
                         return httpRequest;
                     }
@@ -89,12 +88,14 @@ public class DBMSServer extends AbstractDbModule
     }
 
     @Override
-    public synchronized void init() {
-        if (isInit()) {
-            return;
+    public void init() {
+        synchronized (this) {
+            if (isInit()) {
+                return;
+            }
+            setInit();
+            logInit();
         }
-        setInit();
-        logInit();
 
         bossGroup = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup();
@@ -102,45 +103,67 @@ public class DBMSServer extends AbstractDbModule
         serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    public void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new DiscardServerHandler());
-                    }
-                })
+                .handler(new LoggingHandler(LogLevel.INFO))
+                .childHandler(new HttpServerInitializer())
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
 
     }
 
     @Override
-    public synchronized void run() {
-        if (isRunning()) {
-            return;
+    public void run() {
+        synchronized (this) {
+            if (isRunning()) {
+                return;
+            }
+            setRunning();
+            logRunning();
+
+            try {
+                serverFuture = serverBootstrap.bind(port).sync();
+            } catch (InterruptedException error) {
+                LOGGER.error(error.getMessage());
+            }
         }
-        setRunning();
-        logRunning();
+
         try {
-            ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
-            channelFuture.channel().closeFuture().sync();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            serverFuture.channel().closeFuture().sync();
+        } catch (InterruptedException error) {
+            LOGGER.error(error.getMessage());
+        } finally {
+            workerGroup.shutdownGracefully();
+            bossGroup.shutdownGracefully();
         }
     }
 
     @Override
-    public synchronized void close() throws Exception {
-        if (isClosed()) {
-            return;
+    public void close() throws Exception {
+        synchronized (this) {
+            if (isClosed()) {
+                return;
+            }
+            setClosed();
+            logClose();
         }
-        setClosed();
-        logClose();
-        workerGroup.shutdownGracefully();
-        bossGroup.shutdownGracefully();
+
+        if (serverFuture != null) {
+            ChannelFuture future = serverFuture.channel().close();
+            future.awaitUninterruptibly();
+        }
+    }
+
+    public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
+        @Override
+        protected void initChannel(SocketChannel channel) throws Exception {
+            ChannelPipeline pipeline = channel.pipeline();
+            pipeline.addLast(new HttpServerCodec());
+            pipeline.addLast(new HttpObjectAggregator(1024 * 1024));
+            pipeline.addLast(new DiscardServerHandler());
+        }
     }
 
     public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
-
+        private Logger logger = LoggerFactory.getLogger(DiscardServerHandler.class);
         private Connection connection;
 
         @Override
@@ -159,42 +182,47 @@ public class DBMSServer extends AbstractDbModule
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg)
                 throws Exception {
-            ByteBuf byteBuf = ((ByteBuf) msg);
-            StringBuilder builder = new StringBuilder();
-            builder.append(byteBuf.readCharSequence(byteBuf.readableBytes(), StandardCharsets.UTF_8));
-            byteBuf.release();
+            try {
+                HttpRequest request = new HttpRequest("request " + Instant.now().getEpochSecond(),
+                        connection, Instant.now().toEpochMilli());
+                logger.info("Put request " + request + " http server.");
 
-            HttpRequest request = new HttpRequest("request " + Instant.now().getEpochSecond(),
-                    connection, Instant.now().toEpochMilli());
+                BlockingQueue queue = requests.get(connection);
+                queue.put(request);
 
-            logger.info("Put request " + request + " http server.");
+                DBMSServer.this.liveQueue.put(request, connection);
 
-            BlockingQueue queue = requests.get(connection);
-            queue.put(request);
+                HttpResponse httpResponse = responses.get(connection).poll(10, TimeUnit.MILLISECONDS);
+                while (httpResponse == null) {
+                    Thread.yield();
+                    httpResponse = responses.get(connection).poll(10, TimeUnit.MILLISECONDS);
+                }
 
-            DBMSServer.this.liveQueue.put(request, connection);
+                ByteBuf content = Unpooled.copiedBuffer(httpResponse.getResponse(), CharsetUtil.UTF_8);
+                FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, content);
+                response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html");
+                response.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.readableBytes());
 
-            HttpResponse httpResponse = responses.get(connection).poll(10, TimeUnit.MILLISECONDS);
-            while (httpResponse == null) {
-//                synchronized (connection) {
-//                    try {
-//                    Thread.yield();
-//                        connection.wait();
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-                httpResponse = responses.get(connection).poll(10, TimeUnit.MILLISECONDS);
+                logger.info("Send response " + response + " http server.");
+                ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+            } catch (Exception exception) {
+                logger.warn(exception.getMessage());
+            } finally {
+                ((ByteBuf) msg).release();
             }
-
-            logger.info("Send response " + httpResponse + " http server.");
-            ctx.writeAndFlush(httpResponse.getResponse()).addListener(ChannelFutureListener.CLOSE);
         }
 
         @Override
-        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-            cause.printStackTrace();
+        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+            if (cause != null) {
+                logger.warn(cause.getMessage());
+            }
             ctx.close();
+        }
+
+        @Override
+        public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+            ctx.flush();
         }
     }
 }

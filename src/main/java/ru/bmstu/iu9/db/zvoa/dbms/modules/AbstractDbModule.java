@@ -1,14 +1,14 @@
 package ru.bmstu.iu9.db.zvoa.dbms.modules;
 
-import java.util.logging.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.DBMS;
+import ru.bmstu.iu9.db.zvoa.dbms.io.impl.DBMSServer;
 
 public abstract class AbstractDbModule implements IDbModule {
-    private Logger logger = Logger.getLogger(getClass().getName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private State state = State.NOT_INIT;
-    private DBMS dbms;
 
     @Override
     public abstract void init();
@@ -32,10 +32,6 @@ public abstract class AbstractDbModule implements IDbModule {
     @Override
     public boolean isClosed() {
         return state == State.CLOSED;
-    }
-
-    protected Logger getLogger() {
-        return logger;
     }
 
     protected void setInit() {

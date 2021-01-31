@@ -1,19 +1,18 @@
 package ru.bmstu.iu9.db.zvoa.dbms.io;
 
-import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
-import ru.bmstu.iu9.db.zvoa.dbms.query.QueryRequestStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponseStorage;
 
 public class OutputResponseModule<T> extends AbstractDbModule {
+    private final static Logger LOGGER = LoggerFactory.getLogger(OutputResponseModule.class);
 
     private final QueryResponseStorage queryResponseStorage;
     private final ResponseHandler<T> responseHandler;
-    private final Logger logger;
     private final Consumer<T> consumer;
 
     public OutputResponseModule(
@@ -23,55 +22,55 @@ public class OutputResponseModule<T> extends AbstractDbModule {
         this.consumer = consumer;
         this.queryResponseStorage = queryResponseStorage;
         this.responseHandler = responseHandler;
-        this.logger = getLogger();
     }
 
     @Override
-    public synchronized void init() {
-        if (isInit()) {
-            return;
+    public void init() {
+        synchronized (this) {
+            if (isInit()) {
+                return;
+            }
+            setInit();
+            logInit();
         }
-        setInit();
-        logInit();
     }
 
     @Override
-    public synchronized void run() {
-        if (isRunning()) {
-            return;
+    public void run() {
+        synchronized (this) {
+            if (isRunning()) {
+                return;
+            }
+            setRunning();
+            logRunning();
         }
-        setRunning();
-        logRunning();
+
         Query response;
         while (isRunning()) {
-//            System.out.println(getClass().getSimpleName());
             if (!queryResponseStorage.isEmpty() &&
                     (response = queryResponseStorage.get()) != null) {
                 T t = responseHandler.execute(response);
-                logger.info("Output module handle response " + t);
+                LOGGER.info("Output module handle response " + t);
                 consumer.accept(t);
             } else {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(10);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    LOGGER.warn(e.getMessage());
                 }
-//                try {
-//                    queryResponseStorage.wait();
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
             }
         }
     }
 
     @Override
-    public synchronized void close() throws Exception {
-        if (isClosed()) {
-            return;
+    public void close() throws Exception {
+        synchronized (this) {
+            if (isClosed()) {
+                return;
+            }
+            setClosed();
+            logClose();
         }
-        setClosed();
-        logClose();
     }
 
     public QueryResponseStorage getQueryResponseStorage() {
