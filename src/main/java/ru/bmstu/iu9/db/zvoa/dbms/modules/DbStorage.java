@@ -18,14 +18,40 @@ public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
     }
 
     @Override
+    public boolean isEmpty() {
+        return outputBuffer.isEmpty();
+    }
+
+    @Override
     public boolean put(T t) {
         try {
+            logger.info("Put " + t + " to storage " + getClass().getSimpleName()
+                    + " input buffer size " + inputBuffer.size()
+                    + " output buffer size " + outputBuffer.size());
             inputBuffer.put(t);
-            logger.info("Put " + t + " to storage " + getClass().getSimpleName());
+            inputBuffer.notifyAll();
             return true;
         } catch (InterruptedException e) {
+            logger.warning(e.getMessage());
             return false;
         }
+    }
+
+    @Override
+    public T get() {
+        try {
+            T t = outputBuffer.poll(1, TimeUnit.MILLISECONDS);
+            if (t != null) {
+                logger.info("Get " + t + " from storage " + getClass().getSimpleName()
+                        + " input buffer size " + inputBuffer.size()
+                        + " output buffer size " + outputBuffer.size());
+//                notifyAll();
+                return t;
+            }
+        } catch (InterruptedException e) {
+            logger.warning(e.getMessage());
+        }
+        return null;
     }
 
     @Override
@@ -45,16 +71,32 @@ public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
         setRunning();
         logRunning();
         while (isRunning()) {
+//            System.out.println(getClass().getSimpleName());
+            T t;
             try {
-                T t = inputBuffer.poll(10, TimeUnit.MILLISECONDS);
-
-                if (t != null) {
-                    outputBuffer.put(t);
-                }
-                else {
-                    Thread.yield();
+                if (!inputBuffer.isEmpty() &&
+                        (t = inputBuffer.poll(1, TimeUnit.MILLISECONDS)) != null) {
+                    try {
+                        outputBuffer.put(t);
+                        notifyAll();
+                        logger.info("Replace " + t + getClass().getSimpleName());
+                    } catch (InterruptedException e) {
+                        logger.warning(e.getMessage());
+                    }
+                } else {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+//                    try {
+//                        inputBuffer.wait();
+//                    } catch (InterruptedException exception) {
+//
+//                    }
                 }
             } catch (InterruptedException e) {
+                logger.warning(e.getMessage());
             }
         }
     }
@@ -64,20 +106,12 @@ public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
         if (isClosed()) {
             return;
         }
-        setClosed();
-        logClose();
-    }
 
-    @Override
-    public T get() {
-        try {
-            T t = outputBuffer.poll(10, TimeUnit.MILLISECONDS);
-            if (t != null) {
-                logger.info("Get " + t + " from storage " + getClass().getSimpleName());
-                return t;
-            }
-        } catch (InterruptedException e) {
+        if (inputBuffer.isEmpty() && outputBuffer.isEmpty()) {
+            setClosed();
+            logClose();
+        } else {
+            throw new StorageException("Non empty storage.");
         }
-        return null;
     }
 }

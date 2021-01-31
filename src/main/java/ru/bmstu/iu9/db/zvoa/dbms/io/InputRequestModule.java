@@ -25,29 +25,43 @@ public class InputRequestModule<T> extends AbstractDbModule {
     }
 
     @Override
-    public void init() {
+    public synchronized void init() {
+        if (isInit()) {
+            return;
+        }
         setInit();
         logInit();
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
+        if (isRunning()) {
+            return;
+        }
         setRunning();
         logRunning();
-        while (isRunning() && !isClosed()) {
+        while (isRunning()) {
+//            System.out.println(getClass().getSimpleName());
             T t = queryGenerator.get();
 
             if (t != null) {
                 logger.info("Input module handle request " + t);
                 queryRequestStorage.put(requestHandler.execute(t));
             } else {
-                Thread.yield();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
     @Override
-    public void close() throws Exception {
+    public synchronized void close() throws Exception {
+        if (isClosed()) {
+            return;
+        }
         setClosed();
         logClose();
     }

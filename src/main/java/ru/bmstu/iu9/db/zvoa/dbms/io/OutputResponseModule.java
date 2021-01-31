@@ -1,5 +1,6 @@
 package ru.bmstu.iu9.db.zvoa.dbms.io;
 
+import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -26,30 +27,49 @@ public class OutputResponseModule<T> extends AbstractDbModule {
     }
 
     @Override
-    public void init() {
+    public synchronized void init() {
+        if (isInit()) {
+            return;
+        }
         setInit();
         logInit();
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
+        if (isRunning()) {
+            return;
+        }
         setRunning();
         logRunning();
-        while (isRunning() && !isClosed()) {
-            Query response = queryResponseStorage.get();
-
-            if (response != null) {
+        Query response;
+        while (isRunning()) {
+//            System.out.println(getClass().getSimpleName());
+            if (!queryResponseStorage.isEmpty() &&
+                    (response = queryResponseStorage.get()) != null) {
                 T t = responseHandler.execute(response);
                 logger.info("Output module handle response " + t);
                 consumer.accept(t);
             } else {
-                Thread.yield();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+//                try {
+//                    queryResponseStorage.wait();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
             }
         }
     }
 
     @Override
-    public void close() throws Exception {
+    public synchronized void close() throws Exception {
+        if (isClosed()) {
+            return;
+        }
         setClosed();
         logClose();
     }

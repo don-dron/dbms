@@ -2,7 +2,6 @@ package ru.bmstu.iu9.db.zvoa.dbms.query;
 
 import java.util.logging.Logger;
 
-import ru.bmstu.iu9.db.zvoa.dbms.DBMS;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
 
@@ -20,8 +19,19 @@ public class QueryModule extends AbstractDbModule {
         this.logger = getLogger();
     }
 
+    public QueryRequestStorage getQueryRequestStorage() {
+        return queryRequestStorage;
+    }
+
+    public QueryResponseStorage getQueryResponseStorage() {
+        return queryResponseStorage;
+    }
+
     @Override
-    public void init() {
+    public synchronized void init() {
+        if (isInit()) {
+            return;
+        }
         setInit();
         logInit();
     }
@@ -34,28 +44,32 @@ public class QueryModule extends AbstractDbModule {
         setRunning();
         logRunning();
 
-        while (!isClosed()) {
-            Query request = queryRequestStorage.get();
-
-            if (request != null) {
+        Query request;
+        while (isRunning()) {
+//            System.out.println(getClass().getSimpleName());
+            if (!queryRequestStorage.isEmpty() && (request = queryRequestStorage.get()) != null) {
                 Query response = queryHandler.execute(request);
                 queryResponseStorage.put(response);
             } else {
-                Thread.yield();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+//                try {
+//                    queryRequestStorage.wait();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
             }
         }
     }
 
-    public QueryRequestStorage getQueryRequestStorage() {
-        return queryRequestStorage;
-    }
-
-    public QueryResponseStorage getQueryResponseStorage() {
-        return queryResponseStorage;
-    }
-
     @Override
-    public void close() throws Exception {
+    public synchronized void close() throws Exception {
+        if (isClosed()) {
+            return;
+        }
         setClosed();
         logClose();
     }

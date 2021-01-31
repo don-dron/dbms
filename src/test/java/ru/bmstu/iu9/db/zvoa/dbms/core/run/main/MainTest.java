@@ -6,7 +6,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -64,31 +67,50 @@ public class MainTest {
     }
 
     @Test
-    public void mainPipelineTest() {
-        try {
-            dbms.init();
-            dbms.run();
+    public void mainPipelineTest() throws Exception {
+        dbms.init();
+        httpServer.init();
 
-            Thread serverThread = new Thread(httpServer::run);
-            serverThread.start();
 
-            HttpClient httpClient = HttpClient.newBuilder()
-                    .version(HttpClient.Version.HTTP_2)
-                    .connectTimeout(Duration.ofSeconds(10))
-                    .build();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .setHeader("TTTT", "111")
-                    .uri(URI.create("http://" + ADDRESS + ":" + PORT))
-                    .build();
+        Thread dbmsThread = new Thread(dbms::run);
+        dbmsThread.start();
 
-            HttpResponse<String> response =
-                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Thread serverThread = new Thread(httpServer::run);
+        serverThread.start();
 
-            response.body();
 
-            serverThread.join();
-        } catch (Exception exception) {
-            System.out.println(exception.getMessage());
+        HttpClient httpClient = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_2)
+                .connectTimeout(Duration.ofSeconds(10))
+                .build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .setHeader("TTTT", "111")
+                .uri(URI.create("http://" + ADDRESS + ":" + PORT))
+                .build();
+        AtomicBoolean flag = new AtomicBoolean(false);
+
+        new Thread(() -> {
+            CompletableFuture<HttpResponse<String>> response =
+                    httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+            try {
+                response.get().body();
+                flag.set(true);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+        while (!flag.get()) {
+            Thread.yield();
         }
+//        System.out.println(response.body());
+
+        httpServer.close();
+        dbms.close();
+        dbmsThread.join();
+        serverThread.join();
+
     }
 }

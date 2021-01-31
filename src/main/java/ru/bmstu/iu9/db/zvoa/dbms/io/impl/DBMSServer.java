@@ -1,5 +1,6 @@
 package ru.bmstu.iu9.db.zvoa.dbms.io.impl;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -25,17 +26,13 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 
-public class DBMSServer extends AbstractDbModule implements Consumer<HttpResponse>, Supplier<HttpRequest> {
+public class DBMSServer extends AbstractDbModule
+        implements Consumer<HttpResponse>, Supplier<HttpRequest> {
     private Logger logger = Logger.getLogger(getClass().getName());
 
-    private EventLoopGroup bossGroup;
-    private EventLoopGroup workerGroup;
-    private ServerBootstrap serverBootstrap;
-
-    private Map<Connection, BlockingQueue<HttpRequest>> requests = new ConcurrentHashMap<>();
-    private Map<Connection, BlockingQueue<HttpResponse>> responses = new ConcurrentHashMap<>();
-
-    private ConcurrentSkipListMap<HttpRequest, Connection> liveQueue = new ConcurrentSkipListMap<>((o1, o2) -> {
+    private final Map<Connection, BlockingQueue<HttpRequest>> requests = new ConcurrentHashMap<>();
+    private final Map<Connection, BlockingQueue<HttpResponse>> responses = new ConcurrentHashMap<>();
+    private final ConcurrentSkipListMap<HttpRequest, Connection> liveQueue = new ConcurrentSkipListMap<>((o1, o2) -> {
         if (o1.getTimestamp() < o2.getTimestamp()) {
             return 1;
         } else if (o1.getTimestamp() > o2.getTimestamp()) {
@@ -45,6 +42,9 @@ public class DBMSServer extends AbstractDbModule implements Consumer<HttpRespons
         }
     });
 
+    private EventLoopGroup bossGroup;
+    private EventLoopGroup workerGroup;
+    private ServerBootstrap serverBootstrap;
     private int port;
 
     public DBMSServer(int port) {
@@ -69,14 +69,14 @@ public class DBMSServer extends AbstractDbModule implements Consumer<HttpRespons
 
             if (entry != null) {
                 BlockingQueue<HttpRequest> httpRequests
-                        = requests
-                        .get(entry.getValue());
+                        = requests.get(entry.getValue());
 
                 if (httpRequests != null) {
                     HttpRequest httpRequest = httpRequests.poll(10, TimeUnit.MILLISECONDS);
 
                     if (httpRequest != null) {
                         logger.info("Request " + httpRequest + " get by InputModule.");
+
                         return httpRequest;
                     }
                 }
@@ -88,7 +88,14 @@ public class DBMSServer extends AbstractDbModule implements Consumer<HttpRespons
         }
     }
 
-    public void init() {
+    @Override
+    public synchronized void init() {
+        if (isInit()) {
+            return;
+        }
+        setInit();
+        logInit();
+
         bossGroup = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup();
 
@@ -106,7 +113,13 @@ public class DBMSServer extends AbstractDbModule implements Consumer<HttpRespons
 
     }
 
-    public void run() {
+    @Override
+    public synchronized void run() {
+        if (isRunning()) {
+            return;
+        }
+        setRunning();
+        logRunning();
         try {
             ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
             channelFuture.channel().closeFuture().sync();
@@ -116,31 +129,41 @@ public class DBMSServer extends AbstractDbModule implements Consumer<HttpRespons
     }
 
     @Override
-    public void close() throws Exception {
+    public synchronized void close() throws Exception {
+        if (isClosed()) {
+            return;
+        }
+        setClosed();
+        logClose();
         workerGroup.shutdownGracefully();
         bossGroup.shutdownGracefully();
     }
 
     public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
 
+        private Connection connection;
+
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
-            requests.put(new Connection(ctx), new LinkedBlockingQueue<>());
-            responses.put(new Connection(ctx), new LinkedBlockingQueue<>());
+            connection = new Connection(ctx);
+            requests.put(connection, new LinkedBlockingQueue<>());
+            responses.put(connection, new LinkedBlockingQueue<>());
         }
 
         @Override
         public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-            requests.remove(new Connection(ctx));
-            responses.remove(new Connection(ctx), new LinkedBlockingQueue<>());
+            requests.remove(connection);
+            responses.remove(connection);
         }
 
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg)
                 throws Exception {
-            ((ByteBuf) msg).release();
+            ByteBuf byteBuf = ((ByteBuf) msg);
+            StringBuilder builder = new StringBuilder();
+            builder.append(byteBuf.readCharSequence(byteBuf.readableBytes(), StandardCharsets.UTF_8));
+            byteBuf.release();
 
-            Connection connection = new Connection(ctx);
             HttpRequest request = new HttpRequest("request " + Instant.now().getEpochSecond(),
                     connection, Instant.now().toEpochMilli());
 
@@ -153,13 +176,14 @@ public class DBMSServer extends AbstractDbModule implements Consumer<HttpRespons
 
             HttpResponse httpResponse = responses.get(connection).poll(10, TimeUnit.MILLISECONDS);
             while (httpResponse == null) {
-                synchronized (connection) {
-                    try {
-                        connection.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+//                synchronized (connection) {
+//                    try {
+//                    Thread.yield();
+//                        connection.wait();
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
                 httpResponse = responses.get(connection).poll(10, TimeUnit.MILLISECONDS);
             }
 

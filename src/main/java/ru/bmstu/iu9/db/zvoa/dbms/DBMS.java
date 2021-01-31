@@ -2,6 +2,8 @@ package ru.bmstu.iu9.db.zvoa.dbms;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import ru.bmstu.iu9.db.zvoa.dbms.io.InputRequestModule;
 import ru.bmstu.iu9.db.zvoa.dbms.io.OutputResponseModule;
@@ -21,11 +23,20 @@ public class DBMS extends AbstractDbModule {
         this.queryModule = builder.queryModule;
         this.inputModule = builder.inputModule;
         this.outputModule = builder.outputModule;
+
+
     }
 
     @Override
-    public void init() {
-        executorService = Executors.newCachedThreadPool();
+    public synchronized void init() {
+        if (isInit()) {
+            return;
+        }
+        executorService = new ForkJoinPool
+                (10,
+                        ForkJoinPool.defaultForkJoinWorkerThreadFactory,
+                        null,
+                        false);
         initModules();
         executorService.shutdown();
     }
@@ -44,8 +55,17 @@ public class DBMS extends AbstractDbModule {
         executorService.submit(() -> module.init());
     }
 
-    public void run() {
-        executorService = Executors.newCachedThreadPool();
+    public synchronized void run() {
+        if (isRunning()) {
+            return;
+        }
+
+        executorService = new ForkJoinPool
+                (10,
+                        ForkJoinPool.defaultForkJoinWorkerThreadFactory,
+                        null,
+                        false);
+
         runModules();
         setRunning();
         logRunning();
@@ -56,8 +76,8 @@ public class DBMS extends AbstractDbModule {
         runModule(queryModule.getQueryRequestStorage());
         runModule(queryModule.getQueryResponseStorage());
         runModule(queryModule);
-        runModule(outputModule);
         runModule(inputModule);
+        runModule(outputModule);
     }
 
     private void runModule(IDbModule dbModule) {
@@ -65,9 +85,12 @@ public class DBMS extends AbstractDbModule {
     }
 
     @Override
-    public void close() throws Exception {
-        setRunning();
-        logRunning();
+    public synchronized void close() throws Exception {
+        if (isClosed()) {
+            return;
+        }
+        setClosed();
+        logClose();
     }
 
     public static class Builder {

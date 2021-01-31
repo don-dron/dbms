@@ -2,12 +2,13 @@ package ru.bmstu.iu9.db.zvoa.dbms.modules;
 
 import java.util.logging.Logger;
 
+import ru.bmstu.iu9.db.zvoa.dbms.DBMS;
+
 public abstract class AbstractDbModule implements IDbModule {
     private Logger logger = Logger.getLogger(getClass().getName());
 
-    private boolean isInit;
-    private boolean isRunning;
-    private boolean isClosed;
+    private State state = State.NOT_INIT;
+    private DBMS dbms;
 
     @Override
     public abstract void init();
@@ -20,17 +21,17 @@ public abstract class AbstractDbModule implements IDbModule {
 
     @Override
     public boolean isInit() {
-        return isInit;
+        return state != State.NOT_INIT;
     }
 
     @Override
     public boolean isRunning() {
-        return isRunning;
+        return state == State.RUNNING;
     }
 
     @Override
     public boolean isClosed() {
-        return isClosed;
+        return state == State.CLOSED;
     }
 
     protected Logger getLogger() {
@@ -38,15 +39,15 @@ public abstract class AbstractDbModule implements IDbModule {
     }
 
     protected void setInit() {
-        isInit = true;
+        state = State.INIT;
     }
 
     protected void setRunning() {
-        isRunning = true;
+        state = State.RUNNING;
     }
 
     protected void setClosed() {
-        isClosed = true;
+        state = State.CLOSED;
     }
 
     protected void logInit() {
@@ -59,5 +60,12 @@ public abstract class AbstractDbModule implements IDbModule {
 
     protected void logClose() {
         logger.info("Close " + getClass().getSimpleName() + " module.");
+    }
+
+    private enum State {
+        NOT_INIT,
+        INIT,
+        RUNNING,
+        CLOSED
     }
 }
