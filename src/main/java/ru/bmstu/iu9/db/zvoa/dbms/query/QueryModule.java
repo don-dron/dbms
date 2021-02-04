@@ -78,7 +78,7 @@ public class QueryModule extends AbstractDbModule {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         synchronized (this) {
             if (isClosed()) {
                 return;

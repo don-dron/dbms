@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
  * The type Db storage.
  *
  * @param <T> the type parameter
- *
  * @author don-dron Zvorygin Andrey BMSTU IU-9
  */
 public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
@@ -19,8 +18,8 @@ public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
     private final BlockingQueue<T> inputBuffer;
     private final BlockingQueue<T> outputBuffer;
 
-    public DbStorage(BlockingQueue inputBuffer,
-                     BlockingQueue outputBuffer) {
+    public DbStorage(BlockingQueue<T> inputBuffer,
+                     BlockingQueue<T> outputBuffer) {
         this.inputBuffer = inputBuffer;
         this.outputBuffer = outputBuffer;
     }
@@ -107,7 +106,7 @@ public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         synchronized (this) {
             if (isClosed()) {
                 return;

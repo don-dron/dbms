@@ -1,12 +1,5 @@
 package ru.bmstu.iu9.db.zvoa.dbms.core.run.main;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -29,7 +22,15 @@ import ru.bmstu.iu9.db.zvoa.dbms.query.QueryModule;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryRequestStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponseStorage;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
+
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 /**
  * The type Main test.
@@ -95,8 +96,8 @@ public class MainTest {
         dbms.init();
         httpServer.init();
 
-        Thread dbmsThread = new Thread(dbms::run);
-        Thread serverThread = new Thread(httpServer::run);
+        Thread dbmsThread = new Thread(dbms);
+        Thread serverThread = new Thread(httpServer);
         dbmsThread.start();
         serverThread.start();
 
@@ -119,7 +120,7 @@ public class MainTest {
             for (ClientMultiThreaded clientMultiThreaded : threads) {
                 clientMultiThreaded.join();
             }
-        }, () -> String.valueOf("Response is OK: " + counter.get() + "/" + CLIENTS_COUNT * REQUEST_PER_CLIENT));
+        }, () -> "Response is OK: " + counter.get() + "/" + CLIENTS_COUNT * REQUEST_PER_CLIENT);
 
         httpServer.close();
         dbms.close();

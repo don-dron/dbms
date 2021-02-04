@@ -2,8 +2,6 @@ package ru.bmstu.iu9.db.zvoa.dbms.modules;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.bmstu.iu9.db.zvoa.dbms.DBMS;
-import ru.bmstu.iu9.db.zvoa.dbms.io.impl.DBMSServer;
 
 /**
  * The type Abstract db module.
@@ -11,7 +9,7 @@ import ru.bmstu.iu9.db.zvoa.dbms.io.impl.DBMSServer;
  * @author don-dron Zvorygin Andrey BMSTU IU-9
  */
 public abstract class AbstractDbModule implements IDbModule {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private State state = State.NOT_INIT;
 
     @Override

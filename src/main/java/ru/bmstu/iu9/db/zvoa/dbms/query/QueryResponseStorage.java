@@ -1,9 +1,9 @@
 package ru.bmstu.iu9.db.zvoa.dbms.query;
 
-import java.util.concurrent.BlockingQueue;
-
 import ru.bmstu.iu9.db.zvoa.dbms.modules.DbStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
+
+import java.util.concurrent.BlockingQueue;
 
 /**
  * The type Query response storage.

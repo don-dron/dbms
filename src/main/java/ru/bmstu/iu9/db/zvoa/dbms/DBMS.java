@@ -1,7 +1,5 @@
 package ru.bmstu.iu9.db.zvoa.dbms;
 
-import java.util.concurrent.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.io.InputRequestModule;
@@ -9,6 +7,11 @@ import ru.bmstu.iu9.db.zvoa.dbms.io.OutputResponseModule;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.IDbModule;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryModule;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The type Dbms.
@@ -50,7 +53,7 @@ public class DBMS extends AbstractDbModule {
                     LOGGER.warn(exception.getMessage());
                 }
             }
-            
+
             setInit();
             logInit();
         }

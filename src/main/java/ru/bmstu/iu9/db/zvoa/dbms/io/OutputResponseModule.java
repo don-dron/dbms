@@ -1,18 +1,17 @@
 package ru.bmstu.iu9.db.zvoa.dbms.io;
 
-import java.util.function.Consumer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponseStorage;
 
+import java.util.function.Consumer;
+
 /**
  * The type Output response module.
  *
  * @param <T> the type parameter
- *
  * @author don-dron Zvorygin Andrey BMSTU IU-9
  */
 public class OutputResponseModule<T> extends AbstractDbModule {
@@ -77,7 +76,7 @@ public class OutputResponseModule<T> extends AbstractDbModule {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         synchronized (this) {
             if (isClosed()) {
                 return;

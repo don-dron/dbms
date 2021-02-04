@@ -7,7 +7,6 @@ import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
  * The type Request handler.
  *
  * @param <T> the type parameter
- *
  * @author don-dron Zvorygin Andrey BMSTU IU-9
  */
 public abstract class RequestHandler<T> implements IDbHandler<T, Query> {

@@ -4,7 +4,6 @@ package ru.bmstu.iu9.db.zvoa.dbms.modules;
  * The interface Db storage.
  *
  * @param <T> the type parameter
- *
  * @author don-dron Zvorygin Andrey BMSTU IU-9
  */
 public interface IDbStorage<T> {

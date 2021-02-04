@@ -1,18 +1,5 @@
 package ru.bmstu.iu9.db.zvoa.dbms.io.impl;
 
-import java.time.Instant;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -27,6 +14,15 @@ import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
+
+import java.time.Instant;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * The type Dbms server.
@@ -63,7 +59,8 @@ public class DBMSServer extends AbstractDbModule
             Connection connection = response.getConnection();
             LOGGER.info("Response " + response + " accept by OutputModule.");
             responses.get(connection).put(response);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException exception) {
+            LOGGER.warn(exception.getMessage());
         }
     }
 
@@ -172,7 +169,7 @@ public class DBMSServer extends AbstractDbModule
 
     public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         @Override
-        protected void initChannel(SocketChannel channel) throws Exception {
+        protected void initChannel(SocketChannel channel) {
             ChannelPipeline pipeline = channel.pipeline();
             pipeline.addLast(new HttpServerCodec());
             pipeline.addLast(new HttpObjectAggregator(1024 * 1024));
@@ -186,18 +183,18 @@ public class DBMSServer extends AbstractDbModule
      * @author don-dron Zvorygin Andrey BMSTU IU-9
      */
     public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
-        private Logger logger = LoggerFactory.getLogger(DiscardServerHandler.class);
+        private final Logger logger = LoggerFactory.getLogger(DiscardServerHandler.class);
         private Connection connection;
 
         @Override
-        public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        public void channelActive(ChannelHandlerContext ctx) {
             connection = new Connection(ctx);
             requests.put(connection, new LinkedBlockingQueue<>());
             responses.put(connection, new LinkedBlockingQueue<>());
         }
 
         @Override
-        public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        public void channelInactive(ChannelHandlerContext ctx) {
             requests.remove(connection);
             responses.remove(connection);
         }
@@ -220,7 +217,7 @@ public class DBMSServer extends AbstractDbModule
             requestsCount.getAndIncrement();
             logger.info("Put request " + request + " http server.");
 
-            HttpResponse httpResponse = null;
+            HttpResponse httpResponse;
             while (true) {
                 try {
                     httpResponse = responses.get(connection).poll(10, TimeUnit.MILLISECONDS);
@@ -250,7 +247,7 @@ public class DBMSServer extends AbstractDbModule
         }
 
         @Override
-        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
             if (cause != null) {
                 logger.warn(cause.getMessage());
             }
@@ -258,12 +255,12 @@ public class DBMSServer extends AbstractDbModule
         }
 
         @Override
-        public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        public void channelReadComplete(ChannelHandlerContext ctx) {
             ctx.flush();
         }
     }
 
-    private class RequestComparator implements Comparator<HttpRequest> {
+    private static class RequestComparator implements Comparator<HttpRequest> {
         @Override
         public int compare(HttpRequest first, HttpRequest second) {
             if (first.getTimestamp() < second.getTimestamp()) {

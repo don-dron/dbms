@@ -1,17 +1,16 @@
 package ru.bmstu.iu9.db.zvoa.dbms.io;
 
-import java.util.function.Supplier;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryRequestStorage;
 
+import java.util.function.Supplier;
+
 /**
  * The type Input request module.
  *
  * @param <T> the type parameter
- *
  * @author don-dron Zvorygin Andrey BMSTU IU-9
  */
 public class InputRequestModule<T> extends AbstractDbModule {
@@ -74,7 +73,7 @@ public class InputRequestModule<T> extends AbstractDbModule {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         synchronized (this) {
             if (isClosed()) {
                 return;

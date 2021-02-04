@@ -5,7 +5,6 @@ package ru.bmstu.iu9.db.zvoa.dbms.modules;
  *
  * @param <T> the type parameter
  * @param <R> the type parameter
- *
  * @author don-dron Zvorygin Andrey BMSTU IU-9
  */
 public interface IDbHandler<T, R> {
@@ -16,5 +15,5 @@ public interface IDbHandler<T, R> {
      * @return the r
      * @throws HandleException the handle exception
      */
-    public R execute(T t) throws HandleException;
+    R execute(T t) throws HandleException;
 }
