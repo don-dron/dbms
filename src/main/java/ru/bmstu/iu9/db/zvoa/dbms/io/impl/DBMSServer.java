@@ -1,12 +1,15 @@
 package ru.bmstu.iu9.db.zvoa.dbms.io.impl;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -25,28 +28,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 
+/**
+ * The type Dbms server.
+ *
+ * @author don-dron Zvorygin Andrey BMSTU IU-9
+ */
 public class DBMSServer extends AbstractDbModule
         implements Consumer<HttpResponse>, Supplier<HttpRequest> {
     private final static Logger LOGGER = LoggerFactory.getLogger(DBMSServer.class);
-
+    private final AtomicInteger requestsCount = new AtomicInteger();
+    private final AtomicInteger responseCount = new AtomicInteger();
     private final Map<Connection, BlockingQueue<HttpRequest>> requests = new ConcurrentHashMap<>();
     private final Map<Connection, BlockingQueue<HttpResponse>> responses = new ConcurrentHashMap<>();
-    private final ConcurrentSkipListMap<HttpRequest, Connection> liveQueue = new ConcurrentSkipListMap<>((o1, o2) -> {
-        if (o1.getTimestamp() < o2.getTimestamp()) {
-            return 1;
-        } else if (o1.getTimestamp() > o2.getTimestamp()) {
-            return -1;
-        } else {
-            return 0;
-        }
-    });
+    private final ConcurrentSkipListMap<HttpRequest, Connection> liveQueue = new ConcurrentSkipListMap<>(new RequestComparator());
+    private final int port;
 
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
     private ServerBootstrap serverBootstrap;
     private ChannelFuture serverFuture;
-    private int port;
 
+    /**
+     * Instantiates a new Dbms server.
+     *
+     * @param port the port
+     */
     public DBMSServer(int port) {
         this.port = port;
     }
@@ -75,9 +81,21 @@ public class DBMSServer extends AbstractDbModule
 
                     if (httpRequest != null) {
                         LOGGER.info("Request " + httpRequest + " get by InputModule.");
-
                         return httpRequest;
                     }
+                }
+            } else if (!requests.isEmpty()) {
+                HttpRequest httpRequest = requests
+                        .entrySet()
+                        .stream()
+                        .findFirst()
+                        .orElse(null)
+                        .getValue()
+                        .poll(10, TimeUnit.MILLISECONDS);
+
+                if (httpRequest != null) {
+                    LOGGER.info("Request " + httpRequest + " get by InputModule.");
+                    return httpRequest;
                 }
             }
 
@@ -137,7 +155,7 @@ public class DBMSServer extends AbstractDbModule
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         synchronized (this) {
             if (isClosed()) {
                 return;
@@ -162,6 +180,11 @@ public class DBMSServer extends AbstractDbModule
         }
     }
 
+    /**
+     * The type Discard server handler.
+     *
+     * @author don-dron Zvorygin Andrey BMSTU IU-9
+     */
     public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
         private Logger logger = LoggerFactory.getLogger(DiscardServerHandler.class);
         private Connection connection;
@@ -180,36 +203,50 @@ public class DBMSServer extends AbstractDbModule
         }
 
         @Override
-        public void channelRead(ChannelHandlerContext ctx, Object msg)
-                throws Exception {
-            try {
-                HttpRequest request = new HttpRequest("request " + Instant.now().getEpochSecond(),
-                        connection, Instant.now().toEpochMilli());
-                logger.info("Put request " + request + " http server.");
+        public void channelRead(ChannelHandlerContext ctx, Object msg) {
+            ((FullHttpRequest) msg).release();
+            HttpRequest request = new HttpRequest("request " + UUID.randomUUID(),
+                    connection, Instant.now().toEpochMilli());
 
-                BlockingQueue queue = requests.get(connection);
-                queue.put(request);
+            while (true) {
+                try {
+                    requests.get(connection).put(request);
+                    break;
+                } catch (InterruptedException exception) {
+                    logger.warn(exception.getMessage());
+                }
+            }
+            DBMSServer.this.liveQueue.put(request, connection);
+            requestsCount.getAndIncrement();
+            logger.info("Put request " + request + " http server.");
 
-                DBMSServer.this.liveQueue.put(request, connection);
-
-                HttpResponse httpResponse = responses.get(connection).poll(10, TimeUnit.MILLISECONDS);
-                while (httpResponse == null) {
-                    Thread.yield();
+            HttpResponse httpResponse = null;
+            while (true) {
+                try {
                     httpResponse = responses.get(connection).poll(10, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException exception) {
+                    logger.warn(exception.getMessage());
+                    continue;
                 }
 
-                ByteBuf content = Unpooled.copiedBuffer(httpResponse.getResponse(), CharsetUtil.UTF_8);
-                FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, content);
-                response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html");
-                response.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.readableBytes());
-
-                logger.info("Send response " + response + " http server.");
-                ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-            } catch (Exception exception) {
-                logger.warn(exception.getMessage());
-            } finally {
-                ((ByteBuf) msg).release();
+                if (httpResponse == null) {
+                    Thread.yield();
+                } else {
+                    break;
+                }
             }
+
+            ByteBuf content = Unpooled.copiedBuffer(httpResponse.getResponse(), CharsetUtil.UTF_8);
+            FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, content);
+            response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html");
+            response.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.readableBytes());
+
+            logger.info("Send response " + response + " http server.");
+
+            responseCount.getAndIncrement();
+            ctx.writeAndFlush(response);
+
+            logger.info("Request count: " + requestsCount.get() + "\nResponse count: " + responseCount.get());
         }
 
         @Override
@@ -223,6 +260,25 @@ public class DBMSServer extends AbstractDbModule
         @Override
         public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
             ctx.flush();
+        }
+    }
+
+    private class RequestComparator implements Comparator<HttpRequest> {
+        @Override
+        public int compare(HttpRequest first, HttpRequest second) {
+            if (first.getTimestamp() < second.getTimestamp()) {
+                return 1;
+            } else if (first.getTimestamp() > second.getTimestamp()) {
+                return -1;
+            } else {
+                if (first.hashCode() < second.hashCode()) {
+                    return 1;
+                } else if (first.hashCode() > second.hashCode()) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
         }
     }
 }

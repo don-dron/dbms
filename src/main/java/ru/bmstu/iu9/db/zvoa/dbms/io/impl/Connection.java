@@ -4,26 +4,41 @@ import java.util.Objects;
 
 import io.netty.channel.ChannelHandlerContext;
 
+/**
+ * The type Connection.
+ *
+ * @author don-dron Zvorygin Andrey BMSTU IU-9
+ */
 public class Connection {
     private final ChannelHandlerContext channelHandlerContext;
 
+    /**
+     * Instantiates a new Connection.
+     *
+     * @param channelHandlerContext the channel handler context
+     */
     public Connection(ChannelHandlerContext channelHandlerContext) {
         this.channelHandlerContext = channelHandlerContext;
     }
 
+    /**
+     * Gets channel handler context.
+     *
+     * @return the channel handler context
+     */
     public ChannelHandlerContext getChannelHandlerContext() {
         return channelHandlerContext;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        Connection that = (Connection) o;
+        Connection that = (Connection) object;
         return Objects.equals(channelHandlerContext, that.channelHandlerContext);
     }
 

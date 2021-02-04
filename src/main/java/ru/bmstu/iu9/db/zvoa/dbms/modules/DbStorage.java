@@ -6,6 +6,13 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The type Db storage.
+ *
+ * @param <T> the type parameter
+ *
+ * @author don-dron Zvorygin Andrey BMSTU IU-9
+ */
 public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
     private final static Logger LOGGER = LoggerFactory.getLogger(DbStorage.class);
 

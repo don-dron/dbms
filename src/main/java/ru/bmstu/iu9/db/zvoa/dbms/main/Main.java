@@ -31,11 +31,22 @@ import ru.bmstu.iu9.db.zvoa.dbms.query.QueryModule;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryRequestStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponseStorage;
 
+/**
+ * The type Main.
+ *
+ * @author don-dron Zvorygin Andrey BMSTU IU-9
+ */
 public class Main {
     private static Supplier<BlockingQueue> queueSupplier = () -> new LinkedBlockingQueue();
     private static String ADDRESS = "127.0.0.1";
     private static int PORT = 38900;
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     * @throws Exception the exception
+     */
     public static void main(String[] args) throws Exception {
         DBMSServer httpServer = new DBMSServer(PORT);
 

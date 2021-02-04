@@ -1,15 +1,20 @@
 package ru.bmstu.iu9.db.zvoa.dbms.core.run.main;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -26,23 +31,36 @@ import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponseStorage;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * The type Main test.
+ *
+ * @author don-dron Zvorygin Andrey BMSTU IU-9
+ */
 public class MainTest {
     private static final String ADDRESS = "127.0.0.1";
     private static final int PORT = 8890;
-    private static Supplier<BlockingQueue> queueSupplier = () -> new LinkedBlockingQueue();
+    private static final int CLIENTS_COUNT = 16;
+    private static final int REQUEST_PER_CLIENT = 64;
+    private static final Supplier<BlockingQueue> QUEUE_SUPPLIER = () -> new LinkedBlockingQueue();
+
     private DBMSServer httpServer;
     private DBMS dbms;
+    private AtomicInteger counter;
 
+    /**
+     * Create dbms.
+     */
     @BeforeEach
     public void createDBMS() {
         MockitoAnnotations.openMocks(this);
 
+        counter = new AtomicInteger();
         httpServer = new DBMSServer(PORT);
 
         QueryRequestStorage queryRequestStorage =
-                new QueryRequestStorage(queueSupplier.get(), queueSupplier.get());
+                new QueryRequestStorage(QUEUE_SUPPLIER.get(), QUEUE_SUPPLIER.get());
         QueryResponseStorage queryResponseStorage =
-                new QueryResponseStorage(queueSupplier.get(), queueSupplier.get());
+                new QueryResponseStorage(QUEUE_SUPPLIER.get(), QUEUE_SUPPLIER.get());
 
         dbms = DBMS.Builder.newBuilder()
                 .setQueryModule(QueryModule.Builder.newBuilder()
@@ -59,60 +77,97 @@ public class MainTest {
                 .build();
     }
 
+    /**
+     * Main dummy test.
+     */
     @Test
     public void mainDummyTest() {
         System.out.println("Dummy main test running");
     }
 
+    /**
+     * Main pipeline test.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void mainPipelineTest() throws Exception {
         dbms.init();
         httpServer.init();
 
         Thread dbmsThread = new Thread(dbms::run);
-        dbmsThread.start();
-
         Thread serverThread = new Thread(httpServer::run);
+        dbmsThread.start();
         serverThread.start();
 
-        HttpClient httpClient = HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_1_1)
-                .connectTimeout(Duration.ofSeconds(10))
-                .build();
+        PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
+        connManager.setMaxTotal(100);
+        HttpClientBuilder clientBuilder = HttpClients.custom().setConnectionManager(connManager);
+        CloseableHttpClient httpclient = clientBuilder.build();
 
-        ExecutorService joinPool = new ThreadPoolExecutor(16, Integer.MAX_VALUE,
-                600L, TimeUnit.DAYS,
-                new SynchronousQueue<Runnable>());
-
-        for (int i = 0; i < 10; i++) {
-            joinPool.execute(() -> {
-                assertTimeout(Duration.ofMillis(4000), () -> {
-                    for (int j = 0; j < 30; j++) {
-                        HttpRequest request = HttpRequest.newBuilder()
-                                .version(HttpClient.Version.HTTP_1_1)
-                                .uri(URI.create("http://" + ADDRESS + ":" + PORT))
-                                .build();
-
-                        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                        response.body();
-                    }
-                });
-            });
+        List<ClientMultiThreaded> threads = new ArrayList<>();
+        for (int i = 0; i < CLIENTS_COUNT; i++) {
+            HttpGet httpGet = new HttpGet("http://" + ADDRESS + ":" + PORT);
+            ClientMultiThreaded thread = new ClientMultiThreaded(httpclient, httpGet, i);
+            threads.add(thread);
         }
 
-        joinPool.shutdown();
-        while (true) {
-            try {
-                if (joinPool.awaitTermination(1, TimeUnit.SECONDS)) {
-                    break;
-                }
-            } catch (InterruptedException e) {
+        assertTimeoutPreemptively(Duration.ofMillis(16000), () -> {
+            for (ClientMultiThreaded clientMultiThreaded : threads) {
+                clientMultiThreaded.start();
             }
-        }
+            for (ClientMultiThreaded clientMultiThreaded : threads) {
+                clientMultiThreaded.join();
+            }
+        }, () -> String.valueOf("Response is OK: " + counter.get() + "/" + CLIENTS_COUNT * REQUEST_PER_CLIENT));
 
         httpServer.close();
         dbms.close();
         dbmsThread.join();
         serverThread.join();
+    }
+
+    /**
+     * The type Client multi threaded.
+     *
+     * @author don-dron Zvorygin Andrey BMSTU IU-9
+     */
+    public class ClientMultiThreaded extends Thread {
+        private final CloseableHttpClient httpClient;
+        private final HttpGet httpget;
+        private final int id;
+
+        /**
+         * Instantiates a new Client multi threaded.
+         *
+         * @param httpClient the http client
+         * @param httpget    the httpget
+         * @param id         the id
+         */
+        public ClientMultiThreaded(CloseableHttpClient httpClient, HttpGet httpget,
+                                   int id) {
+            this.httpClient = httpClient;
+            this.httpget = httpget;
+            this.id = id;
+        }
+
+        @Override
+        public void run() {
+            for (int i = 0; i < REQUEST_PER_CLIENT; i++) {
+                try {
+                    CloseableHttpResponse httpResponse = httpClient.execute(httpget);
+
+                    System.out.println("Status of thread " + id + ":" + httpResponse.getStatusLine());
+
+                    HttpEntity entity = httpResponse.getEntity();
+                    if (entity != null) {
+                        System.out.println("Bytes read by thread thread " + id + ":" + EntityUtils.toByteArray(entity).length);
+                        counter.getAndIncrement();
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
     }
 }
