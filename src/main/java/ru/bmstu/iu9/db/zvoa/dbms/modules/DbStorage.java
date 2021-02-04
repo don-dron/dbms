@@ -51,7 +51,6 @@ public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
                 LOGGER.info("Get " + t + " from storage " + getClass().getSimpleName()
                         + " input buffer size " + inputBuffer.size()
                         + " output buffer size " + outputBuffer.size());
-//                notifyAll();
                 return t;
             }
         } catch (InterruptedException e) {

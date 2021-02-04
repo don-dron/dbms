@@ -145,7 +145,8 @@ public class MainTest {
          * @param httpget    the httpget
          * @param id         the id
          */
-        public ClientMultiThreaded(CloseableHttpClient httpClient, HttpGet httpget,
+        public ClientMultiThreaded(CloseableHttpClient httpClient,
+                                   HttpGet httpget,
                                    int id) {
             this.httpClient = httpClient;
             this.httpget = httpget;
