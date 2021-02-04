@@ -227,7 +227,7 @@ public class DBMSServer extends AbstractDbModule
                 }
 
                 if (httpResponse == null) {
-                    Thread.yield();
+                    Thread.onSpinWait();
                 } else {
                     break;
                 }

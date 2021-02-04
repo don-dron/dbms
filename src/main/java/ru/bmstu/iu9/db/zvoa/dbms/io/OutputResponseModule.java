@@ -66,11 +66,7 @@ public class OutputResponseModule<T> extends AbstractDbModule {
                 LOGGER.info("Output module handle response " + t);
                 consumer.accept(t);
             } else {
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    LOGGER.warn(e.getMessage());
-                }
+                Thread.onSpinWait();
             }
         }
     }

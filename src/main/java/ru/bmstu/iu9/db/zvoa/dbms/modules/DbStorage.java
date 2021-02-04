@@ -93,11 +93,7 @@ public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
                         LOGGER.warn(e.getMessage());
                     }
                 } else {
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        LOGGER.warn(e.getMessage());
-                    }
+                    Thread.onSpinWait();
                 }
             } catch (InterruptedException e) {
                 LOGGER.warn(e.getMessage());

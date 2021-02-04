@@ -48,6 +48,8 @@ public class DBMS extends AbstractDbModule {
                 try {
                     if (executorService.awaitTermination(1, TimeUnit.SECONDS)) {
                         break;
+                    } else {
+                        Thread.onSpinWait();
                     }
                 } catch (InterruptedException exception) {
                     LOGGER.warn(exception.getMessage());
@@ -95,6 +97,8 @@ public class DBMS extends AbstractDbModule {
             try {
                 if (executorService.awaitTermination(1, TimeUnit.SECONDS)) {
                     break;
+                } else {
+                    Thread.onSpinWait();
                 }
             } catch (InterruptedException exception) {
                 LOGGER.warn(exception.getMessage());
