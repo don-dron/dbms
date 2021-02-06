@@ -1,23 +1,26 @@
-package ru.bmstu.iu9.db.zvoa.dbms.io.impl;
+package ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http;
 
 import java.util.Objects;
 
 import io.netty.channel.ChannelHandlerContext;
 
+import javax.validation.constraints.NotNull;
+
 /**
- * The type Connection.
+ * The Connection - information about Http Connection.
  *
  * @author don-dron Zvorygin Andrey BMSTU IU-9
  */
-public class Connection {
+public class ConnectionInformation {
+    @NotNull
     private final ChannelHandlerContext channelHandlerContext;
 
     /**
-     * Instantiates a new Connection.
+     * Instantiates a new Connection Information for Http channel.
      *
      * @param channelHandlerContext the channel handler context
      */
-    public Connection(ChannelHandlerContext channelHandlerContext) {
+    public ConnectionInformation(@NotNull ChannelHandlerContext channelHandlerContext) {
         this.channelHandlerContext = channelHandlerContext;
     }
 
@@ -26,6 +29,7 @@ public class Connection {
      *
      * @return the channel handler context
      */
+    @NotNull
     public ChannelHandlerContext getChannelHandlerContext() {
         return channelHandlerContext;
     }
@@ -38,7 +42,7 @@ public class Connection {
         if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        Connection that = (Connection) object;
+        ConnectionInformation that = (ConnectionInformation) object;
         return Objects.equals(channelHandlerContext, that.channelHandlerContext);
     }
 

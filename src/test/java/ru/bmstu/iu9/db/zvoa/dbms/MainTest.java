@@ -1,4 +1,4 @@
-package ru.bmstu.iu9.db.zvoa.dbms.core.run.main;
+package ru.bmstu.iu9.db.zvoa.dbms;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -11,13 +11,13 @@ import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
-import ru.bmstu.iu9.db.zvoa.dbms.DBMS;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.DSQLExecutor;
 import ru.bmstu.iu9.db.zvoa.dbms.io.InputRequestModule;
 import ru.bmstu.iu9.db.zvoa.dbms.io.OutputResponseModule;
-import ru.bmstu.iu9.db.zvoa.dbms.io.impl.DBMSServer;
-import ru.bmstu.iu9.db.zvoa.dbms.io.impl.HttpRequestHandler;
-import ru.bmstu.iu9.db.zvoa.dbms.io.impl.HttpResponseHandler;
-import ru.bmstu.iu9.db.zvoa.dbms.query.QueryHandler;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpRequestHandler;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpResponseHandler;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.query.DSQLQueryHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryModule;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryRequestStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponseStorage;
@@ -29,6 +29,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
@@ -65,7 +67,7 @@ public class MainTest {
 
         dbms = DBMS.Builder.newBuilder()
                 .setQueryModule(QueryModule.Builder.newBuilder()
-                        .setQueryHandler(new QueryHandler())
+                        .setQueryHandler(new DSQLQueryHandler(new DSQLExecutor()))
                         .setQueryRequestStorage(queryRequestStorage)
                         .setQueryResponseStorage(queryResponseStorage)
                         .build())
@@ -163,7 +165,7 @@ public class MainTest {
 
                     HttpEntity entity = httpResponse.getEntity();
                     if (entity != null) {
-                        System.out.println("Bytes read by thread thread " + id + ":" + EntityUtils.toByteArray(entity).length);
+                        System.out.println("Bytes read by thread thread " + id + " : " + EntityUtils.toString(entity));
                         counter.getAndIncrement();
                     }
                 } catch (Exception e) {

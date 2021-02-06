@@ -61,21 +61,21 @@ public abstract class AbstractDbModule implements IDbModule {
      * Log init.
      */
     protected void logInit() {
-        logger.info("Init " + getClass().getSimpleName() + " module.");
+        logger.debug("Init " + getClass().getSimpleName() + " module.");
     }
 
     /**
      * Log running.
      */
     protected void logRunning() {
-        logger.info("Running " + getClass().getSimpleName() + " module.");
+        logger.debug("Running " + getClass().getSimpleName() + " module.");
     }
 
     /**
      * Log close.
      */
     protected void logClose() {
-        logger.info("Close " + getClass().getSimpleName() + " module.");
+        logger.debug("Close " + getClass().getSimpleName() + " module.");
     }
 
     private enum State {

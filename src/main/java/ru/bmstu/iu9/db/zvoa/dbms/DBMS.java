@@ -1,5 +1,6 @@
 package ru.bmstu.iu9.db.zvoa.dbms;
 
+import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.io.InputRequestModule;
@@ -8,6 +9,11 @@ import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.IDbModule;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryModule;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -19,11 +25,17 @@ import java.util.concurrent.TimeUnit;
  * @author don-dron Zvorygin Andrey BMSTU IU-9
  */
 public class DBMS extends AbstractDbModule {
-    private final static Logger LOGGER = LoggerFactory.getLogger(DBMS.class);
+    private final Logger logger = LoggerFactory.getLogger(DBMS.class);
     private final QueryModule queryModule;
     private final InputRequestModule inputModule;
     private final OutputResponseModule outputModule;
     private ExecutorService executorService;
+
+    static {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        URL url = loader.getResource("log4j.properties");
+        PropertyConfigurator.configure(url);
+    }
 
     private DBMS(Builder builder) {
         this.queryModule = builder.queryModule;
@@ -52,7 +64,7 @@ public class DBMS extends AbstractDbModule {
                         Thread.onSpinWait();
                     }
                 } catch (InterruptedException exception) {
-                    LOGGER.warn(exception.getMessage());
+                    logger.warn(exception.getMessage());
                 }
             }
 
@@ -101,7 +113,7 @@ public class DBMS extends AbstractDbModule {
                     Thread.onSpinWait();
                 }
             } catch (InterruptedException exception) {
-                LOGGER.warn(exception.getMessage());
+                logger.warn(exception.getMessage());
             }
         }
     }

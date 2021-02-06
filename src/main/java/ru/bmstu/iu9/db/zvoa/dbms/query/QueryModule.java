@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.query.DSQLQueryHandler;
 
 /**
  * The type Query module.
@@ -11,11 +12,11 @@ import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
  * @author don-dron Zvorygin Andrey BMSTU IU-9
  */
 public class QueryModule extends AbstractDbModule {
-    private final static Logger LOGGER = LoggerFactory.getLogger(QueryModule.class);
+    private final Logger logger = LoggerFactory.getLogger(QueryModule.class);
 
     private final QueryRequestStorage queryRequestStorage;
     private final QueryResponseStorage queryResponseStorage;
-    private final QueryHandler queryHandler;
+    private final DSQLQueryHandler queryHandler;
 
     private QueryModule(Builder builder) {
         this.queryRequestStorage = builder.requestStorage;
@@ -90,7 +91,7 @@ public class QueryModule extends AbstractDbModule {
      * @author don-dron Zvorygin Andrey BMSTU IU-9
      */
     public static class Builder {
-        private QueryHandler handler;
+        private DSQLQueryHandler handler;
         private QueryRequestStorage requestStorage;
         private QueryResponseStorage responseStorage;
 
@@ -131,7 +132,7 @@ public class QueryModule extends AbstractDbModule {
          * @param queryHandler the query handler
          * @return the query handler
          */
-        public Builder setQueryHandler(QueryHandler queryHandler) {
+        public Builder setQueryHandler(DSQLQueryHandler queryHandler) {
             this.handler = queryHandler;
             return this;
         }

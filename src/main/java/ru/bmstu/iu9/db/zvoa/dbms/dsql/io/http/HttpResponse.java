@@ -1,4 +1,4 @@
-package ru.bmstu.iu9.db.zvoa.dbms.io.impl;
+package ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http;
 
 /**
  * The type Http response.
@@ -6,18 +6,18 @@ package ru.bmstu.iu9.db.zvoa.dbms.io.impl;
  * @author don-dron Zvorygin Andrey BMSTU IU-9
  */
 public class HttpResponse {
-    private final Connection connection;
+    private final ConnectionInformation connectionInformation;
     private final String response;
 
     /**
      * Instantiates a new Http response.
      *
      * @param response   the response
-     * @param connection the connection
+     * @param connectionInformation the connection
      */
-    public HttpResponse(String response, Connection connection) {
+    public HttpResponse(String response, ConnectionInformation connectionInformation) {
         this.response = response;
-        this.connection = connection;
+        this.connectionInformation = connectionInformation;
     }
 
     /**
@@ -25,8 +25,8 @@ public class HttpResponse {
      *
      * @return the connection
      */
-    public Connection getConnection() {
-        return connection;
+    public ConnectionInformation getConnectionInformation() {
+        return connectionInformation;
     }
 
     /**

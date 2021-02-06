@@ -1,12 +1,13 @@
 package ru.bmstu.iu9.db.zvoa.dbms.main;
 
 import ru.bmstu.iu9.db.zvoa.dbms.DBMS;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.DSQLExecutor;
 import ru.bmstu.iu9.db.zvoa.dbms.io.InputRequestModule;
 import ru.bmstu.iu9.db.zvoa.dbms.io.OutputResponseModule;
-import ru.bmstu.iu9.db.zvoa.dbms.io.impl.DBMSServer;
-import ru.bmstu.iu9.db.zvoa.dbms.io.impl.HttpRequestHandler;
-import ru.bmstu.iu9.db.zvoa.dbms.io.impl.HttpResponseHandler;
-import ru.bmstu.iu9.db.zvoa.dbms.query.QueryHandler;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpRequestHandler;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpResponseHandler;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.query.DSQLQueryHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryModule;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryRequestStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponseStorage;
@@ -41,7 +42,7 @@ public class Main {
 
         DBMS dbms = DBMS.Builder.newBuilder()
                 .setQueryModule(QueryModule.Builder.newBuilder()
-                        .setQueryHandler(new QueryHandler())
+                        .setQueryHandler(new DSQLQueryHandler(new DSQLExecutor()))
                         .setQueryRequestStorage(queryRequestStorage)
                         .setQueryResponseStorage(queryResponseStorage)
                         .build())

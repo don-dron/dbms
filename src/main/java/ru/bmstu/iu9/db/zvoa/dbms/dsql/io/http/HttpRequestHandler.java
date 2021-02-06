@@ -1,5 +1,6 @@
-package ru.bmstu.iu9.db.zvoa.dbms.io.impl;
+package ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http;
 
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.query.DSQLQuery;
 import ru.bmstu.iu9.db.zvoa.dbms.io.RequestHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
 
@@ -10,7 +11,7 @@ import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
  */
 public class HttpRequestHandler extends RequestHandler<HttpRequest> {
     @Override
-    public Query execute(HttpRequest o) {
-        return new DSQLQuery(o.getConnection());
+    public Query execute(HttpRequest httpRequest) {
+        return new DSQLQuery(httpRequest.getRequest(), httpRequest.getConnectionInformation());
     }
 }

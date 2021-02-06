@@ -7,13 +7,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The type Db storage.
+ * The Data Base storage - it's two sides buffer between modules for sharing data.
  *
- * @param <T> the type parameter
+ * @param <T> the type elements in storage
  * @author don-dron Zvorygin Andrey BMSTU IU-9
  */
 public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
-    private final static Logger LOGGER = LoggerFactory.getLogger(DbStorage.class);
+    private final Logger logger = LoggerFactory.getLogger(DbStorage.class);
 
     private final BlockingQueue<T> inputBuffer;
     private final BlockingQueue<T> outputBuffer;
@@ -32,13 +32,13 @@ public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
     @Override
     public boolean put(T t) {
         try {
-            LOGGER.info("Put " + t + " to storage " + getClass().getSimpleName()
+            logger.debug("Put " + t + " to storage " + getClass().getSimpleName()
                     + " input buffer size " + inputBuffer.size()
                     + " output buffer size " + outputBuffer.size());
             inputBuffer.put(t);
             return true;
         } catch (InterruptedException e) {
-            LOGGER.warn(e.getMessage());
+            logger.warn(e.getMessage());
             return false;
         }
     }
@@ -48,13 +48,13 @@ public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
         try {
             T t = outputBuffer.poll(1, TimeUnit.MILLISECONDS);
             if (t != null) {
-                LOGGER.info("Get " + t + " from storage " + getClass().getSimpleName()
+                logger.debug("Get " + t + " from storage " + getClass().getSimpleName()
                         + " input buffer size " + inputBuffer.size()
                         + " output buffer size " + outputBuffer.size());
                 return t;
             }
         } catch (InterruptedException e) {
-            LOGGER.warn(e.getMessage());
+            logger.warn(e.getMessage());
         }
         return null;
     }
@@ -87,15 +87,15 @@ public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
                         (t = inputBuffer.poll(1, TimeUnit.MILLISECONDS)) != null) {
                     try {
                         outputBuffer.put(t);
-                        LOGGER.info("Replace " + t + getClass().getSimpleName());
+                        logger.debug("Replace " + t + getClass().getSimpleName());
                     } catch (InterruptedException e) {
-                        LOGGER.warn(e.getMessage());
+                        logger.warn(e.getMessage());
                     }
                 } else {
                     Thread.onSpinWait();
                 }
             } catch (InterruptedException e) {
-                LOGGER.warn(e.getMessage());
+                logger.warn(e.getMessage());
             }
         }
     }

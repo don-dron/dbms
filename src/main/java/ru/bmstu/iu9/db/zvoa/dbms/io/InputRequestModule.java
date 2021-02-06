@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  * @author don-dron Zvorygin Andrey BMSTU IU-9
  */
 public class InputRequestModule<T> extends AbstractDbModule {
-    private final static Logger LOGGER = LoggerFactory.getLogger(InputRequestModule.class);
+    private final Logger logger = LoggerFactory.getLogger(InputRequestModule.class);
     private final Supplier<T> queryGenerator;
     private final QueryRequestStorage queryRequestStorage;
     private final RequestHandler<T> requestHandler;
@@ -60,7 +60,7 @@ public class InputRequestModule<T> extends AbstractDbModule {
             T t = queryGenerator.get();
 
             if (t != null) {
-                LOGGER.info("Input module handle request " + t);
+                logger.debug("Input module handle request " + t);
                 queryRequestStorage.put(requestHandler.execute(t));
             } else {
                 Thread.onSpinWait();

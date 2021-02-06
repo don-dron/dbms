@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  * @author don-dron Zvorygin Andrey BMSTU IU-9
  */
 public class OutputResponseModule<T> extends AbstractDbModule {
-    private final static Logger LOGGER = LoggerFactory.getLogger(OutputResponseModule.class);
+    private final Logger logger = LoggerFactory.getLogger(OutputResponseModule.class);
 
     private final QueryResponseStorage queryResponseStorage;
     private final ResponseHandler<T> responseHandler;
@@ -63,7 +63,7 @@ public class OutputResponseModule<T> extends AbstractDbModule {
             if (!queryResponseStorage.isEmpty() &&
                     (response = queryResponseStorage.get()) != null) {
                 T t = responseHandler.execute(response);
-                LOGGER.info("Output module handle response " + t);
+                logger.debug("Output module handle response " + t);
                 consumer.accept(t);
             } else {
                 Thread.onSpinWait();
