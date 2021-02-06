@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.compiler.lexer.ILexer;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.compiler.lexer.IToken;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.compiler.lexer.LexerError;
-import ru.bmstu.iu9.db.zvoa.dbms.io.OutputResponseModule;
 
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DSQLLexer implements ILexer {
@@ -15,6 +15,8 @@ public class DSQLLexer implements ILexer {
     @Override
     public Stream<IToken> lex(String code) throws LexerError {
         logger.debug("Start lex program.");
-        return Stream.empty();
+        Stream<IToken> tokens = new DSQLIdentifier().identifyDSQLTokens(code);
+        logger.debug(tokens.map(IToken::toString).collect(Collectors.joining(", ")));
+        return tokens;
     }
 }

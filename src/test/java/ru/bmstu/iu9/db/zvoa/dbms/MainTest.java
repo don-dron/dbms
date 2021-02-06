@@ -2,7 +2,8 @@ package ru.bmstu.iu9.db.zvoa.dbms;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -12,12 +13,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.DSQLExecutor;
-import ru.bmstu.iu9.db.zvoa.dbms.io.InputRequestModule;
-import ru.bmstu.iu9.db.zvoa.dbms.io.OutputResponseModule;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpRequestHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpResponseHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.query.DSQLQueryHandler;
+import ru.bmstu.iu9.db.zvoa.dbms.io.InputRequestModule;
+import ru.bmstu.iu9.db.zvoa.dbms.io.OutputResponseModule;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryModule;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryRequestStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponseStorage;
@@ -29,8 +30,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
@@ -110,8 +109,13 @@ public class MainTest {
 
         List<ClientMultiThreaded> threads = new ArrayList<>();
         for (int i = 0; i < CLIENTS_COUNT; i++) {
-            HttpGet httpGet = new HttpGet("http://" + ADDRESS + ":" + PORT);
-            ClientMultiThreaded thread = new ClientMultiThreaded(httpclient, httpGet, i);
+            HttpPost httpPost = new HttpPost("http://" + ADDRESS + ":" + PORT);
+            String content = "" +
+                    "select * from table " +
+                    "where id = 1 ";
+            httpPost.setEntity(new StringEntity(content));
+
+            ClientMultiThreaded thread = new ClientMultiThreaded(httpclient, httpPost, i);
             threads.add(thread);
         }
 
@@ -137,21 +141,21 @@ public class MainTest {
      */
     public class ClientMultiThreaded extends Thread {
         private final CloseableHttpClient httpClient;
-        private final HttpGet httpget;
+        private final HttpPost httpget;
         private final int id;
 
         /**
          * Instantiates a new Client multi threaded.
          *
          * @param httpClient the http client
-         * @param httpget    the httpget
+         * @param httpGet    the httpGet
          * @param id         the id
          */
         public ClientMultiThreaded(CloseableHttpClient httpClient,
-                                   HttpGet httpget,
+                                   HttpPost httpGet,
                                    int id) {
             this.httpClient = httpClient;
-            this.httpget = httpget;
+            this.httpget = httpGet;
             this.id = id;
         }
 

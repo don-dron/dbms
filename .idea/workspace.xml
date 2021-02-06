@@ -23,63 +23,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="636cd115-ac8a-4ec5-bbf6-f87a6ec92e5a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__javax_validation_validation_api_2_0_1_Final.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/DSQLExecutor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/DSQLProgram.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/DSQLCompiler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/lexer/DSQLLexer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/lexer/DSQLToken.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/optimizer/DSQLOptimizer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/parser/DSQLNode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/parser/DSQLParser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/semanter/DSQLSemanter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/translator/DSQLTranslator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/vm/DSQLVM.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/io/http/HttpRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/query/DSQLQuery.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/query/DSQLQueryHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/CompilationError.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/IExecutor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/IProgram.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/RuntimeError.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/compiler/ICompiler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/compiler/lexer/ILexer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/compiler/lexer/IToken.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/compiler/lexer/LexerError.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/compiler/optimizer/IOptimizer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/compiler/parser/ASTNode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/compiler/parser/IParser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/compiler/parser/ParserError.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/compiler/semanter/ISemanter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/compiler/semanter/SemanticError.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/compiler/translator/ITranslator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/vm/IVM.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/simplelogger.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/resources/log4j.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/resources/simplelogger.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/ActionInterface.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/GrammaticalElement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/GrammaticalInterface.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/lexer/DSQLIdentifier.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/lexer/DSQLTokenType.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dbms.iml" beforeDir="false" afterPath="$PROJECT_DIR$/dbms.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/DBMS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/DBMS.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/InputRequestModule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/InputRequestModule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/OutputResponseModule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/OutputResponseModule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/impl/Connection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/io/http/ConnectionInformation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/impl/DBMSServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/io/http/DBMSServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/impl/DSQLQuery.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/impl/HttpRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/impl/HttpRequestHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/io/http/HttpRequestHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/impl/HttpResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/io/http/HttpResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/impl/HttpResponseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/io/http/HttpResponseHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/main/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/main/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/modules/AbstractDbModule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/modules/AbstractDbModule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/modules/DbStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/modules/DbStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/query/QueryHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/query/QueryModule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/query/QueryModule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/query/SqlQuery.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/log4j.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/log4j.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/core/run/main/MainTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/MainTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/lexer/DSQLLexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/lexer/DSQLLexer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/lexer/DSQLToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/compiler/lexer/DSQLToken.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/MainTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/MainTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/resources/log4j.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/log4j.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/log4j.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/log4j.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/META-INF/dbms.kotlin_module" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/log4j.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/log4j.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,8 +44,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -283,7 +238,7 @@
       <workItem from="1612464486315" duration="6428000" />
       <workItem from="1612470932539" duration="167000" />
       <workItem from="1612471110393" duration="2156000" />
-      <workItem from="1612607108850" duration="16225000" />
+      <workItem from="1612607108850" duration="21602000" />
     </task>
     <servers />
   </component>
@@ -311,10 +266,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="414" y="175" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1612621601404" />
-    <state x="765" y="226" key="#com.intellij.ide.util.MemberChooser" timestamp="1612615612972">
+    <state x="765" y="226" key="#com.intellij.ide.util.MemberChooser" timestamp="1612629648601">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="765" y="226" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1612615612972" />
+    <state x="765" y="226" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1612629648601" />
     <state x="591" y="444" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog" timestamp="1612615509733">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -335,38 +290,38 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="450" height="466" key="DebuggerActiveHint/0.0.1920.1040@0.0.1920.1040" timestamp="1612469398635" />
-    <state width="1876" height="506" key="GridCell.Tab.0.bottom" timestamp="1612623457009">
+    <state width="1876" height="362" key="GridCell.Tab.0.bottom" timestamp="1612630252416">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="506" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1612623457009" />
-    <state width="1876" height="506" key="GridCell.Tab.0.center" timestamp="1612623457009">
+    <state width="1876" height="362" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1612630252416" />
+    <state width="1876" height="362" key="GridCell.Tab.0.center" timestamp="1612630252416">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="506" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1612623457009" />
-    <state width="1876" height="506" key="GridCell.Tab.0.left" timestamp="1612623457009">
+    <state width="1876" height="362" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1612630252416" />
+    <state width="1876" height="362" key="GridCell.Tab.0.left" timestamp="1612630252416">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="506" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1612623457009" />
-    <state width="1876" height="506" key="GridCell.Tab.0.right" timestamp="1612623457009">
+    <state width="1876" height="362" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1612630252416" />
+    <state width="1876" height="362" key="GridCell.Tab.0.right" timestamp="1612630252416">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="506" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1612623457009" />
-    <state width="1876" height="506" key="GridCell.Tab.1.bottom" timestamp="1612623456924">
+    <state width="1876" height="362" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1612630252416" />
+    <state width="1876" height="362" key="GridCell.Tab.1.bottom" timestamp="1612630252334">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="506" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1612623456924" />
-    <state width="1876" height="506" key="GridCell.Tab.1.center" timestamp="1612623456924">
+    <state width="1876" height="362" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1612630252334" />
+    <state width="1876" height="362" key="GridCell.Tab.1.center" timestamp="1612630252334">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="506" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1612623456924" />
-    <state width="1876" height="506" key="GridCell.Tab.1.left" timestamp="1612623456924">
+    <state width="1876" height="362" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1612630252334" />
+    <state width="1876" height="362" key="GridCell.Tab.1.left" timestamp="1612630252334">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="506" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1612623456924" />
-    <state width="1876" height="506" key="GridCell.Tab.1.right" timestamp="1612623456924">
+    <state width="1876" height="362" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1612630252334" />
+    <state width="1876" height="362" key="GridCell.Tab.1.right" timestamp="1612630252334">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="506" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1612623456924" />
+    <state width="1876" height="362" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1612630252334" />
     <state x="490" y="175" key="Maven.ArtifactSearchDialog" timestamp="1612608903920">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -391,10 +346,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="616" y="240" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1612619949275" />
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1612623164239">
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1612629512487">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1612623164239" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1612629512487" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
