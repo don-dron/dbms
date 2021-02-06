@@ -21,6 +21,7 @@ import ru.bmstu.iu9.db.zvoa.dbms.execute.compiler.semanter.ISemanter;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.compiler.semanter.SemanticError;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.compiler.translator.ITranslator;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 public class DSQLCompiler implements ICompiler {
@@ -36,7 +37,7 @@ public class DSQLCompiler implements ICompiler {
     public IProgram compile(String program) throws CompilationError {
         try {
             logger.debug("Start compilation program: " + program);
-            Stream<IToken> tokenStream = lexer.lex(program);
+            List<IToken> tokenStream = lexer.lex(program);
             ASTNode programRoot = parser.parse(tokenStream);
             semanter.checkSemantic(programRoot);
             IProgram afterTranslator = translator.translate(programRoot);

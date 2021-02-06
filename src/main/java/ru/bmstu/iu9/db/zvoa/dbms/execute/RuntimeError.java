@@ -6,8 +6,9 @@ package ru.bmstu.iu9.db.zvoa.dbms.execute;
 public class RuntimeError extends Exception {
     /**
      * Instantiates a new Runtime error.
+     * @param message
      */
-    public RuntimeError() {
-        super();
+    public RuntimeError(String message) {
+        super(message);
     }
 }

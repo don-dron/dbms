@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.DSQLExecutor;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.JSQLInterpreter;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpRequestHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpResponseHandler;
@@ -66,7 +67,7 @@ public class MainTest {
 
         dbms = DBMS.Builder.newBuilder()
                 .setQueryModule(QueryModule.Builder.newBuilder()
-                        .setQueryHandler(new DSQLQueryHandler(new DSQLExecutor()))
+                        .setQueryHandler(new DSQLQueryHandler(new JSQLInterpreter()))
                         .setQueryRequestStorage(queryRequestStorage)
                         .setQueryResponseStorage(queryResponseStorage)
                         .build())
@@ -112,7 +113,7 @@ public class MainTest {
             HttpPost httpPost = new HttpPost("http://" + ADDRESS + ":" + PORT);
             String content = "" +
                     "select * from table " +
-                    "where id = 1 ";
+                    "where id = 1";
             httpPost.setEntity(new StringEntity(content));
 
             ClientMultiThreaded thread = new ClientMultiThreaded(httpclient, httpPost, i);

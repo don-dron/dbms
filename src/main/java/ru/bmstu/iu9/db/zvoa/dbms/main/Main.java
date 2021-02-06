@@ -2,6 +2,7 @@ package ru.bmstu.iu9.db.zvoa.dbms.main;
 
 import ru.bmstu.iu9.db.zvoa.dbms.DBMS;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.DSQLExecutor;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.JSQLInterpreter;
 import ru.bmstu.iu9.db.zvoa.dbms.io.InputRequestModule;
 import ru.bmstu.iu9.db.zvoa.dbms.io.OutputResponseModule;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
@@ -42,7 +43,7 @@ public class Main {
 
         DBMS dbms = DBMS.Builder.newBuilder()
                 .setQueryModule(QueryModule.Builder.newBuilder()
-                        .setQueryHandler(new DSQLQueryHandler(new DSQLExecutor()))
+                        .setQueryHandler(new DSQLQueryHandler(new JSQLInterpreter()))
                         .setQueryRequestStorage(queryRequestStorage)
                         .setQueryResponseStorage(queryResponseStorage)
                         .build())

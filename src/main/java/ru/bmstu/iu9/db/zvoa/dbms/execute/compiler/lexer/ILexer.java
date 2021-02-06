@@ -1,7 +1,7 @@
 package ru.bmstu.iu9.db.zvoa.dbms.execute.compiler.lexer;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 public interface ILexer {
-    public Stream<IToken> lex(String code) throws LexerError;
+    public List<IToken> lex(String code) throws LexerError;
 }

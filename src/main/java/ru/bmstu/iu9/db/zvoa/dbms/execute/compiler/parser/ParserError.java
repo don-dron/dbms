@@ -7,7 +7,14 @@ public class ParserError extends Exception {
     /**
      * Instantiates a new Parser error.
      */
-    public ParserError() {
-        super();
+    public ParserError(String message) {
+        super(message);
+    }
+
+    /**
+     * Instantiates a new Parser error.
+     */
+    public ParserError(String message, Throwable throwable) {
+        super(message, throwable);
     }
 }
