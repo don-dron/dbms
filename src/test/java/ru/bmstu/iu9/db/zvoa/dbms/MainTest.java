@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.JSQLInterpreter;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.DBMSDataStorage;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.memory.DBMSInMemoryStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpRequestHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpResponseHandler;
@@ -26,10 +25,12 @@ import ru.bmstu.iu9.db.zvoa.dbms.query.QueryModule;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryRequestStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponseStorage;
 
+import java.io.File;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,8 +46,8 @@ import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 public class MainTest {
     private static final String ADDRESS = "127.0.0.1";
     private static final int PORT = 8890;
-    private static final int CLIENTS_COUNT = 1;
-    private static final int REQUEST_PER_CLIENT = 1;
+    private static final int CLIENTS_COUNT = 16;
+    private static final int REQUEST_PER_CLIENT = 16;
     private static final String SCHEMA_NAME = "schema1";
     private static final String TABLE_NAME = "table1";
     private static final Supplier<BlockingQueue> QUEUE_SUPPLIER = () -> new LinkedBlockingQueue();
@@ -64,9 +65,14 @@ public class MainTest {
 
         counter = new AtomicInteger();
         httpServer = new DBMSServer(PORT);
+        // TODO сделать нормально
+        File file = new File("./");
+        String path = file.getAbsolutePath();
+        path = path.substring(0, path.length() - 1) + "data";
+
         DataStorage dataStorage = new DBMSDataStorage.Builder()
-                .setInMemoryStorage(new DBMSInMemoryStorage())
-                .build();
+                .setDirectory(path).build();
+
 
         dataStorage.createSchema(CreateSchemaSettings.Builder.newBuilder()
                 .setSchemaName(SCHEMA_NAME)
@@ -126,29 +132,29 @@ public class MainTest {
         HttpClientBuilder clientBuilder = HttpClients.custom().setConnectionManager(connManager);
         CloseableHttpClient httpclient = clientBuilder.build();
 
-        List<ClientMultiThreaded> threads = new ArrayList<>();
-        for (int i = 0; i < CLIENTS_COUNT; i++) {
+        List<Thread> threads = new ArrayList<>();
+
+        for (int i = 0; i < CLIENTS_COUNT / 2; i++) {
             HttpPost httpPost = new HttpPost("http://" + ADDRESS + ":" + PORT);
             String content = "" +
                     "\n" +
-                    "select * from schema1.table1\n" +
-                    "where id = 1;\n" +
-                    "\n" +
-                    "insert into t2\n" +
-                    "values (1,2,3);\n" +
-                    "\n" +
-                    "delete from t3;\n";
+                    "select * from schema1.table1\n";
             httpPost.setEntity(new StringEntity(content));
 
             ClientMultiThreaded thread = new ClientMultiThreaded(httpclient, httpPost, i);
             threads.add(thread);
         }
 
-        assertTimeoutPreemptively(Duration.ofMillis(16000), () -> {
-            for (ClientMultiThreaded clientMultiThreaded : threads) {
+        for (int i = CLIENTS_COUNT / 2; i < CLIENTS_COUNT; i++) {
+            ClientMultiThreaded1 thread = new ClientMultiThreaded1(httpclient, i);
+            threads.add(thread);
+        }
+
+        assertTimeoutPreemptively(Duration.ofMillis(24000), () -> {
+            for (Thread clientMultiThreaded : threads) {
                 clientMultiThreaded.start();
             }
-            for (ClientMultiThreaded clientMultiThreaded : threads) {
+            for (Thread clientMultiThreaded : threads) {
                 clientMultiThreaded.join();
             }
         }, () -> "Response is OK: " + counter.get() + "/" + CLIENTS_COUNT * REQUEST_PER_CLIENT);
@@ -189,6 +195,55 @@ public class MainTest {
             for (int i = 0; i < REQUEST_PER_CLIENT; i++) {
                 try {
                     CloseableHttpResponse httpResponse = httpClient.execute(httpget);
+
+                    System.out.println("Status of thread " + id + ":" + httpResponse.getStatusLine());
+
+                    HttpEntity entity = httpResponse.getEntity();
+                    if (entity != null) {
+                        System.out.println("Bytes read by thread thread " + id + " : " + EntityUtils.toString(entity));
+                        counter.getAndIncrement();
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+    }
+
+
+    /**
+     * The type Client multi threaded.
+     *
+     * @author don-dron Zvorygin Andrey BMSTU IU-9
+     */
+    public class ClientMultiThreaded1 extends Thread {
+        private final CloseableHttpClient httpClient;
+        private final int id;
+
+        /**
+         * Instantiates a new Client multi threaded.
+         *
+         * @param httpClient the http client
+         * @param httpGet    the httpGet
+         * @param id         the id
+         */
+        public ClientMultiThreaded1(CloseableHttpClient httpClient,
+                                    int id) {
+            this.httpClient = httpClient;
+            this.id = id;
+        }
+
+        @Override
+        public void run() {
+            for (int i = 0; i < REQUEST_PER_CLIENT * REQUEST_PER_CLIENT; i++) {
+                try {
+                    HttpPost httpPost = new HttpPost("http://" + ADDRESS + ":" + PORT);
+                    String content = "" +
+                            "\n" +
+                            "insert into schema1.table1 values (" + new Random().nextInt(1000000) + ")\n";
+                    httpPost.setEntity(new StringEntity(content));
+
+                    CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
 
                     System.out.println("Status of thread " + id + ":" + httpResponse.getStatusLine());
 

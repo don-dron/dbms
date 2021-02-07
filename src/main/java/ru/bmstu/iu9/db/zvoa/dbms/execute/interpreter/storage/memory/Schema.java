@@ -5,6 +5,7 @@ import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.CreateTableSettings
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public abstract class Schema {
@@ -28,11 +29,10 @@ public abstract class Schema {
         }
     }
 
-    public Table getTable(String tableName) throws DataStorageException {
+    public synchronized Optional<Table> getTable(String tableName) {
         return tables.stream()
                 .filter(table -> table.getTableName().equals(tableName))
-                .findFirst()
-                .orElseThrow(() -> new DataStorageException("Table " + tableName + " not found"));
+                .findFirst();
     }
 
     public String getSchemaName() {

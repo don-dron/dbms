@@ -3,7 +3,6 @@ package ru.bmstu.iu9.db.zvoa.dbms.main;
 import ru.bmstu.iu9.db.zvoa.dbms.DBMS;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.JSQLInterpreter;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.DBMSDataStorage;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.memory.DBMSInMemoryStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpRequestHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpResponseHandler;
@@ -15,6 +14,12 @@ import ru.bmstu.iu9.db.zvoa.dbms.query.QueryModule;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryRequestStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponseStorage;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Supplier;
@@ -37,7 +42,14 @@ public class Main {
      */
     public static void main(String[] args) throws Exception {
         DBMSServer httpServer = new DBMSServer(PORT);
-        DataStorage dataStorage = new DBMSDataStorage.Builder().setInMemoryStorage(new DBMSInMemoryStorage()).build();
+
+        // TODO сделать нормально
+        File file = new File("./");
+        String path = file.getAbsolutePath();
+        path = path.substring(0, path.length() - 1) + "data";
+
+        DataStorage dataStorage = new DBMSDataStorage.Builder()
+                .setDirectory(path).build();
 
         QueryRequestStorage queryRequestStorage =
                 new QueryRequestStorage(queueSupplier.get(), queueSupplier.get());

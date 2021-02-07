@@ -9,6 +9,8 @@ import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.SelectSettings;
 
+import java.util.List;
+
 public class PlainSelectEngine extends DSQLEngine<PlainSelect> {
     public PlainSelectEngine(DataStorage dataStorage) {
         super(dataStorage);
@@ -18,11 +20,12 @@ public class PlainSelectEngine extends DSQLEngine<PlainSelect> {
         FromItem fromItem = plainSelect.getFromItem();
         Table table = (Table) fromItem;
         try {
-            System.out.println(
+            List<ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table.Row> rowList =
                     dataStorage.selectRows(SelectSettings.Builder.newBuilder()
                             .setSchemaName(table.getSchemaName())
                             .setTableName(table.getName())
-                            .build()));
+                            .build());
+            System.out.println("ROWS COUNT: " + rowList.size() + " " + rowList);
         } catch (DataStorageException dataStorageException) {
             throw new RuntimeError(dataStorageException.getMessage());
         }

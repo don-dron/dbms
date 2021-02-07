@@ -2,6 +2,7 @@ package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory;
 
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,11 +23,11 @@ public abstract class Table {
         return tableName;
     }
 
-    public abstract List<Row> selectRows(SelectSettings selectSettings);
+    public abstract List<Row> selectRows(SelectSettings selectSettings) throws DataStorageException;
 
-    public abstract List<Row> insertRows(InsertSettings insertSettings);
+    public abstract List<Row> insertRows(InsertSettings insertSettings) throws DataStorageException;
 
-    public abstract List<Row> deleteRows(DeleteSettings deleteSettings);
+    public abstract List<Row> deleteRows(DeleteSettings deleteSettings) throws DataStorageException;
 
     protected Row createRow(List<Object> values) {
         return new Row(this, values);
@@ -45,7 +46,7 @@ public abstract class Table {
         return Objects.hash(tableName);
     }
 
-    public class Row {
+    public static class Row {
         private Table table;
         private Object key;
         private List<Object> values;
@@ -66,6 +67,18 @@ public abstract class Table {
 
         public List<Object> getValues() {
             return values;
+        }
+
+        public static Row parseString(Table table, String rawString) {
+            return new Row(table, Arrays.asList(rawString));
+        }
+
+        @Override
+        public String toString() {
+            return "Row{" +
+                    "key=" + key +
+                    ", values=" + values +
+                    '}';
         }
     }
 }
