@@ -4,6 +4,9 @@ import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.Statements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.DBMSDataStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.CompilationError;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.IExecutor;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.RuntimeError;
@@ -15,70 +18,40 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.stream.Collectors;
 
 public class JSQLInterpreter implements IExecutor {
+    private final Logger logger = LoggerFactory.getLogger(JSQLInterpreter.class);
+    private final DBMSDataStorage dbmsStorage;
+
+    public JSQLInterpreter(DBMSDataStorage storage) {
+        this.dbmsStorage = storage;
+    }
 
     @Override
     public String execute(String string) throws CompilationError, RuntimeError {
         try {
             Statements statements = CCJSqlParserUtil.parseStatements(string);
-            BlockingDeque<Exception> runtimeExceptions = new LinkedBlockingDeque<>();
-            List<Thread> executors = new ArrayList<>();
-
-            BlockingDeque<Result> results = new LinkedBlockingDeque<>();
+            List<DSQLWorker> executors = new ArrayList<>();
+            BlockingDeque<DSQLResult> results = new LinkedBlockingDeque<>();
 
             for (Statement statement : statements.getStatements()) {
-                executors.add(new Thread(() -> {
-                    try {
-                        String result = executeStatement(statement);
-                        results.addLast(new Result(statement, result));
-                    } catch (RuntimeError runtimeError) {
-                        runtimeExceptions.add(runtimeError);
-                    }
-                }));
+                executors.add(new DSQLWorker(statement));
             }
 
-            for (Thread thread : executors) {
+            for (DSQLWorker thread : executors) {
                 thread.start();
             }
 
-            for (Thread thread : executors) {
-                thread.join();
+            for (DSQLWorker thread : executors) {
+                try {
+                    thread.join();
+                    results.addLast(thread.getResult());
+                } catch (InterruptedException e) {
+                    throw new RuntimeError(e.getMessage());
+                }
             }
 
-            return results.stream().map(Result::toString).collect(Collectors.joining(", "));
+            return results.stream().map(DSQLResult::toString).collect(Collectors.joining(", "));
         } catch (JSQLParserException e) {
             throw new CompilationError(e.getMessage());
-        } catch (InterruptedException e) {
-            throw new RuntimeError(e.getMessage());
-        }
-    }
-
-    private String executeStatement(Statement statement) throws RuntimeError {
-        return statement.toString();
-    }
-
-    private class Result {
-        private final Statement statement;
-        private final String result;
-
-        public Result(Statement statement, String result) {
-            this.statement = statement;
-            this.result = result;
-        }
-
-        public Statement getStatement() {
-            return statement;
-        }
-
-        public String getResult() {
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "Result{" +
-                    "statement=" + statement +
-                    ", result='" + result + '\'' +
-                    '}';
         }
     }
 }

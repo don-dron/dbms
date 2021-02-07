@@ -13,6 +13,7 @@ public class DSQLOptimizer implements IOptimizer {
     @Override
     public IProgram optimize(IProgram program) {
         logger.debug("Start optimize program.");
+        //        TODO Optimizer
         return new DSQLProgram();
     }
 }

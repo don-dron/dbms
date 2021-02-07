@@ -66,7 +66,9 @@ public class QueryModule extends AbstractDbModule {
         Query request;
         while (isRunning()) {
             if (!queryRequestStorage.isEmpty() && (request = queryRequestStorage.get()) != null) {
+                logger.debug("Start execute query " + request);
                 Query response = queryHandler.execute(request);
+                logger.debug("End execute query " + request);
                 queryResponseStorage.put(response);
             } else {
                 Thread.onSpinWait();

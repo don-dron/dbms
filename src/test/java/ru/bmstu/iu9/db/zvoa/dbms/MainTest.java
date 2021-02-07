@@ -112,8 +112,14 @@ public class MainTest {
         for (int i = 0; i < CLIENTS_COUNT; i++) {
             HttpPost httpPost = new HttpPost("http://" + ADDRESS + ":" + PORT);
             String content = "" +
-                    "select * from table " +
-                    "where id = 1";
+                    "\n" +
+                    "select * from schema.t1\n" +
+                    "where id = 1;\n" +
+                    "\n" +
+                    "insert into t2\n" +
+                    "values (1,2,3);\n" +
+                    "\n" +
+                    "delete from t3;\n";
             httpPost.setEntity(new StringEntity(content));
 
             ClientMultiThreaded thread = new ClientMultiThreaded(httpclient, httpPost, i);

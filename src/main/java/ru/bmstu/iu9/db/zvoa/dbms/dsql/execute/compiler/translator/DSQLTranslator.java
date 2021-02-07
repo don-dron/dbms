@@ -12,6 +12,7 @@ public class DSQLTranslator implements ITranslator {
 
     public IProgram translate(ASTNode astNode) {
         logger.debug("Start translate program.");
+        //        TODO Translator
         return new DSQLProgram();
     }
 }

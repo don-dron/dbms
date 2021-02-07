@@ -13,5 +13,6 @@ public class DSQLSemanter implements ISemanter {
     @Override
     public void checkSemantic(ASTNode astNode) throws SemanticError {
         logger.debug("Start semantic checking program.");
+        //        TODO Semanter
     }
 }

@@ -15,6 +15,7 @@ public class DSQLLexer implements ILexer {
     @Override
     public List<IToken> lex(String code) throws LexerError {
         logger.debug("Start lex program.");
+//        TODO Lexer
 //        List<IToken> tokens = new DSQLIdentifier(code);
 //        logger.debug(tokens.stream().map(IToken::toString).collect(Collectors.joining(", ")));
 //        return tokens;
