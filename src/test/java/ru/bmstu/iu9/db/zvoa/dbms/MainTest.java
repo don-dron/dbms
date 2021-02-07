@@ -12,12 +12,14 @@ import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.DSQLExecutor;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.JSQLInterpreter;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.DBMSDataStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.memory.DBMSInMemoryStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpRequestHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpResponseHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.query.DSQLQueryHandler;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
 import ru.bmstu.iu9.db.zvoa.dbms.io.InputRequestModule;
 import ru.bmstu.iu9.db.zvoa.dbms.io.OutputResponseModule;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryModule;
@@ -26,6 +28,7 @@ import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponseStorage;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -42,8 +45,10 @@ import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 public class MainTest {
     private static final String ADDRESS = "127.0.0.1";
     private static final int PORT = 8890;
-    private static final int CLIENTS_COUNT = 16;
-    private static final int REQUEST_PER_CLIENT = 64;
+    private static final int CLIENTS_COUNT = 1;
+    private static final int REQUEST_PER_CLIENT = 1;
+    private static final String SCHEMA_NAME = "schema1";
+    private static final String TABLE_NAME = "table1";
     private static final Supplier<BlockingQueue> QUEUE_SUPPLIER = () -> new LinkedBlockingQueue();
 
     private DBMSServer httpServer;
@@ -54,11 +59,24 @@ public class MainTest {
      * Create dbms.
      */
     @BeforeEach
-    public void createDBMS() {
+    public void createDBMS() throws DataStorageException {
         MockitoAnnotations.openMocks(this);
 
         counter = new AtomicInteger();
         httpServer = new DBMSServer(PORT);
+        DataStorage dataStorage = new DBMSDataStorage.Builder()
+                .setInMemoryStorage(new DBMSInMemoryStorage())
+                .build();
+
+        dataStorage.createSchema(CreateSchemaSettings.Builder.newBuilder()
+                .setSchemaName(SCHEMA_NAME)
+                .build());
+
+        dataStorage.createTable(CreateTableSettings.Builder.newBuilder()
+                .setSchemaName(SCHEMA_NAME)
+                .setTableName(TABLE_NAME)
+                .setTypes(Arrays.asList(Type.INTEGER))
+                .build());
 
         QueryRequestStorage queryRequestStorage =
                 new QueryRequestStorage(QUEUE_SUPPLIER.get(), QUEUE_SUPPLIER.get());
@@ -67,7 +85,7 @@ public class MainTest {
 
         dbms = DBMS.Builder.newBuilder()
                 .setQueryModule(QueryModule.Builder.newBuilder()
-                        .setQueryHandler(new DSQLQueryHandler(new JSQLInterpreter()))
+                        .setQueryHandler(new DSQLQueryHandler(new JSQLInterpreter(dataStorage)))
                         .setQueryRequestStorage(queryRequestStorage)
                         .setQueryResponseStorage(queryResponseStorage)
                         .build())
@@ -113,7 +131,7 @@ public class MainTest {
             HttpPost httpPost = new HttpPost("http://" + ADDRESS + ":" + PORT);
             String content = "" +
                     "\n" +
-                    "select * from schema.t1\n" +
+                    "select * from schema1.table1\n" +
                     "where id = 1;\n" +
                     "\n" +
                     "insert into t2\n" +

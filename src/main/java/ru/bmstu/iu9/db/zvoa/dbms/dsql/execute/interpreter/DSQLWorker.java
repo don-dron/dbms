@@ -5,14 +5,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.engine.statement.StatementEngine;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.RuntimeError;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorage;
 
 public class DSQLWorker extends Thread {
     private final Logger logger = LoggerFactory.getLogger(DSQLWorker.class);
     private Statement statement;
+    private DataStorage dataStorage;
     private DSQLResult result;
 
-    public DSQLWorker(Statement statement) {
+    public DSQLWorker(Statement statement, DataStorage dataStorage) {
         this.statement = statement;
+        this.dataStorage = dataStorage;
     }
 
     public DSQLResult getResult() {
@@ -31,7 +34,7 @@ public class DSQLWorker extends Thread {
     }
 
     private String executeStatement(Statement statement) throws RuntimeError {
-        new StatementEngine().execute(statement);
+        new StatementEngine(dataStorage).execute(statement);
         return "res";
     }
 }

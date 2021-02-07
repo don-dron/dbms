@@ -10,6 +10,7 @@ import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.DBMSDataStorag
 import ru.bmstu.iu9.db.zvoa.dbms.execute.CompilationError;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.IExecutor;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.RuntimeError;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +20,9 @@ import java.util.stream.Collectors;
 
 public class JSQLInterpreter implements IExecutor {
     private final Logger logger = LoggerFactory.getLogger(JSQLInterpreter.class);
-    private final DBMSDataStorage dbmsStorage;
+    private final DataStorage dbmsStorage;
 
-    public JSQLInterpreter(DBMSDataStorage storage) {
+    public JSQLInterpreter(DataStorage storage) {
         this.dbmsStorage = storage;
     }
 
@@ -33,7 +34,7 @@ public class JSQLInterpreter implements IExecutor {
             BlockingDeque<DSQLResult> results = new LinkedBlockingDeque<>();
 
             for (Statement statement : statements.getStatements()) {
-                executors.add(new DSQLWorker(statement));
+                executors.add(new DSQLWorker(statement, dbmsStorage));
             }
 
             for (DSQLWorker thread : executors) {

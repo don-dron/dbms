@@ -4,10 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.DBMSDriverStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.memory.DBMSInMemoryStorage;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorage;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Table;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Schema;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
 
 import java.util.List;
 
@@ -25,23 +24,28 @@ public class DBMSDataStorage implements DataStorage {
     }
 
     @Override
-    public synchronized void createTable(String tableName, List<Type> types) throws DataStorageException {
-
+    public Schema createSchema(CreateSchemaSettings settings) throws DataStorageException {
+        return inMemoryStorage.createSchema(settings);
     }
 
     @Override
-    public synchronized void put(String tableName, List<Object> values) throws DataStorageException {
-
+    public Table createTable(CreateTableSettings createTableSettings) throws DataStorageException {
+        return inMemoryStorage.createTable(createTableSettings);
     }
 
     @Override
-    public synchronized void get(String tableName, Object key) throws DataStorageException {
-
+    public List<Table.Row> insertRows(InsertSettings insertSettings) throws DataStorageException {
+        return inMemoryStorage.insertRows(insertSettings);
     }
 
     @Override
-    public synchronized void remove(String tableName, Object key) throws DataStorageException {
+    public List<Table.Row> selectRows(SelectSettings selectSettings) throws DataStorageException {
+        return inMemoryStorage.selectRows(selectSettings);
+    }
 
+    @Override
+    public List<Table.Row> deleteRows(DeleteSettings deleteSettings) throws DataStorageException {
+        return inMemoryStorage.deleteRows(deleteSettings);
     }
 
     public static class Builder {

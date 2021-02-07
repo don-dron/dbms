@@ -1,13 +1,18 @@
 package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage;
 
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Schema;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
+
 import java.util.List;
 
 public interface DataStorage {
-    public void createTable(String tableName, List<Type> types) throws DataStorageException;
+    public Schema createSchema(CreateSchemaSettings settings) throws DataStorageException;
 
-    public void put(String tableName, List<Object> values) throws DataStorageException;
+    public Table createTable(CreateTableSettings createTableSettings) throws DataStorageException;
 
-    public void get(String tableName, Object key) throws DataStorageException;
+    public List<Table.Row> insertRows(InsertSettings insertSettings) throws DataStorageException;
 
-    public void remove(String tableName, Object key) throws DataStorageException;
+    public List<Table.Row> selectRows(SelectSettings selectSettings) throws DataStorageException;
+
+    public List<Table.Row> deleteRows(DeleteSettings deleteSettings) throws DataStorageException;
 }

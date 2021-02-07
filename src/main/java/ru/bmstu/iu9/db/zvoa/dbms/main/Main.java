@@ -1,14 +1,16 @@
 package ru.bmstu.iu9.db.zvoa.dbms.main;
 
 import ru.bmstu.iu9.db.zvoa.dbms.DBMS;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.DSQLExecutor;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.JSQLInterpreter;
-import ru.bmstu.iu9.db.zvoa.dbms.io.InputRequestModule;
-import ru.bmstu.iu9.db.zvoa.dbms.io.OutputResponseModule;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.DBMSDataStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.memory.DBMSInMemoryStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpRequestHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpResponseHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.query.DSQLQueryHandler;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.io.InputRequestModule;
+import ru.bmstu.iu9.db.zvoa.dbms.io.OutputResponseModule;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryModule;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryRequestStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponseStorage;
@@ -35,6 +37,7 @@ public class Main {
      */
     public static void main(String[] args) throws Exception {
         DBMSServer httpServer = new DBMSServer(PORT);
+        DataStorage dataStorage = new DBMSDataStorage.Builder().setInMemoryStorage(new DBMSInMemoryStorage()).build();
 
         QueryRequestStorage queryRequestStorage =
                 new QueryRequestStorage(queueSupplier.get(), queueSupplier.get());
@@ -43,7 +46,7 @@ public class Main {
 
         DBMS dbms = DBMS.Builder.newBuilder()
                 .setQueryModule(QueryModule.Builder.newBuilder()
-                        .setQueryHandler(new DSQLQueryHandler(new JSQLInterpreter()))
+                        .setQueryHandler(new DSQLQueryHandler(new JSQLInterpreter(dataStorage)))
                         .setQueryRequestStorage(queryRequestStorage)
                         .setQueryResponseStorage(queryResponseStorage)
                         .build())
