@@ -1,5 +1,6 @@
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.memory;
 
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.DBMSDataStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.LSMStore;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.shared.KVItem;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
@@ -12,17 +13,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DSQLTable extends Table {
-    private LSMStore lsmStore;
+    private final LSMStore lsmStore;
 
     private DSQLTable(Builder builder) {
         super(builder.name, builder.types);
+        lsmStore = builder.lsmStore;
     }
 
-    public synchronized void setLsmStore(LSMStore lsmStore) {
-        this.lsmStore = lsmStore;
-    }
-
-    public synchronized List<Row> selectRows(SelectSettings selectSettings) throws DataStorageException {
+    public List<Row> selectRows(SelectSettings selectSettings) throws DataStorageException {
         if (lsmStore == null) {
             throw new DataStorageException("Driver store not connected");
         } else {
@@ -35,7 +33,7 @@ public class DSQLTable extends Table {
         }
     }
 
-    public synchronized List<Row> insertRows(InsertSettings insertSettings) throws DataStorageException {
+    public List<Row> insertRows(InsertSettings insertSettings) throws DataStorageException {
         if (lsmStore == null) {
             throw new DataStorageException("Driver store not connected");
         } else {
@@ -51,7 +49,7 @@ public class DSQLTable extends Table {
         }
     }
 
-    public synchronized List<Row> deleteRows(DeleteSettings deleteSettings) throws DataStorageException {
+    public List<Row> deleteRows(DeleteSettings deleteSettings) throws DataStorageException {
         if (lsmStore == null) {
             throw new DataStorageException("Driver store not connected");
         } else {
@@ -70,6 +68,7 @@ public class DSQLTable extends Table {
     public static class Builder {
         private String name;
         private List<Type> types;
+        private LSMStore lsmStore;
 
         public static Builder newBuilder() {
             return new Builder();
@@ -77,6 +76,11 @@ public class DSQLTable extends Table {
 
         public Builder setName(String name) {
             this.name = name;
+            return this;
+        }
+
+        public Builder setLsmStore(LSMStore lsmStore) {
+            this.lsmStore = lsmStore;
             return this;
         }
 

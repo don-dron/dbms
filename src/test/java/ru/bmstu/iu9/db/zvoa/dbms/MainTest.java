@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.JSQLInterpreter;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.DBMSDataStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.LSMStore;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpRequestHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpResponseHandler;
@@ -26,6 +27,8 @@ import ru.bmstu.iu9.db.zvoa.dbms.query.QueryRequestStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponseStorage;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 public class MainTest {
     private static final String ADDRESS = "127.0.0.1";
     private static final int PORT = 8890;
+    private static final int RANGE = 1000000;
     private static final int CLIENTS_COUNT = 16;
     private static final int REQUEST_PER_CLIENT = 16;
     private static final String SCHEMA_NAME = "schema1";
@@ -60,7 +64,7 @@ public class MainTest {
      * Create dbms.
      */
     @BeforeEach
-    public void createDBMS() throws DataStorageException {
+    public void createDBMS() throws DataStorageException, IOException {
         MockitoAnnotations.openMocks(this);
 
         counter = new AtomicInteger();
@@ -70,19 +74,27 @@ public class MainTest {
         String path = file.getAbsolutePath();
         path = path.substring(0, path.length() - 1) + "data";
 
+        LSMStore lsmStore = new LSMStore(Path.of(path));
         DataStorage dataStorage = new DBMSDataStorage.Builder()
-                .setDirectory(path).build();
+                .setLsmStore(lsmStore).build();
 
+        try {
+            dataStorage.createSchema(CreateSchemaSettings.Builder.newBuilder()
+                    .setSchemaName(SCHEMA_NAME)
+                    .build());
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
 
-        dataStorage.createSchema(CreateSchemaSettings.Builder.newBuilder()
-                .setSchemaName(SCHEMA_NAME)
-                .build());
-
-        dataStorage.createTable(CreateTableSettings.Builder.newBuilder()
-                .setSchemaName(SCHEMA_NAME)
-                .setTableName(TABLE_NAME)
-                .setTypes(Arrays.asList(Type.INTEGER))
-                .build());
+        try {
+            dataStorage.createTable(CreateTableSettings.Builder.newBuilder()
+                    .setSchemaName(SCHEMA_NAME)
+                    .setTableName(TABLE_NAME)
+                    .setTypes(Arrays.asList(Type.INTEGER))
+                    .build());
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
 
         QueryRequestStorage queryRequestStorage =
                 new QueryRequestStorage(QUEUE_SUPPLIER.get(), QUEUE_SUPPLIER.get());
@@ -138,7 +150,8 @@ public class MainTest {
             HttpPost httpPost = new HttpPost("http://" + ADDRESS + ":" + PORT);
             String content = "" +
                     "\n" +
-                    "select * from schema1.table1\n";
+                    "select * from schema1.table1\n" +
+                    "where id=" + new Random().nextInt(RANGE) + "\n";
             httpPost.setEntity(new StringEntity(content));
 
             ClientMultiThreaded thread = new ClientMultiThreaded(httpclient, httpPost, i);
@@ -235,12 +248,12 @@ public class MainTest {
 
         @Override
         public void run() {
-            for (int i = 0; i < REQUEST_PER_CLIENT * REQUEST_PER_CLIENT; i++) {
+            for (int i = 0; i < REQUEST_PER_CLIENT; i++) {
                 try {
                     HttpPost httpPost = new HttpPost("http://" + ADDRESS + ":" + PORT);
                     String content = "" +
                             "\n" +
-                            "insert into schema1.table1 values (" + new Random().nextInt(1000000) + ")\n";
+                            "insert into schema1.table1 values (" + new Random().nextInt(RANGE) + ")\n";
                     httpPost.setEntity(new StringEntity(content));
 
                     CloseableHttpResponse httpResponse = httpClient.execute(httpPost);

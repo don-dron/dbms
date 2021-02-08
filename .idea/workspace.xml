@@ -23,28 +23,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="636cd115-ac8a-4ec5-bbf6-f87a6ec92e5a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/KVStore.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/LSMStore.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/lsm/LSMCache.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/lsm/LSMFile.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/lsm/LSMFlusher.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/lsm/LSMLog.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/shared/Constants.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/shared/KVItem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/engine/statement/insert/InsertEngine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/engine/statement/insert/InsertEngine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/engine/statement/select/PlainSelectEngine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/engine/statement/select/PlainSelectEngine.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/DBMSDataStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/DBMSDataStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/StorageBlock.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/DBMSDriverStorage.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/memory/DBMSInMemoryStorage.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/LSMStore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/LSMStore.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/memory/DSQLSchema.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/memory/DSQLSchema.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/memory/DSQLTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/memory/DSQLTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/CreateSchemaSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/CreateSchemaSettings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/DeleteSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/DeleteSettings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/InsertSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/InsertSettings.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/Schema.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/Schema.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/Table.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/Table.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/main/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/main/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/MainTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/MainTest.java" afterDir="false" />
     </list>
@@ -140,7 +124,7 @@
       <recent name="ru.bmstu.iu9.db.zvoa.dbms.modules" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.MainTest (1)">
+  <component name="RunManager" selected="JUnit.MainTest.mainDummyTest">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.main.Main" />
       <module name="dbms" />
@@ -199,17 +183,17 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="MainTest.mainPipelineTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="MainTest.mainDummyTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="dbms" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.core.run.main.*" />
+          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.core.run.main" />
-      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.core.run.main.MainTest" />
-      <option name="METHOD_NAME" value="mainPipelineTest" />
+      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms" />
+      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.MainTest" />
+      <option name="METHOD_NAME" value="mainDummyTest" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -241,18 +225,18 @@
     <list>
       <item itemvalue="Application.Main" />
       <item itemvalue="JUnit.MainTest" />
-      <item itemvalue="JUnit.MainTest.mainPipelineTest" />
       <item itemvalue="JUnit.MainTest (1)" />
       <item itemvalue="JUnit.LexerTest" />
       <item itemvalue="Maven.dbms" />
+      <item itemvalue="JUnit.MainTest.mainDummyTest" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.MainTest.mainDummyTest" />
         <item itemvalue="JUnit.MainTest (1)" />
         <item itemvalue="JUnit.LexerTest" />
         <item itemvalue="JUnit.MainTest" />
         <item itemvalue="Application.Main" />
-        <item itemvalue="JUnit.MainTest.mainPipelineTest" />
       </list>
     </recent_temporary>
   </component>
@@ -281,7 +265,9 @@
       <workItem from="1612643244739" duration="2045000" />
       <workItem from="1612645307194" duration="2142000" />
       <workItem from="1612684152095" duration="30227000" />
-      <workItem from="1612729717812" duration="2164000" />
+      <workItem from="1612729717812" duration="2340000" />
+      <workItem from="1612732347155" duration="27000" />
+      <workItem from="1612781580810" duration="5672000" />
     </task>
     <servers />
   </component>
@@ -312,10 +298,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="414" y="175" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1612643310690" />
-    <state x="733" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1612727485983">
+    <state x="733" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1612781638949">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="733" y="322" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1612727485983" />
+    <state x="733" y="322" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1612781638949" />
     <state x="765" y="226" key="#com.intellij.ide.util.MemberChooser" timestamp="1612730790984">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -344,38 +330,38 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="468" height="466" key="DebuggerActiveHint/0.0.1920.1040@0.0.1920.1040" timestamp="1612718780386" />
-    <state width="1876" height="187" key="GridCell.Tab.0.bottom" timestamp="1612731812844">
+    <state width="1876" height="366" key="GridCell.Tab.0.bottom" timestamp="1612812939957">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="187" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1612731812844" />
-    <state width="1876" height="187" key="GridCell.Tab.0.center" timestamp="1612731812844">
+    <state width="1876" height="366" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1612812939957" />
+    <state width="1876" height="366" key="GridCell.Tab.0.center" timestamp="1612812939957">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="187" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1612731812844" />
-    <state width="1876" height="187" key="GridCell.Tab.0.left" timestamp="1612731812844">
+    <state width="1876" height="366" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1612812939957" />
+    <state width="1876" height="366" key="GridCell.Tab.0.left" timestamp="1612812939957">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="187" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1612731812844" />
-    <state width="1876" height="187" key="GridCell.Tab.0.right" timestamp="1612731812844">
+    <state width="1876" height="366" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1612812939957" />
+    <state width="1876" height="366" key="GridCell.Tab.0.right" timestamp="1612812939957">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="187" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1612731812844" />
-    <state width="1876" height="187" key="GridCell.Tab.1.bottom" timestamp="1612731812761">
+    <state width="1876" height="366" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1612812939957" />
+    <state width="1876" height="366" key="GridCell.Tab.1.bottom" timestamp="1612812939894">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="187" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1612731812761" />
-    <state width="1876" height="187" key="GridCell.Tab.1.center" timestamp="1612731812761">
+    <state width="1876" height="366" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1612812939894" />
+    <state width="1876" height="366" key="GridCell.Tab.1.center" timestamp="1612812939894">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="187" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1612731812761" />
-    <state width="1876" height="187" key="GridCell.Tab.1.left" timestamp="1612731812761">
+    <state width="1876" height="366" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1612812939894" />
+    <state width="1876" height="366" key="GridCell.Tab.1.left" timestamp="1612812939894">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="187" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1612731812761" />
-    <state width="1876" height="187" key="GridCell.Tab.1.right" timestamp="1612731812761">
+    <state width="1876" height="366" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1612812939894" />
+    <state width="1876" height="366" key="GridCell.Tab.1.right" timestamp="1612812939894">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="187" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1612731812761" />
+    <state width="1876" height="366" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1612812939894" />
     <state x="490" y="175" key="Maven.ArtifactSearchDialog" timestamp="1612608903920">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -392,6 +378,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="776" y="298" key="chooseDestDirectoryDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1612634518855" />
+    <state x="769" y="434" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1612812591963">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="769" y="434" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1040@0.0.1920.1040" timestamp="1612812591963" />
     <state x="616" y="342" key="com.intellij.testIntegration.createTest.CreateTestDialog" timestamp="1612697142483">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

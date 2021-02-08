@@ -22,11 +22,14 @@ public class LSMStore implements KVStore {
     private LSMLog lsmLog;
     private LSMCache lsmCache;
     private final Path lsmFileDir;
+    private final Path root;
 
     public LSMStore(Path dataDir) throws IOException {
         if (!dataDir.toFile().exists()) {
             dataDir.toFile().mkdir();
         }
+
+        root = dataDir;
 
         Path lsmLogFileDir = Paths.get(dataDir.toString(), "log");
         this.lsmFileDir = Paths.get(dataDir.toString(), "data");
@@ -55,6 +58,10 @@ public class LSMStore implements KVStore {
             }
         }
         return lsmFiles;
+    }
+
+    public Path getRoot() {
+        return root;
     }
 
     @Override

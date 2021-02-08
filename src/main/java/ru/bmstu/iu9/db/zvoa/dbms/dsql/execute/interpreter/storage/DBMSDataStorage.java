@@ -3,8 +3,8 @@ package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.LSMStore;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.shared.KVItem;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.memory.DSQLSchema;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.memory.DSQLTable;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Schema;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
@@ -17,40 +17,60 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 public class DBMSDataStorage implements DataStorage {
     private final Logger logger = LoggerFactory.getLogger(DBMSDataStorage.class);
-    private final String directory;
+    private final LSMStore lsmStore;
     private ConcurrentSkipListSet<Schema> schemas = new ConcurrentSkipListSet<>(Comparator.comparingInt(Schema::hashCode));
 
-    private DBMSDataStorage(Builder builder) {
-        assert (builder.directory != null);
-        this.directory = builder.directory;
+    private DBMSDataStorage(Builder builder) throws IOException, DataStorageException {
+        assert (builder.lsmStore != null);
+        this.lsmStore = builder.lsmStore;
+
+        initStorage();
+    }
+
+    private synchronized void initStorage() throws DataStorageException, IOException {
+        for (String row : lsmStore.getAllKeys((row) -> true)) {
+            schemas.add(schemaFromRow(row));
+        }
+    }
+
+    private Schema schemaFromRow(String row) throws DataStorageException {
+        try {
+            String schemaName = row;
+            LSMStore schemaStore = new LSMStore(Path.of(lsmStore.getRoot().toString() + "/" + schemaName));
+            DSQLSchema schema = DSQLSchema.Builder.newBuilder()
+                    .setSchemaName(schemaName)
+                    .setLsmStore(schemaStore)
+                    .build();
+            return schema;
+        } catch (IOException exception) {
+            throw new DataStorageException(exception.getMessage());
+        }
     }
 
     @Override
     public synchronized Schema createSchema(CreateSchemaSettings settings) throws DataStorageException {
-        Schema schema = DSQLSchema.Builder.newBuilder()
-                .setSchemaName(settings.getSchemaName())
-                .build();
+        try {
+            if (schemas.stream().anyMatch(schema -> schema.getSchemaName().equals(settings.getSchemaName()))) {
+                throw new DataStorageException("Schema already exist.");
+            } else {
+                LSMStore schemaStore = new LSMStore(Path.of(lsmStore.getRoot().toString() + "/" + settings.getSchemaName()));
+                DSQLSchema schema = DSQLSchema.Builder.newBuilder()
+                        .setSchemaName(settings.getSchemaName())
+                        .setLsmStore(schemaStore)
+                        .build();
 
-        if (schemas.add(schema)) {
-            return schema;
-        } else {
-            throw new DataStorageException("Schema already exist.");
+                lsmStore.put(new KVItem(settings.getSchemaName(), settings.getSchemaName()));
+                schemas.add(schema);
+                return schema;
+            }
+        } catch (IOException ioException) {
+            throw new DataStorageException("Cannot create files for schema on driver: " + ioException.getMessage());
         }
     }
 
     @Override
     public synchronized Table createTable(CreateTableSettings settings) throws DataStorageException {
-        DSQLTable dsqlTable = (DSQLTable) getSchema(settings.getSchemaName()).createTable(settings);
-
-        try {
-            LSMStore lsmStore = new LSMStore(Path.of(directory + "/" + settings.getTableName()));
-            dsqlTable.setLsmStore(lsmStore);
-        } catch (IOException ioException) {
-            logger.error("Cannot create files for table on driver: " + ioException.getMessage());
-            ioException.printStackTrace();
-        }
-
-        return dsqlTable;
+        return getSchema(settings.getSchemaName()).createTable(settings);
     }
 
     @Override
@@ -86,18 +106,18 @@ public class DBMSDataStorage implements DataStorage {
     }
 
     public static class Builder {
-        private String directory;
+        private LSMStore lsmStore;
 
         public static Builder newBuilder() {
             return new Builder();
         }
 
-        public Builder setDirectory(String directory) {
-            this.directory = directory;
+        public Builder setLsmStore(LSMStore lsmStore) {
+            this.lsmStore = lsmStore;
             return this;
         }
 
-        public DBMSDataStorage build() {
+        public DBMSDataStorage build() throws IOException, DataStorageException {
             return new DBMSDataStorage(this);
         }
     }

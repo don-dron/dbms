@@ -3,6 +3,7 @@ package ru.bmstu.iu9.db.zvoa.dbms.main;
 import ru.bmstu.iu9.db.zvoa.dbms.DBMS;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.JSQLInterpreter;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.DBMSDataStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.LSMStore;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpRequestHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpResponseHandler;
@@ -48,8 +49,9 @@ public class Main {
         String path = file.getAbsolutePath();
         path = path.substring(0, path.length() - 1) + "data";
 
+        LSMStore lsmStore = new LSMStore(Path.of(path));
         DataStorage dataStorage = new DBMSDataStorage.Builder()
-                .setDirectory(path).build();
+                .setLsmStore(lsmStore).build();
 
         QueryRequestStorage queryRequestStorage =
                 new QueryRequestStorage(queueSupplier.get(), queueSupplier.get());
