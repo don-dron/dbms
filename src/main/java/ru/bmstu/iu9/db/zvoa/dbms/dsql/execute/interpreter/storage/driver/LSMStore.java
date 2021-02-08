@@ -19,10 +19,11 @@ import java.util.stream.Stream;
 
 public class LSMStore implements KVStore {
 
-    private LSMLog lsmLog;
-    private LSMCache lsmCache;
+    private final LSMLog lsmLog;
+    private final LSMCache lsmCache;
     private final Path lsmFileDir;
     private final Path root;
+    private final LSMFlusher lsmFlusher;
 
     public LSMStore(Path dataDir) throws IOException {
         if (!dataDir.toFile().exists()) {
@@ -45,8 +46,19 @@ public class LSMStore implements KVStore {
 
         log.forEach((s, i) -> lsmCache.put(i));
 
-        LSMFlusher lsmFlusher = new LSMFlusher(lsmCache, lsmFileDir, lsmLog);
+        lsmFlusher = new LSMFlusher(lsmCache, lsmFileDir, lsmLog);
+    }
+
+    public void start() {
         lsmFlusher.start();
+    }
+
+    public void join() throws InterruptedException {
+        lsmFlusher.join();
+    }
+
+    public void shutdown() throws InterruptedException {
+        lsmFlusher.shutdown();
     }
 
     private List<LSMFile> listLSMFiles(Path lsmFileDir) throws IOException {
@@ -132,7 +144,6 @@ public class LSMStore implements KVStore {
 
     @Override
     public Set<String> getAllKeys(Predicate<String> predicate) throws IOException {
-
         TreeMap<String, KVItem> cacheSnapshot = lsmCache.getShallowLsmCopy();
 
         Set<String> matchingKeys = cacheSnapshot.keySet()

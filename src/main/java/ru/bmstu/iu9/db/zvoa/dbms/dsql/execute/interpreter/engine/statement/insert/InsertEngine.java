@@ -28,9 +28,7 @@ public class InsertEngine extends DSQLEngine<Insert> {
             List<List<Object>> values = ((ExpressionList) itemsList)
                     .getExpressions()
                     .stream()
-                    .map(expression -> {
-                        return ((LongValue) expression).getValue();
-                    })
+                    .map(expression -> ((LongValue) expression).getValue())
                     .map(value -> Arrays.asList((Object) value))
                     .collect(Collectors.toList());
 

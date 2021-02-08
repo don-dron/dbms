@@ -1,6 +1,5 @@
 package ru.bmstu.iu9.db.zvoa.dbms;
 
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.io.InputRequestModule;
@@ -9,11 +8,8 @@ import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.IDbModule;
 import ru.bmstu.iu9.db.zvoa.dbms.query.QueryModule;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Properties;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -22,25 +18,21 @@ import java.util.concurrent.TimeUnit;
 /**
  * The type Dbms.
  *
- * @author don-dron Zvorygin Andrey BMSTU IU-9
+ * @author don -dron Zvorygin Andrey BMSTU IU-9
  */
 public class DBMS extends AbstractDbModule {
     private final Logger logger = LoggerFactory.getLogger(DBMS.class);
     private final QueryModule queryModule;
     private final InputRequestModule inputModule;
     private final OutputResponseModule outputModule;
+    private final List<IDbModule> additionalModules;
     private ExecutorService executorService;
-
-    static {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        URL url = loader.getResource("log4j.properties");
-        PropertyConfigurator.configure(url);
-    }
 
     private DBMS(Builder builder) {
         this.queryModule = builder.queryModule;
         this.inputModule = builder.inputModule;
         this.outputModule = builder.outputModule;
+        this.additionalModules = builder.additionalModules;
     }
 
     @Override
@@ -49,8 +41,11 @@ public class DBMS extends AbstractDbModule {
             if (isInit()) {
                 return;
             }
-            executorService = new ThreadPoolExecutor(16, Integer.MAX_VALUE,
-                    600L, TimeUnit.DAYS,
+            executorService = new ThreadPoolExecutor(
+                    16,
+                    Integer.MAX_VALUE,
+                    Integer.MAX_VALUE,
+                    TimeUnit.DAYS,
                     new SynchronousQueue<Runnable>());
             initModules();
 
@@ -79,6 +74,10 @@ public class DBMS extends AbstractDbModule {
         initModule(queryModule);
         initModule(outputModule);
         initModule(inputModule);
+
+        for (IDbModule module : additionalModules) {
+            initModule(module);
+        }
     }
 
     private void initModule(IDbModule module) {
@@ -124,6 +123,10 @@ public class DBMS extends AbstractDbModule {
         runModule(queryModule);
         runModule(inputModule);
         runModule(outputModule);
+
+        for (IDbModule module : additionalModules) {
+            runModule(module);
+        }
     }
 
     private void runModule(IDbModule dbModule) {
@@ -143,6 +146,10 @@ public class DBMS extends AbstractDbModule {
             inputModule.close();
             outputModule.close();
 
+            for (IDbModule module : additionalModules) {
+                module.close();
+            }
+
             setClosed();
             logClose();
         }
@@ -151,12 +158,13 @@ public class DBMS extends AbstractDbModule {
     /**
      * The type Builder.
      *
-     * @author don-dron Zvorygin Andrey BMSTU IU-9
+     * @author don -dron Zvorygin Andrey BMSTU IU-9
      */
     public static class Builder {
         private QueryModule queryModule;
         private InputRequestModule inputModule;
         private OutputResponseModule outputModule;
+        private List<IDbModule> additionalModules = Collections.emptyList();
 
         /**
          * New builder builder.
@@ -165,6 +173,18 @@ public class DBMS extends AbstractDbModule {
          */
         public static Builder newBuilder() {
             return new Builder();
+        }
+
+        /**
+         * Sets additional modules.
+         *
+         * @param additionalModules the additional modules
+         * @return the additional modules
+         */
+        public Builder setAdditionalModules(List<IDbModule> additionalModules) {
+            assert (additionalModules != null);
+            this.additionalModules = additionalModules;
+            return this;
         }
 
         /**

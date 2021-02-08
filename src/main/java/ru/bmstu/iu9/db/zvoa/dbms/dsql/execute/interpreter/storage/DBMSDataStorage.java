@@ -8,6 +8,7 @@ import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.memory.DSQLSch
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Schema;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
+import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -15,7 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-public class DBMSDataStorage implements DataStorage {
+public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
     private final Logger logger = LoggerFactory.getLogger(DBMSDataStorage.class);
     private final LSMStore lsmStore;
     private ConcurrentSkipListSet<Schema> schemas = new ConcurrentSkipListSet<>(Comparator.comparingInt(Schema::hashCode));
@@ -25,6 +26,48 @@ public class DBMSDataStorage implements DataStorage {
         this.lsmStore = builder.lsmStore;
 
         initStorage();
+    }
+
+    @Override
+    public void init() {
+        synchronized (this) {
+            if (isInit()) {
+                return;
+            }
+            logInit();
+            setInit();
+        }
+    }
+
+    @Override
+    public void run() {
+        synchronized (this) {
+            if (isRunning()) {
+                return;
+            }
+            setRunning();
+            logRunning();
+        }
+
+        lsmStore.start();
+        try {
+            lsmStore.join();
+        } catch (InterruptedException exception) {
+            throw new IllegalStateException(exception.getMessage());
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+        synchronized (this) {
+            if (isClosed()) {
+                return;
+            }
+            lsmStore.shutdown();
+
+            setClosed();
+            logClose();
+        }
     }
 
     private synchronized void initStorage() throws DataStorageException, IOException {
@@ -77,7 +120,6 @@ public class DBMSDataStorage implements DataStorage {
     public synchronized List<Table.Row> insertRows(InsertSettings insertSettings) throws DataStorageException {
         return getSchema(insertSettings.getSchemaName())
                 .getTable(insertSettings.getTableName())
-                .orElseThrow(() -> new DataStorageException("Table " + insertSettings.getTableName() + " not found"))
                 .insertRows(insertSettings);
     }
 
@@ -85,7 +127,6 @@ public class DBMSDataStorage implements DataStorage {
     public synchronized List<Table.Row> selectRows(SelectSettings selectSettings) throws DataStorageException {
         return getSchema(selectSettings.getSchemaName())
                 .getTable(selectSettings.getTableName())
-                .orElseThrow(() -> new DataStorageException("Table " + selectSettings.getTableName() + " not found"))
                 .selectRows(selectSettings);
     }
 
@@ -93,7 +134,6 @@ public class DBMSDataStorage implements DataStorage {
     public synchronized List<Table.Row> deleteRows(DeleteSettings deleteSettings) throws DataStorageException {
         return getSchema(deleteSettings.getSchemaName())
                 .getTable(deleteSettings.getTableName())
-                .orElseThrow(() -> new DataStorageException("Table " + deleteSettings.getTableName() + " not found"))
                 .deleteRows(deleteSettings);
     }
 

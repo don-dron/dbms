@@ -29,6 +29,10 @@ public class LSMFlusher extends Thread {
         this.lsmLog = lsmLog;
     }
 
+    public void shutdown(){
+        shutDown = true;
+    }
+
     @Override
     public void run() {
         while (!shutDown) {

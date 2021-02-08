@@ -62,6 +62,13 @@ public class DSQLSchema extends Schema {
         }
     }
 
+    @Override
+    public synchronized Table getTable(String tableName) throws DataStorageException {
+        return tables.stream()
+                .filter(table -> table.getTableName().equals(tableName))
+                .findFirst()
+                .orElseThrow(() -> new DataStorageException("Table " + tableName + " not found"));
+    }
 
     public static class Builder {
         private LSMStore lsmStore;

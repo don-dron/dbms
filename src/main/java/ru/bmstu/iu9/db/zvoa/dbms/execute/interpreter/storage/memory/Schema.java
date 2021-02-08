@@ -18,11 +18,7 @@ public abstract class Schema {
 
     public abstract Table createTable(CreateTableSettings settings) throws DataStorageException;
 
-    public synchronized Optional<Table> getTable(String tableName) {
-        return tables.stream()
-                .filter(table -> table.getTableName().equals(tableName))
-                .findFirst();
-    }
+    public abstract Table getTable(String tableName) throws DataStorageException;
 
     public String getSchemaName() {
         return schemaName;
