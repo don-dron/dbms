@@ -29,10 +29,6 @@ public abstract class Table {
 
     public abstract List<Row> deleteRows(DeleteSettings deleteSettings) throws DataStorageException;
 
-    protected Row createRow(List<Object> values) {
-        return new Row(this, values);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -51,7 +47,7 @@ public abstract class Table {
         private Object key;
         private List<Object> values;
 
-        private Row(Table table, List<Object> values) {
+        public Row(Table table, List<Object> values) {
             this.table = table;
             this.key = values.get(0);
             this.values = values;

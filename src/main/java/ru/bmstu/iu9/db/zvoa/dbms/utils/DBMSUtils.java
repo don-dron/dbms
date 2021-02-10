@@ -4,8 +4,9 @@ import org.apache.log4j.PropertyConfigurator;
 import ru.bmstu.iu9.db.zvoa.dbms.DBMS;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.JSQLInterpreter;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.DBMSDataStorage;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.LSMStore;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.LsmStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.FileSystemManager;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.FileSystemManagerConfig;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.StorageProperties;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpRequestHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpResponseHandler;
@@ -20,7 +21,6 @@ import ru.bmstu.iu9.db.zvoa.dbms.query.QueryResponseStorage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.Arrays;
 
 public final class DBMSUtils {
@@ -49,9 +49,14 @@ public final class DBMSUtils {
 
     public static final DBMS createDBMS(DBMSConfig config) throws IOException, DataStorageException {
         DBMSServer httpServer = new DBMSServer(config.getPort());
-        LsmStorage lsmStore = new LsmStorage(Path.of(config.getMountPath()));
+        FileSystemManager fileSystemManager = new FileSystemManager(
+                FileSystemManagerConfig.Builder.newBuilder()
+                        .setStorageProperties(new StorageProperties("Root", config.getMountPath()))
+                        .setStorageSupplier((path) -> null)
+                        .build());
+
         DBMSDataStorage dataStorage = new DBMSDataStorage.Builder()
-                .setLsmStore(lsmStore).build();
+                .setFileSystemManager(fileSystemManager).build();
 
         QueryRequestStorage queryRequestStorage =
                 new QueryRequestStorage(config.getQueueSupplier().get(), config.getQueueSupplier().get());

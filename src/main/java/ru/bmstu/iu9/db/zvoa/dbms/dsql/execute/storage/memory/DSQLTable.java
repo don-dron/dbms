@@ -1,73 +1,62 @@
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.LSMStore;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.shared.KVItem;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.IKeyValueStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
 
-import java.io.IOException;
-import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DSQLTable extends Table {
-    private final LSMStore lsmStore;
+    private final IKeyValueStorage storage;
 
     private DSQLTable(Builder builder) {
         super(builder.name, builder.types);
-        lsmStore = builder.lsmStore;
+        storage = builder.storage;
     }
 
     public List<Row> selectRows(SelectSettings selectSettings) throws DataStorageException {
-        if (lsmStore == null) {
+        if (storage == null) {
             throw new DataStorageException("Driver store not connected");
         } else {
-            try {
-                Set<String> result = lsmStore.getAllKeys((string) -> true);
-                return result.stream().map(raw -> Row.parseString(this, raw)).collect(Collectors.toList());
-            } catch (IOException e) {
-                throw new DataStorageException("Select from driver error " + getTableName());
-            }
+            List<String> result = storage.getValues((string) -> true).stream().map(Value::toString).collect(Collectors.toList());
+            return result.stream().map(raw -> Row.parseString(this, raw)).collect(Collectors.toList());
         }
     }
 
     public List<Row> insertRows(InsertSettings insertSettings) throws DataStorageException {
-        if (lsmStore == null) {
+        if (storage == null) {
             throw new DataStorageException("Driver store not connected");
         } else {
-            try {
-                List<Row> rows = insertSettings.getRows().stream().map(this::createRow).collect(Collectors.toList());
-                for (Row row : rows) {
-                    lsmStore.put(new KVItem(row.getKey().toString(), row.toString(), Instant.now().toEpochMilli()));
-                }
-                return rows;
-            } catch (IOException e) {
-                throw new DataStorageException("Insert from driver error " + getTableName());
+            List<Row> rows = insertSettings.getRows().stream().map(this::createRow).collect(Collectors.toList());
+            for (Row row : rows) {
+//                    lsmStore.put(new KVItem(row.getKey().toString(), row.toString(), Instant.now().toEpochMilli()));
             }
+            return rows;
         }
     }
 
     public List<Row> deleteRows(DeleteSettings deleteSettings) throws DataStorageException {
-        if (lsmStore == null) {
+        if (storage == null) {
             throw new DataStorageException("Driver store not connected");
         } else {
-            try {
-                List<Row> rows = deleteSettings.getRows().stream().map(this::createRow).collect(Collectors.toList());
-                for (Row row : rows) {
-                    lsmStore.put(new KVItem(row.getKey().toString(), null, Instant.now().toEpochMilli()));
-                }
-                return rows;
-            } catch (IOException e) {
-                throw new DataStorageException("Delete from driver error " + getTableName());
+            List<Row> rows = deleteSettings.getRows().stream().map(this::createRow).collect(Collectors.toList());
+            for (Row row : rows) {
+//                    lsmStore.put(new KVItem(row.getKey().toString(), null, Instant.now().toEpochMilli()));
             }
+            return rows;
         }
+    }
+
+    protected Row createRow(List<Object> values) {
+        return new Row(this, values);
     }
 
     public static class Builder {
         private String name;
         private List<Type> types;
-        private LSMStore lsmStore;
+        private IKeyValueStorage storage;
 
         public static Builder newBuilder() {
             return new Builder();
@@ -78,8 +67,8 @@ public class DSQLTable extends Table {
             return this;
         }
 
-        public Builder setLsmStore(LSMStore lsmStore) {
-            this.lsmStore = lsmStore;
+        public Builder setStorage(IKeyValueStorage storage) {
+            this.storage = storage;
             return this;
         }
 

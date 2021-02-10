@@ -1,5 +1,9 @@
 package ru.bmstu.iu9.db.zvoa.dbms.modules;
 
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
+
+import java.io.IOException;
+
 /**
  * The interface Db module.
  *
@@ -10,7 +14,7 @@ public interface IDbModule extends AutoCloseable, Runnable {
     /**
      * Init.
      */
-    void init();
+    void init() throws DataStorageException, IOException;
 
     @Override
     void run();
