@@ -1,7 +1,7 @@
-package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.memory;
+package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.LSMStore;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.shared.KVItem;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.LSMStore;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.shared.KVItem;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.CreateTableSettings;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Schema;

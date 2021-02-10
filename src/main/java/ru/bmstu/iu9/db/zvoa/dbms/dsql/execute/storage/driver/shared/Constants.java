@@ -1,4 +1,4 @@
-package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.shared;
+package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.shared;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

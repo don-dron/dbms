@@ -1,6 +1,6 @@
-package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver;
+package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.shared.KVItem;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.shared.KVItem;
 
 import java.io.IOException;
 import java.util.Set;

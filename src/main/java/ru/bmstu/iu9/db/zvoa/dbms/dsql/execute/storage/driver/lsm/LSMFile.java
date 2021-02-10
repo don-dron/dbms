@@ -1,6 +1,6 @@
-package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.lsm;
+package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.lsm;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.shared.KVItem;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.shared.KVItem;
 
 import java.io.*;
 import java.nio.ByteBuffer;

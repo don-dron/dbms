@@ -6,7 +6,6 @@ import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.Statements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.DBMSDataStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.CompilationError;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.IExecutor;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.RuntimeError;

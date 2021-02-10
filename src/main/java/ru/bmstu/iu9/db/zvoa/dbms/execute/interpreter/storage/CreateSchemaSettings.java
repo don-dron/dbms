@@ -1,9 +1,5 @@
 package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.LSMStore;
-
-import java.util.List;
-
 public class CreateSchemaSettings {
     private final String schemaName;
 

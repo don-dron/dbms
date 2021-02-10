@@ -1,10 +1,11 @@
-package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage;
+package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.LSMStore;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.shared.KVItem;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.memory.DSQLSchema;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.LSMStore;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.shared.KVItem;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.IKeyValueStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLSchema;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Schema;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
@@ -18,13 +19,12 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
     private final Logger logger = LoggerFactory.getLogger(DBMSDataStorage.class);
-    private final LSMStore lsmStore;
+    private final FileSystemMount lsmStore;
     private ConcurrentSkipListSet<Schema> schemas = new ConcurrentSkipListSet<>(Comparator.comparingInt(Schema::hashCode));
 
     private DBMSDataStorage(Builder builder) throws IOException, DataStorageException {
         assert (builder.lsmStore != null);
         this.lsmStore = builder.lsmStore;
-
         initStorage();
     }
 
@@ -146,13 +146,13 @@ public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
     }
 
     public static class Builder {
-        private LSMStore lsmStore;
+        private IKeyValueStorage lsmStore;
 
         public static Builder newBuilder() {
             return new Builder();
         }
 
-        public Builder setLsmStore(LSMStore lsmStore) {
+        public Builder setLsmStore(IKeyValueStorage lsmStore) {
             this.lsmStore = lsmStore;
             return this;
         }

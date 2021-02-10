@@ -13,10 +13,6 @@ import java.util.function.Supplier;
  * @author don-dron Zvorygin Andrey BMSTU IU-9
  */
 public class Main {
-    private static final Supplier<BlockingQueue> queueSupplier = () -> new LinkedBlockingQueue();
-    private static final String ADDRESS = "127.0.0.1";
-    private static final int PORT = 38900;
-
     /**
      * The entry point of application.
      *

@@ -3,13 +3,13 @@ package ru.bmstu.iu9.db.zvoa.dbms.utils;
 import org.apache.log4j.PropertyConfigurator;
 import ru.bmstu.iu9.db.zvoa.dbms.DBMS;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.JSQLInterpreter;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.DBMSDataStorage;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.LSMStore;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.DBMSDataStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.LSMStore;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.LsmStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpRequestHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpResponseHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.query.DSQLQueryHandler;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 import ru.bmstu.iu9.db.zvoa.dbms.io.InputRequestModule;
 import ru.bmstu.iu9.db.zvoa.dbms.io.OutputResponseModule;
@@ -49,7 +49,7 @@ public final class DBMSUtils {
 
     public static final DBMS createDBMS(DBMSConfig config) throws IOException, DataStorageException {
         DBMSServer httpServer = new DBMSServer(config.getPort());
-        LSMStore lsmStore = new LSMStore(Path.of(config.getMountPath()));
+        LsmStorage lsmStore = new LsmStorage(Path.of(config.getMountPath()));
         DBMSDataStorage dataStorage = new DBMSDataStorage.Builder()
                 .setLsmStore(lsmStore).build();
 

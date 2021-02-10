@@ -104,6 +104,9 @@ public class MainTest {
             }
         }, () -> "Response is OK: " + counter.get() + "/" + CLIENTS_COUNT * REQUEST_PER_CLIENT);
 
+        while (counter.get() < CLIENTS_COUNT * REQUEST_PER_CLIENT) {
+        }
+
         dbms.close();
         dbmsThread.join();
     }

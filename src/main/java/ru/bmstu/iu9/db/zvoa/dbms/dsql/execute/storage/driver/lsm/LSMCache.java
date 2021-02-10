@@ -1,7 +1,7 @@
-package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.lsm;
+package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.lsm;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.shared.Constants;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.shared.KVItem;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.shared.Constants;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.shared.KVItem;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,9 +1,9 @@
-package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.lsm;
+package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.lsm;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.shared.Constants;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.driver.shared.KVItem;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.shared.Constants;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.shared.KVItem;
 
 import java.io.IOException;
 import java.nio.file.Path;
