@@ -1,6 +1,7 @@
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.IKeyValueStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.IKeyValueStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Schema;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
@@ -30,6 +31,24 @@ public class DSQLSchema extends Schema {
                 .filter(table -> table.getTableName().equals(tableName))
                 .findFirst()
                 .orElseThrow(() -> new DataStorageException("Table " + tableName + " not found"));
+    }
+
+    public class DSQLSchemaValue implements Value {
+        private String schemaName;
+        private String path;
+
+        public DSQLSchemaValue(String schemaName, String path) {
+            this.schemaName = schemaName;
+            this.path = path;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public String getSchemaName() {
+            return schemaName;
+        }
     }
 
     public static class Builder {

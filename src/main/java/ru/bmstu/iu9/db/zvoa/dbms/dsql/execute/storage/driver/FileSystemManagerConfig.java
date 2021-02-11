@@ -1,6 +1,6 @@
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.IKeyValueStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.IKeyValueStorage;
 
 import java.util.function.Function;
 

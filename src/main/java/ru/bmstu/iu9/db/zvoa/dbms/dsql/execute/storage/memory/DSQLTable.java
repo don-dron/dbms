@@ -1,6 +1,7 @@
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.IKeyValueStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.IKeyValueStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
@@ -8,8 +9,8 @@ import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DSQLTable extends Table {
-    private final IKeyValueStorage storage;
+public class DSQLTable<K extends Key, V extends Value> extends Table {
+    private final IKeyValueStorage<K, V> storage;
 
     private DSQLTable(Builder builder) {
         super(builder.name, builder.types);
@@ -20,8 +21,9 @@ public class DSQLTable extends Table {
         if (storage == null) {
             throw new DataStorageException("Driver store not connected");
         } else {
-            List<String> result = storage.getValues((string) -> true).stream().map(Value::toString).collect(Collectors.toList());
-            return result.stream().map(raw -> Row.parseString(this, raw)).collect(Collectors.toList());
+//            List<String> result = storage.getValues((string) -> true).entrySet().stream().map(Value::toString).collect(Collectors.toList());
+//            return result.stream().map(raw -> Row.parseString(this, raw)).collect(Collectors.toList());
+            return null;
         }
     }
 
@@ -51,6 +53,24 @@ public class DSQLTable extends Table {
 
     protected Row createRow(List<Object> values) {
         return new Row(this, values);
+    }
+
+    public class DSQLTableValue implements Value {
+        private String tableName;
+        private String path;
+
+        public DSQLTableValue(String tableName, String path) {
+            this.tableName = tableName;
+            this.path = path;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public String getTableName() {
+            return tableName;
+        }
     }
 
     public static class Builder {

@@ -2,8 +2,9 @@ package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.IKeyValueStorage;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.IKeyValueStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLSchema;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLTable;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.CreateSchemaSettings;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.CreateTableSettings;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
@@ -71,10 +72,6 @@ public class FileSystemManager extends AbstractDbModule {
                 .collect(Collectors.toConcurrentMap(i -> i.getKey().getTable(), Map.Entry::getValue));
     }
 
-    private StorageProperties parseProperties(Value value) {
-        return null;
-    }
-
     private synchronized void initRoot() throws DataStorageException {
         IKeyValueStorage storage = createStorage(rootDirectory);
         FileItem fileItem = new FileItem(null, null, StorageProperties.StorageType.ROOT);
@@ -87,8 +84,10 @@ public class FileSystemManager extends AbstractDbModule {
                 .filter(entry -> entry.getKey().getType() == StorageProperties.StorageType.ROOT)
                 .forEach(storage -> {
                     try {
-                        storage.getValue().getValues(x -> true).forEach(value -> {
-                            StorageProperties storageProperties = parseProperties(value);
+                        storage.getValue().getValues(x -> true).values().forEach(value -> {
+                            DSQLSchema.DSQLSchemaValue schemaValue = ((DSQLSchema.DSQLSchemaValue) value);
+                            StorageProperties storageProperties = new StorageProperties(schemaValue.getSchemaName(),
+                                    schemaValue.getPath());
                             IKeyValueStorage keyValueStorage = storageSupplier.apply(storageProperties);
                             assert storageProperties != null;
                             FileItem fileItem = new FileItem(
@@ -117,8 +116,10 @@ public class FileSystemManager extends AbstractDbModule {
                 .filter(entry -> entry.getKey().getType() == StorageProperties.StorageType.SCHEMA)
                 .forEach(storage -> {
                     try {
-                        storage.getValue().getValues(x -> true).forEach(value -> {
-                            StorageProperties storageProperties = parseProperties(value);
+                        storage.getValue().getValues(x -> true).values().forEach(value -> {
+                            DSQLTable.DSQLTableValue tableValue = ((DSQLTable.DSQLTableValue) value);
+                            StorageProperties storageProperties = new StorageProperties(tableValue.getTableName(),
+                                    tableValue.getPath());
                             IKeyValueStorage keyValueStorage = storageSupplier.apply(storageProperties);
                             assert storageProperties != null;
                             FileItem fileItem = new FileItem(
