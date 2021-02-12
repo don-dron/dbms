@@ -20,7 +20,7 @@ public class PlainSelectEngine extends DSQLEngine<PlainSelect> {
         FromItem fromItem = plainSelect.getFromItem();
         Table table = (Table) fromItem;
         try {
-            List<ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table.Row> rowList =
+            List<ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Row> rowList =
                     dataStorage.selectRows(SelectSettings.Builder.newBuilder()
                             .setSchemaName(table.getSchemaName())
                             .setTableName(table.getName())

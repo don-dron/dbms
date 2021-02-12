@@ -29,13 +29,21 @@ public class LsmMemory<K extends Key, V extends Value> extends AbstractDbModule 
 
     @Override
     public Map<K, V> getValues(Predicate<Map.Entry<K, V>> predicate) throws DataStorageException {
-        return map.entrySet().stream().filter(predicate).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return map.entrySet().stream().filter(predicate).collect(Collectors.toMap(
+                Map.Entry::getKey,
+                Map.Entry::getValue,
+                (a, b) -> a,
+                TreeMap::new));
     }
 
     public void updateCache(LsmCacheAlgorithm lsmCacheAlgorithm, Map<K, V> newData) {
-        Map<K, V> afterSwap = lsmCacheAlgorithm.swapMemory(map, newData);
+        map = lsmCacheAlgorithm.swapMemory(map, newData);
+    }
+
+    public Map<K, V> swapMemory() {
         Map<K, V> oldMap = map;
-        map = afterSwap;
+        map = new TreeMap<>();
+        return oldMap;
     }
 
     @Override

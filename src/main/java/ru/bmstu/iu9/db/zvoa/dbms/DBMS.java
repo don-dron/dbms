@@ -69,6 +69,10 @@ public class DBMS extends AbstractDbModule {
         joinExecutorService(executorService);
     }
 
+    public List<IDbModule> getAdditionalModules() {
+        return additionalModules;
+    }
+
     private void joinExecutorService(ExecutorService executorService) {
         while (true) {
             try {

@@ -32,7 +32,7 @@ public class FileSystemManager extends AbstractDbModule {
         executorService = createExecutorService();
     }
 
-    public synchronized IKeyValueStorage createTableStorage(CreateTableSettings settings) throws DataStorageException {
+    public synchronized IKeyValueStorage createTableStorage(CreateTableSettings settings) throws DataStorageException, IOException {
         StorageProperties storageProperties = new StorageProperties(settings.getTableName(),
                 rootDirectory.getPath() + "/" + settings.getSchemaName() + "/" + settings.getTableName());
         IKeyValueStorage storage = createStorage(storageProperties);
@@ -41,7 +41,7 @@ public class FileSystemManager extends AbstractDbModule {
         return storage;
     }
 
-    public synchronized IKeyValueStorage createSchemaStorage(CreateSchemaSettings settings) throws DataStorageException {
+    public synchronized IKeyValueStorage createSchemaStorage(CreateSchemaSettings settings) throws DataStorageException, IOException {
         StorageProperties storageProperties = new StorageProperties(settings.getSchemaName(),
                 rootDirectory.getPath() + "/" + settings.getSchemaName());
         IKeyValueStorage storage = createStorage(storageProperties);
@@ -72,24 +72,28 @@ public class FileSystemManager extends AbstractDbModule {
                 .collect(Collectors.toConcurrentMap(i -> i.getKey().getTable(), Map.Entry::getValue));
     }
 
-    private synchronized void initRoot() throws DataStorageException {
+    private synchronized void initRoot() throws DataStorageException, IOException {
         IKeyValueStorage storage = createStorage(rootDirectory);
         FileItem fileItem = new FileItem(null, null, StorageProperties.StorageType.ROOT);
         itemToStorage.put(fileItem, storage);
     }
 
     private synchronized void initSchemas() throws DataStorageException {
-        List<DataStorageException> exceptionList = new ArrayList<>();
+        List<Exception> exceptionList = new ArrayList<>();
         itemToStorage.entrySet().stream()
                 .filter(entry -> entry.getKey().getType() == StorageProperties.StorageType.ROOT)
                 .forEach(storage -> {
                     try {
                         storage.getValue().getValues(x -> true).values().forEach(value -> {
-                            DSQLSchema.DSQLSchemaValue schemaValue = ((DSQLSchema.DSQLSchemaValue) value);
+                            DSQLSchema schemaValue = ((DSQLSchema) value);
                             StorageProperties storageProperties = new StorageProperties(schemaValue.getSchemaName(),
-                                    schemaValue.getPath());
+                                    rootDirectory.getPath() + "/" + schemaValue.getSchemaName());
                             IKeyValueStorage keyValueStorage = storageSupplier.apply(storageProperties);
-                            assert storageProperties != null;
+                            try {
+                                keyValueStorage.init();
+                            } catch (Exception exception) {
+                                exceptionList.add(exception);
+                            }
                             FileItem fileItem = new FileItem(
                                     storageProperties.getName(),
                                     null,
@@ -100,52 +104,57 @@ public class FileSystemManager extends AbstractDbModule {
                         exceptionList.add(dataStorageException);
                     }
                 });
-        DataStorageException exception = exceptionList.stream().reduce((a, b) -> {
+        Exception exception = exceptionList.stream().reduce((a, b) -> {
             a.addSuppressed(b);
             return a;
         }).orElse(null);
 
         if (exception != null) {
-            throw exception;
+            throw new DataStorageException(exception.getMessage());
         }
     }
 
     private synchronized void initTables() throws DataStorageException {
-        List<DataStorageException> exceptionList = new ArrayList<>();
+        List<Exception> exceptionList = new ArrayList<>();
         itemToStorage.entrySet().stream()
                 .filter(entry -> entry.getKey().getType() == StorageProperties.StorageType.SCHEMA)
                 .forEach(storage -> {
                     try {
                         storage.getValue().getValues(x -> true).values().forEach(value -> {
-                            DSQLTable.DSQLTableValue tableValue = ((DSQLTable.DSQLTableValue) value);
+                            DSQLTable tableValue = ((DSQLTable) value);
                             StorageProperties storageProperties = new StorageProperties(tableValue.getTableName(),
-                                    tableValue.getPath());
-                            IKeyValueStorage keyValueStorage = storageSupplier.apply(storageProperties);
-                            assert storageProperties != null;
+                                    rootDirectory.getPath() + "/" + storage.getKey().getSchema() + "/" + tableValue.getTableName());
+                            IKeyValueStorage tableStorageByDrive = storageSupplier.apply(storageProperties);
+                            try {
+                                tableStorageByDrive.init();
+                            } catch (Exception exception) {
+                                exceptionList.add(exception);
+                                return;
+                            }
                             FileItem fileItem = new FileItem(
                                     storage.getKey().getSchema(),
                                     storageProperties.getName(),
                                     StorageProperties.StorageType.TABLE);
-                            itemToStorage.put(fileItem, keyValueStorage);
+                            itemToStorage.put(fileItem, tableStorageByDrive);
                         });
                     } catch (DataStorageException dataStorageException) {
                         exceptionList.add(dataStorageException);
                     }
                 });
 
-        DataStorageException exception = exceptionList.stream().reduce((a, b) -> {
+        Exception exception = exceptionList.stream().reduce((a, b) -> {
             a.addSuppressed(b);
             return a;
         }).orElse(null);
 
         if (exception != null) {
-            throw exception;
+            throw new DataStorageException(exception.getMessage());
         }
     }
 
-    private IKeyValueStorage createStorage(StorageProperties storageProperties) throws DataStorageException {
+    private IKeyValueStorage createStorage(StorageProperties storageProperties) throws DataStorageException, IOException {
         IKeyValueStorage storage = storageSupplier.apply(storageProperties);
-        executorService.submit(storage);
+        storage.init();
         return storage;
     }
 

@@ -6,19 +6,25 @@ import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageExceptio
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModule {
 
+    private final File directory;
     private final File file;
 
     public LsmFileTree(String path) throws DataStorageException {
         try {
-            this.file = new File(path);
+            this.directory = new File(path);
+            if (!directory.exists()) {
+                directory.mkdir();
+            }
 
+            file = new File(path+"/file");
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -45,45 +51,55 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
     public void put(K key, V value) throws DataStorageException {
         try {
             FileInputStream fileInputStream = new FileInputStream(file);
-            List<Record> records = new ArrayList<>();
+
+            Record<K, V>[] newRecords;
+
             if (fileInputStream.available() != 0) {
                 ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                Record<K, V>[] records = (Record<K, V>[]) objectInputStream.readObject();
+                objectInputStream.close();
 
-                boolean inserted = false;
-                while (true) {
-                    Record<K, V> record = readNextObject(objectInputStream);
+                boolean found = false;
+                int index = -1;
 
-                    if (record != null) {
-                        if (record.getKey().compareTo(key) == 0) {
-                            records.add(new Record<>(key, value));
-                            inserted = true;
-                        } else if (record.getKey().compareTo(key) < 0) {
-                            records.add(record);
-                            records.add(new Record<>(key, value));
-                            inserted = true;
-                        } else {
-                            records.add(record);
-                        }
+                for (int i = 0; i < records.length; i++) {
+                    int result = records[i].getKey().compareTo(key);
+                    if (result < 0) {
+                        continue;
+                    } else if (result > 0) {
+                        index = i;
+                        break;
                     } else {
-                        if (!inserted) {
-                            records.add(new Record<>(key, value));
-                        }
-
+                        found = true;
+                        index = i;
                         break;
                     }
                 }
-                objectInputStream.close();
+
+                Record<K, V> record = new Record<>(key, value);
+                if (found) {
+                    records[index] = record;
+                    newRecords = records;
+                } else {
+                    newRecords = new Record[records.length + 1];
+
+                    if (index == -1) {
+                        System.arraycopy(records, 0, newRecords, 0, records.length);
+                        newRecords[records.length] = record;
+                    } else {
+                        System.arraycopy(records, 0, newRecords, 0, index);
+                        newRecords[index] = record;
+                        System.arraycopy(records, index, newRecords, index + 1, records.length - index);
+                    }
+                }
             } else {
-                records.add(new Record<>(key, value));
+                newRecords = new Record[1];
+                newRecords[0] = new Record(key, value);
             }
 
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-
-            for (Record record : records) {
-                objectOutputStream.writeObject(record);
-            }
-
+            objectOutputStream.writeObject(newRecords);
             objectOutputStream.close();
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -97,20 +113,10 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
 
             if (fileInputStream.available() != 0) {
                 ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-                Record<K, V> found = null;
-                while (true) {
-                    Record<K, V> record = readNextObject(objectInputStream);
-
-                    if (record != null) {
-                        if (record.getKey().compareTo(key) == 0) {
-                            found = record;
-                        }
-                    } else {
-                        break;
-                    }
-                }
+                Record<K, V>[] records = (Record<K, V>[]) objectInputStream.readObject();
                 objectInputStream.close();
-                return found != null ? found.getValue() : null;
+                int index = Arrays.binarySearch(records, key);
+                return index == -1 ? null : records[index].getValue();
             } else {
                 return null;
             }
@@ -120,65 +126,43 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
     }
 
     public Map<K, V> readAllKeys() throws DataStorageException {
-        Map<K, V> map = new TreeMap<>();
-        Map<K, V> buffer;
-        int start = 0;
-        int step = 10;
-        while (true) {
-            buffer = readKeysByNumbers(start, start + step);
-            start += step;
-
-            if (buffer != null && !buffer.isEmpty()) {
-                map.putAll(buffer);
-            } else {
-                break;
-            }
-        }
-
-        return map;
-    }
-
-    public Map<K, V> readKeysByNumbers(int start, int end) throws DataStorageException {
         try {
             FileInputStream fileInputStream = new FileInputStream(file);
-            Map<K, V> map = new TreeMap<>();
             if (fileInputStream.available() != 0) {
-                int index = 0;
                 ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-                while (true) {
-                    if(index >= end) {
-                        break;
-                    }
-
-                    Record<K, V> record = readNextObject(objectInputStream);
-                    if (record != null) {
-                        if (start <= index && index < end) {
-                            map.put(record.getKey(), record.getValue());
-                        }
-
-                        index++;
-                    } else {
-                        break;
-                    }
-                }
+                Record<K, V>[] records = (Record<K, V>[]) objectInputStream.readObject();
                 objectInputStream.close();
-                return map;
+                return Arrays.stream(records).collect(Collectors.toMap(
+                        Record::getKey,
+                        Record::getValue,
+                        (a, b) -> a,
+                        TreeMap::new));
             } else {
-                return null;
+                return Collections.emptyMap();
             }
         } catch (Exception exception) {
             throw new DataStorageException(exception.getMessage());
         }
     }
 
-    public Record readNextObject(ObjectInputStream objectInputStream) {
-        Record record;
+    public Map<K, V> readKeysByNumbers(int start, int end) throws DataStorageException {
         try {
-            record = (Record<K, V>) objectInputStream.readObject();
+            FileInputStream fileInputStream = new FileInputStream(file);
+            if (fileInputStream.available() != 0) {
+                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                Record<K, V>[] records = (Record<K, V>[]) objectInputStream.readObject();
+                objectInputStream.close();
+                return Arrays.stream(records).skip(start).limit(end - start).collect(Collectors.toMap(
+                        Record::getKey,
+                        Record::getValue,
+                        (a, b) -> a,
+                        TreeMap::new));
+            } else {
+                return Collections.emptyMap();
+            }
         } catch (Exception exception) {
-            record = null;
+            throw new DataStorageException(exception.getMessage());
         }
-        return record;
     }
 
     public Map<K, V> readKeyBlock(K startKey, int blockSize) {

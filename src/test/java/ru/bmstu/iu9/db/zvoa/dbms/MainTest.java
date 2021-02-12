@@ -12,6 +12,9 @@ import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.DBMSDataStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.CreateSchemaSettings;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.CreateTableSettings;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 import ru.bmstu.iu9.db.zvoa.dbms.utils.DBMSUtils;
 
@@ -68,6 +71,21 @@ public class MainTest {
     @Test
     public void mainPipelineTest() throws Exception {
         dbms.init();
+        DBMSDataStorage dataStorage = (DBMSDataStorage) dbms.getAdditionalModules().get(1);
+
+        if (dataStorage.getSchema("schema1") == null) {
+            dataStorage.createSchema(CreateSchemaSettings.Builder.newBuilder()
+                    .setSchemaName("schema1")
+                    .build());
+        }
+
+        if (dataStorage.getSchema("schema1").getTable("table1") == null) {
+            dataStorage.createTable(CreateTableSettings.Builder.newBuilder()
+                    .setSchemaName("schema1")
+                    .setTableName("table1")
+                    .build());
+        }
+
         Thread dbmsThread = new Thread(dbms);
         dbmsThread.start();
 

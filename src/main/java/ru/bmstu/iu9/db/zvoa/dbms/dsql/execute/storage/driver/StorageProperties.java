@@ -5,6 +5,7 @@ public class StorageProperties {
     private String name;
 
     public StorageProperties(String name, String path) {
+        this.name = name;
         this.path = path;
     }
 

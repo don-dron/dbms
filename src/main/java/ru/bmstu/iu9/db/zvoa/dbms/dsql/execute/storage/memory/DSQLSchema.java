@@ -1,28 +1,33 @@
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory;
 
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.IKeyValueStorage;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Schema;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.TableIdentification;
 
 import java.util.Comparator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class DSQLSchema extends Schema {
-    private final IKeyValueStorage storage;
-    private final ConcurrentSkipListSet<Table> tables;
+    private transient final IKeyValueStorage storage;
+    private transient final ConcurrentSkipListSet<Table> tables;
 
     private DSQLSchema(Builder builder) {
-        super(builder.schemaName);
+        super(builder.schemaName, builder.schemaPath);
         storage = builder.storage;
         tables = builder.tables;
     }
 
     @Override
-    public boolean addTable(Table table) {
-        return tables.add(table);
+    public boolean addTable(Table table) throws DataStorageException {
+        if (tables.add(table)) {
+            storage.put(new TableIdentification(table.getTableName()), table);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -30,30 +35,21 @@ public class DSQLSchema extends Schema {
         return tables.stream()
                 .filter(table -> table.getTableName().equals(tableName))
                 .findFirst()
-                .orElseThrow(() -> new DataStorageException("Table " + tableName + " not found"));
+                .orElse(null);
     }
 
-    public class DSQLSchemaValue implements Value {
-        private String schemaName;
-        private String path;
-
-        public DSQLSchemaValue(String schemaName, String path) {
-            this.schemaName = schemaName;
-            this.path = path;
-        }
-
-        public String getPath() {
-            return path;
-        }
-
-        public String getSchemaName() {
-            return schemaName;
-        }
+    @Override
+    public synchronized Table useTable(String tableName) throws DataStorageException {
+        return tables.stream()
+                .filter(table -> table.getTableName().equals(tableName))
+                .findFirst()
+                .orElseThrow(() -> new DataStorageException("Table " + tableName + " not found"));
     }
 
     public static class Builder {
         private IKeyValueStorage storage;
         private String schemaName;
+        private String schemaPath;
         private ConcurrentSkipListSet<Table> tables = new ConcurrentSkipListSet<>(Comparator.comparingInt(Table::hashCode));
 
         public static Builder newBuilder() {
@@ -68,6 +64,10 @@ public class DSQLSchema extends Schema {
         public Builder setSchemaName(String schemaName) {
             this.schemaName = schemaName;
             return this;
+        }
+
+        public void setSchemaPath(String schemaPath) {
+            this.schemaPath = schemaPath;
         }
 
         public Builder setTables(Set<Table> tables) {

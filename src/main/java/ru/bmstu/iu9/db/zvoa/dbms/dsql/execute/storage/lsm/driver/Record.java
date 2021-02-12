@@ -5,7 +5,7 @@ import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
 
 import java.io.Serializable;
 
-public class Record<K extends Key, V extends Value> implements Serializable {
+public class Record<K extends Key, V extends Value> implements Serializable, Comparable {
     private K key;
     private V value;
 
@@ -23,5 +23,16 @@ public class Record<K extends Key, V extends Value> implements Serializable {
 
     public K getKey() {
         return key;
+    }
+
+    @Override
+    public int compareTo(Object object) {
+        if (object instanceof Key) {
+            return key.compareTo(((Key) object));
+        } else if (object instanceof Record) {
+            return key.compareTo(((Record) object).getKey());
+        } else {
+            throw new IllegalArgumentException("Not comparable key");
+        }
     }
 }

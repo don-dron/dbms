@@ -1,18 +1,31 @@
 package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory;
 
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
-public abstract class Table {
+public abstract class Table implements Value {
     private final String tableName;
+    private final String tablePath;
+    private final Function<Row, Key> rowKeyFunction;
     private final List<Type> types;
 
-    public Table(String tableName, List<Type> types) {
+    public Table(String tableName,
+                 String tablePath,
+                 List<Type> types,
+                 Function<Row, Key> rowKeyFunction) {
         this.tableName = tableName;
         this.types = types;
+        this.rowKeyFunction = rowKeyFunction == null ? new DefaultRowToKey() : rowKeyFunction;
+        this.tablePath = tablePath == null ? tableName : tablePath;
+    }
+
+    public String getTablePath() {
+        return tablePath;
     }
 
     public List<Type> getTypes() {
@@ -21,6 +34,10 @@ public abstract class Table {
 
     public String getTableName() {
         return tableName;
+    }
+
+    public Key getRowKey(Row row) {
+        return rowKeyFunction.apply(row);
     }
 
     public abstract List<Row> selectRows(SelectSettings selectSettings) throws DataStorageException;
@@ -40,41 +57,5 @@ public abstract class Table {
     @Override
     public int hashCode() {
         return Objects.hash(tableName);
-    }
-
-    public static class Row {
-        private Table table;
-        private Object key;
-        private List<Object> values;
-
-        public Row(Table table, List<Object> values) {
-            this.table = table;
-            this.key = values.get(0);
-            this.values = values;
-        }
-
-        public Object getKey() {
-            return key;
-        }
-
-        public Table getTable() {
-            return table;
-        }
-
-        public List<Object> getValues() {
-            return values;
-        }
-
-        public static Row parseString(Table table, String rawString) {
-            return new Row(table, Arrays.asList(rawString));
-        }
-
-        @Override
-        public String toString() {
-            return "Row{" +
-                    "key=" + key +
-                    ", values=" + values +
-                    '}';
-        }
     }
 }

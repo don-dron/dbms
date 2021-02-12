@@ -1,10 +1,12 @@
 package ru.bmstu.iu9.db.zvoa.dbms.storage;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.LsmFileTree;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -18,6 +20,14 @@ public class LsmFileTreeTest {
 
     public String readFile(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)));
+    }
+
+    @BeforeEach
+    public void deleteFile() {
+        File file = new File(path);
+        if (file.exists()) {
+            file.delete();
+        }
     }
 
     @Test

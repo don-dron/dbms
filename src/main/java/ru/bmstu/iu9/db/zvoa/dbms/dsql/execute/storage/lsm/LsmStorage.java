@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule implements IKeyValueStorage<K, V> {
 
@@ -32,7 +33,14 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
 
     @Override
     public void run() {
-
+        Map<K, V> map = lsmMemory.swapMemory();
+        map.entrySet().forEach(entry -> {
+            try {
+                lsmFileTree.put(entry.getKey(), entry.getValue());
+            } catch (DataStorageException dataStorageException) {
+                dataStorageException.printStackTrace();
+            }
+        });
     }
 
     @Override
@@ -43,6 +51,7 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
     @Override
     public void put(K key, V value) throws DataStorageException {
         lsmMemory.put(key, value);
+        run();
     }
 
     @Override
@@ -62,7 +71,21 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
 
     @Override
     public Map<K, V> getValues(Predicate<Map.Entry<K, V>> predicate) throws DataStorageException {
-        Map<K, V> values = lsmMemory.getValues(predicate);
-        return values;
+        Map<K, V> inFile = lsmFileTree.readAllKeys()
+                .entrySet()
+                .stream()
+                .filter(predicate)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<K, V> inMemory = lsmMemory.getValues(predicate);
+
+        Map<K, V> result =
+                inFile.entrySet()
+                        .stream()
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                Map.Entry::getValue,
+                                (v1, v2) -> v1,
+                                () -> new TreeMap<>(inMemory)));
+        return result;
     }
 }

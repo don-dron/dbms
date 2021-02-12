@@ -2,18 +2,19 @@ package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory;
 
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.IKeyValueStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Row;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class DSQLTable<K extends Key, V extends Value> extends Table {
-    private final IKeyValueStorage<K, V> storage;
+public class DSQLTable extends Table {
+    private transient final IKeyValueStorage<Key, Row> storage;
 
     private DSQLTable(Builder builder) {
-        super(builder.name, builder.types);
+        super(builder.name, builder.path, builder.types, builder.rowKeyFunction);
         storage = builder.storage;
     }
 
@@ -21,9 +22,11 @@ public class DSQLTable<K extends Key, V extends Value> extends Table {
         if (storage == null) {
             throw new DataStorageException("Driver store not connected");
         } else {
-//            List<String> result = storage.getValues((string) -> true).entrySet().stream().map(Value::toString).collect(Collectors.toList());
-//            return result.stream().map(raw -> Row.parseString(this, raw)).collect(Collectors.toList());
-            return null;
+            return storage.getValues(x -> true)
+                    .values()
+                    .stream()
+                    .peek(row -> row.setTable(this))
+                    .collect(Collectors.toList());
         }
     }
 
@@ -33,7 +36,7 @@ public class DSQLTable<K extends Key, V extends Value> extends Table {
         } else {
             List<Row> rows = insertSettings.getRows().stream().map(this::createRow).collect(Collectors.toList());
             for (Row row : rows) {
-//                    lsmStore.put(new KVItem(row.getKey().toString(), row.toString(), Instant.now().toEpochMilli()));
+                storage.put(row.getKey(), row);
             }
             return rows;
         }
@@ -45,7 +48,7 @@ public class DSQLTable<K extends Key, V extends Value> extends Table {
         } else {
             List<Row> rows = deleteSettings.getRows().stream().map(this::createRow).collect(Collectors.toList());
             for (Row row : rows) {
-//                    lsmStore.put(new KVItem(row.getKey().toString(), null, Instant.now().toEpochMilli()));
+                storage.put(row.getKey(), null);
             }
             return rows;
         }
@@ -55,28 +58,12 @@ public class DSQLTable<K extends Key, V extends Value> extends Table {
         return new Row(this, values);
     }
 
-    public class DSQLTableValue implements Value {
-        private String tableName;
-        private String path;
-
-        public DSQLTableValue(String tableName, String path) {
-            this.tableName = tableName;
-            this.path = path;
-        }
-
-        public String getPath() {
-            return path;
-        }
-
-        public String getTableName() {
-            return tableName;
-        }
-    }
-
     public static class Builder {
         private String name;
+        private String path;
         private List<Type> types;
-        private IKeyValueStorage storage;
+        private Function<Row, Key> rowKeyFunction;
+        private IKeyValueStorage<Key, Row> storage;
 
         public static Builder newBuilder() {
             return new Builder();
@@ -87,7 +74,16 @@ public class DSQLTable<K extends Key, V extends Value> extends Table {
             return this;
         }
 
-        public Builder setStorage(IKeyValueStorage storage) {
+        public void setPath(String path) {
+            this.path = path;
+        }
+
+        public Builder setRowToKey(Function<Row, Key> rowToKey) {
+            this.rowKeyFunction = rowToKey;
+            return this;
+        }
+
+        public Builder setStorage(IKeyValueStorage<Key, Row> storage) {
             this.storage = storage;
             return this;
         }

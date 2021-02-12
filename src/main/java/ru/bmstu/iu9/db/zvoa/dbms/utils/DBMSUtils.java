@@ -7,10 +7,13 @@ import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.DBMSDataStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.FileSystemManager;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.FileSystemManagerConfig;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.StorageProperties;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.LsmStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpRequestHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpResponseHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.query.DSQLQueryHandler;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.CreateSchemaSettings;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.CreateTableSettings;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 import ru.bmstu.iu9.db.zvoa.dbms.io.InputRequestModule;
 import ru.bmstu.iu9.db.zvoa.dbms.io.OutputResponseModule;
@@ -52,7 +55,14 @@ public final class DBMSUtils {
         FileSystemManager fileSystemManager = new FileSystemManager(
                 FileSystemManagerConfig.Builder.newBuilder()
                         .setStorageProperties(new StorageProperties("Root", config.getMountPath()))
-                        .setStorageSupplier((path) -> null)
+                        .setStorageSupplier((properties) -> {
+                            try {
+                                return new LsmStorage(properties);
+                            } catch (DataStorageException dataStorageException) {
+                                dataStorageException.printStackTrace();
+                                return null;
+                            }
+                        })
                         .build());
 
         DBMSDataStorage dataStorage = new DBMSDataStorage.Builder()
