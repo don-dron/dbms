@@ -13,7 +13,7 @@ import java.io.IOException;
  */
 public abstract class AbstractDbModule implements IDbModule {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private State state = State.NOT_INIT;
+    private volatile State state = State.NOT_INIT;
 
     @Override
     public abstract void init() throws DataStorageException, IOException;

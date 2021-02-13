@@ -12,8 +12,6 @@ import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpRequestHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpResponseHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.query.DSQLQueryHandler;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.CreateSchemaSettings;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.CreateTableSettings;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 import ru.bmstu.iu9.db.zvoa.dbms.io.InputRequestModule;
 import ru.bmstu.iu9.db.zvoa.dbms.io.OutputResponseModule;

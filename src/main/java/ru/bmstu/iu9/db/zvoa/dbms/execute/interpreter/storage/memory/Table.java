@@ -20,8 +20,26 @@ public abstract class Table implements Value {
                  Function<Row, Key> rowKeyFunction) {
         this.tableName = tableName;
         this.types = types;
-        this.rowKeyFunction = rowKeyFunction == null ? new DefaultRowToKey() : rowKeyFunction;
+        this.rowKeyFunction = rowKeyFunction == null ? getDefaultKeyFunction() : rowKeyFunction;
         this.tablePath = tablePath == null ? tableName : tablePath;
+    }
+
+    public Function<Row, Key> getRowKeyFunction() {
+        return rowKeyFunction;
+    }
+
+    public Function<Row, Key> getDefaultKeyFunction() {
+        if (types == null || types.isEmpty()) {
+            return new DefaultRowToKey();
+        } else {
+            Type type = types.get(0);
+
+            if (type == Type.INTEGER) {
+                return new LongRowToKey();
+            } else {
+                return new DefaultRowToKey();
+            }
+        }
     }
 
     public String getTablePath() {

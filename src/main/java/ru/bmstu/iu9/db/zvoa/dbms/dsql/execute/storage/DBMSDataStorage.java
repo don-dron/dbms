@@ -6,9 +6,7 @@ import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.FileSystemManager;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLSchema;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLTable;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Row;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Schema;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.*;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.IDbModule;
 
@@ -20,7 +18,7 @@ import java.util.concurrent.*;
 public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
     private final Logger logger = LoggerFactory.getLogger(DBMSDataStorage.class);
     private final FileSystemManager fileSystemManager;
-    private IKeyValueStorage<Schema.SchemeIdentification, DSQLSchema> fileSchemasStorage;
+    private IKeyValueStorage<SchemeIdentification, DSQLSchema> fileSchemasStorage;
     private ConcurrentSkipListSet<Schema> schemas = new ConcurrentSkipListSet<>(Comparator.comparingInt(Schema::hashCode));
 
     private DBMSDataStorage(Builder builder) {
@@ -38,22 +36,40 @@ public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
 
         initModules(executorService);
 
-        setRunning();
-        logRunning();
         executorService.shutdown();
         joinExecutorService(executorService);
 
         linkStorages();
 
+        printLog();
         logInit();
         setInit();
+    }
+
+    private void printLog() throws DataStorageException {
+        System.out.println("Initialization storage debug.");
+        System.out.println("__________________________________________________________");
+
+        for (Schema schema : schemas) {
+            System.out.println(schema.getSchemaName());
+
+            for (Table table : schema.getTables()) {
+                System.out.println(schema.getSchemaName() + "." + table.getTableName());
+                List<Row> rows = table.selectRows(SelectSettings.Builder.newBuilder().build());
+                System.out.println("Rows: " + rows.size());
+                for (Row row : rows) {
+                    System.out.println(row);
+                }
+            }
+        }
+        System.out.println("__________________________________________________________");
     }
 
     @Override
     public void run() {
         ExecutorService executorService;
         synchronized (this) {
-            if (isRunning()) {
+            if (isRunning() || isClosed()) {
                 return;
             }
             executorService = createExecutorService();
@@ -69,6 +85,7 @@ public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
 
     @Override
     public void close() throws Exception {
+        printLog();
         synchronized (this) {
             if (isClosed()) {
                 return;
@@ -82,7 +99,7 @@ public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
     private void joinExecutorService(ExecutorService executorService) {
         while (true) {
             try {
-                if (executorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                if (executorService.awaitTermination(100, TimeUnit.MILLISECONDS)) {
                     break;
                 } else {
                     Thread.onSpinWait();
@@ -116,7 +133,7 @@ public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
                     try {
                         module.init();
                     } catch (Exception exception) {
-                        logger.error(exception.getMessage());
+                        throw new IllegalStateException(exception.getMessage());
                     }
                 });
     }
@@ -140,16 +157,20 @@ public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
                     fileSystemManager.getCurrentTables(name).entrySet()
                             .stream()
                             .forEach(tableEntry -> {
-                                String tableName = entry.getKey();
-                                IKeyValueStorage tableStorage = entry.getValue();
-                                DSQLTable table = DSQLTable.Builder.newBuilder()
-                                        .setName(tableName)
-                                        .setStorage(tableStorage)
-                                        .build();
+                                String tableName = tableEntry.getKey();
+
                                 try {
+                                    DSQLTable tableSource = (DSQLTable) storage.get(new TableIdentification(tableName));
+                                    IKeyValueStorage tableStorage = tableEntry.getValue();
+                                    DSQLTable table = DSQLTable.Builder.newBuilder()
+                                            .setName(tableName)
+                                            .setTypes(tableSource.getTypes())
+                                            .setRowToKey(tableSource.getRowKeyFunction())
+                                            .setStorage(tableStorage)
+                                            .build();
                                     schema.addTable(table);
                                 } catch (DataStorageException dataStorageException) {
-                                    dataStorageException.printStackTrace();
+                                    throw new IllegalStateException(dataStorageException.getMessage());
                                 }
                             });
                 });
@@ -169,8 +190,8 @@ public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
             DSQLTable table = DSQLTable.Builder.newBuilder()
                     .setName(settings.getTableName())
                     .setStorage(tableStorage)
+                    .setTypes(settings.getTypes())
                     .build();
-            tableStorage.init();
             schema.addTable(table);
             return table;
         }
@@ -185,11 +206,28 @@ public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
                     .setSchemaName(settings.getSchemaName())
                     .setStorage(schemaStorage)
                     .build();
-            schemaStorage.init();
-            fileSchemasStorage.put(new Schema.SchemeIdentification(schema.getSchemaName()), schema);
+            fileSchemasStorage.put(new SchemeIdentification(schema.getSchemaName()), schema);
             schemas.add(schema);
             return schema;
         }
+    }
+
+    public Table deleteTable(CreateTableSettings settings) throws Exception {
+        Schema schema = useSchema(settings.getSchemaName());
+        Table table = schema.useTable(settings.getTableName());
+        IKeyValueStorage tableStorage = fileSystemManager.getCurrentTables(settings.getSchemaName()).get(table.getTableName());
+        tableStorage.close();
+        schema.deleteTable(table);
+        return table;
+    }
+
+    public Schema deleteSchema(DeleteSchemaSettings settings) throws Exception {
+        Schema schema = useSchema(settings.getSchemaName());
+        IKeyValueStorage schemaStorage = fileSystemManager.getCurrentSchemas().get(schema.getSchemaName());
+        schemaStorage.close();
+        fileSchemasStorage.put(new SchemeIdentification(schema.getSchemaName()), null);
+        schemas.remove(schema);
+        return schema;
     }
 
     @Override

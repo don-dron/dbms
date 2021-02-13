@@ -1,8 +1,9 @@
 package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
+
+import java.util.List;
 
 public abstract class Schema implements Value {
     private final String schemaName;
@@ -14,7 +15,11 @@ public abstract class Schema implements Value {
         this.schemaPath = schemaPath == null ? schemaName : schemaPath;
     }
 
+    public abstract List<Table> getTables() throws DataStorageException;
+
     public abstract boolean addTable(Table table) throws DataStorageException;
+
+    public abstract boolean deleteTable(Table table) throws DataStorageException;
 
     public abstract Table getTable(String tableName) throws DataStorageException;
 
@@ -28,16 +33,4 @@ public abstract class Schema implements Value {
         return schemaName;
     }
 
-    public static class SchemeIdentification implements Key {
-        private String name;
-
-        public SchemeIdentification(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public int compareTo(Object o) {
-            return name.compareTo(((SchemeIdentification) o).name);
-        }
-    }
 }

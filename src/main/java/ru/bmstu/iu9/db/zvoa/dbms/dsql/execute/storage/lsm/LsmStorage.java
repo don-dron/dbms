@@ -1,5 +1,8 @@
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.DBMSDataStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.IKeyValueStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.StorageProperties;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.LsmFileTree;
@@ -14,26 +17,59 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule implements IKeyValueStorage<K, V> {
-
+    private final Logger logger = LoggerFactory.getLogger(DBMSDataStorage.class);
     private static final int MAX_CACHE_SIZE = 100;
 
+    private final String path;
     private final LsmMemory<K, V> lsmMemory;
     private final LsmFileTree<K, V> lsmFileTree;
     private final LsmCacheAlgorithm<K, V> lsmCacheAlgorithm = new LsmCacheAlgorithmHalf<>();
 
     public LsmStorage(StorageProperties storageProperties) throws DataStorageException {
+        this.path = storageProperties.getPath();
         this.lsmFileTree = new LsmFileTree(storageProperties.getPath());
         this.lsmMemory = new LsmMemory();
     }
 
     @Override
-    public void init() throws DataStorageException, IOException {
+    public synchronized void init() throws DataStorageException, IOException {
+        if (isInit()) {
+            return;
+        }
+
         lsmMemory.init();
+        setInit();
+        logInit();
+        logger.debug("Init storage " + path);
     }
 
     @Override
     public void run() {
-        Map<K, V> map = lsmMemory.pushToDrive();
+        synchronized (this) {
+            if (isRunning()) {
+                return;
+            }
+
+            if (isClosed()) {
+                return;
+            }
+            setRunning();
+            logRunning();
+            logger.debug("Run storage " + path);
+        }
+
+        while (isRunning()) {
+            if (lsmMemory.size() >= 1000) {
+                pushToDrive();
+            } else {
+                Thread.onSpinWait();
+            }
+        }
+        pushToDrive();
+    }
+
+    public void pushToDrive() {
+        Map<K, V> map = lsmMemory.swapMemory();
         map.entrySet().forEach(entry -> {
             try {
                 lsmFileTree.put(entry.getKey(), entry.getValue());
@@ -45,13 +81,19 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
 
     @Override
     public void close() throws Exception {
-
+        synchronized (this) {
+            if (isClosed()) {
+                return;
+            }
+            setClosed();
+            logClose();
+            logger.debug("Close storage " + path);
+        }
     }
 
     @Override
     public void put(K key, V value) throws DataStorageException {
         lsmMemory.put(key, value);
-        run();
     }
 
     @Override

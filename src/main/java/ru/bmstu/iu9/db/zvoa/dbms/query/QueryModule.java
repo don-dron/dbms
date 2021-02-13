@@ -59,6 +59,9 @@ public class QueryModule extends AbstractDbModule {
             if (isRunning()) {
                 return;
             }
+            if (isClosed()) {
+                return;
+            }
             setRunning();
             logRunning();
         }

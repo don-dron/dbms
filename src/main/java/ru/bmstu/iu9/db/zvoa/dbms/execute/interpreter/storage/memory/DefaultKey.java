@@ -3,18 +3,18 @@ package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
 
 public class DefaultKey implements Key {
-    private int id;
+    private long id;
 
-    public DefaultKey(int id) {
+    public DefaultKey(long id) {
         this.id = id;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
     @Override
     public int compareTo(Object o) {
-        return id - ((DefaultKey) o).id;
+        return Long.compare(id, ((DefaultKey) o).id);
     }
 }

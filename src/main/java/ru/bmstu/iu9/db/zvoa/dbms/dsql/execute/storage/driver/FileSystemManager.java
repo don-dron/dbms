@@ -35,8 +35,12 @@ public class FileSystemManager extends AbstractDbModule {
     public synchronized IKeyValueStorage createTableStorage(CreateTableSettings settings) throws DataStorageException, IOException {
         StorageProperties storageProperties = new StorageProperties(settings.getTableName(),
                 rootDirectory.getPath() + "/" + settings.getSchemaName() + "/" + settings.getTableName());
-        IKeyValueStorage storage = createStorage(storageProperties);
+        IKeyValueStorage storage = storageSupplier.apply(storageProperties);
         FileItem fileItem = new FileItem(settings.getSchemaName(), settings.getTableName(), StorageProperties.StorageType.TABLE);
+        storage.init();
+        if (isRunning()) {
+            executorService.submit(storage);
+        }
         itemToStorage.put(fileItem, storage);
         return storage;
     }
@@ -44,8 +48,12 @@ public class FileSystemManager extends AbstractDbModule {
     public synchronized IKeyValueStorage createSchemaStorage(CreateSchemaSettings settings) throws DataStorageException, IOException {
         StorageProperties storageProperties = new StorageProperties(settings.getSchemaName(),
                 rootDirectory.getPath() + "/" + settings.getSchemaName());
-        IKeyValueStorage storage = createStorage(storageProperties);
+        IKeyValueStorage storage = storageSupplier.apply(storageProperties);
         FileItem fileItem = new FileItem(settings.getSchemaName(), null, StorageProperties.StorageType.SCHEMA);
+        storage.init();
+        if (isRunning()) {
+            executorService.submit(storage);
+        }
         itemToStorage.put(fileItem, storage);
         return storage;
     }
@@ -73,8 +81,9 @@ public class FileSystemManager extends AbstractDbModule {
     }
 
     private synchronized void initRoot() throws DataStorageException, IOException {
-        IKeyValueStorage storage = createStorage(rootDirectory);
+        IKeyValueStorage storage = storageSupplier.apply(rootDirectory);
         FileItem fileItem = new FileItem(null, null, StorageProperties.StorageType.ROOT);
+        storage.init();
         itemToStorage.put(fileItem, storage);
     }
 
@@ -133,7 +142,7 @@ public class FileSystemManager extends AbstractDbModule {
                             }
                             FileItem fileItem = new FileItem(
                                     storage.getKey().getSchema(),
-                                    storageProperties.getName(),
+                                    tableValue.getTableName(),
                                     StorageProperties.StorageType.TABLE);
                             itemToStorage.put(fileItem, tableStorageByDrive);
                         });
@@ -150,12 +159,6 @@ public class FileSystemManager extends AbstractDbModule {
         if (exception != null) {
             throw new DataStorageException(exception.getMessage());
         }
-    }
-
-    private IKeyValueStorage createStorage(StorageProperties storageProperties) throws DataStorageException, IOException {
-        IKeyValueStorage storage = storageSupplier.apply(storageProperties);
-        storage.init();
-        return storage;
     }
 
     @Override
@@ -182,6 +185,10 @@ public class FileSystemManager extends AbstractDbModule {
                 return;
             }
 
+            if (isClosed()) {
+                return;
+            }
+
             runStorages();
 
             setRunning();
@@ -203,6 +210,9 @@ public class FileSystemManager extends AbstractDbModule {
                 return;
             }
 
+            for (IKeyValueStorage storage : itemToStorage.values()) {
+                storage.close();
+            }
             setClosed();
             logClose();
         }
@@ -220,7 +230,7 @@ public class FileSystemManager extends AbstractDbModule {
     private void joinExecutorService(ExecutorService executorService) {
         while (true) {
             try {
-                if (executorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                if (executorService.awaitTermination(100, TimeUnit.MILLISECONDS)) {
                     break;
                 } else {
                     Thread.onSpinWait();

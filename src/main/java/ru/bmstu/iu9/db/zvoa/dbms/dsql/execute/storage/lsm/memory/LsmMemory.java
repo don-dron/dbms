@@ -17,6 +17,10 @@ public class LsmMemory<K extends Key, V extends Value> extends AbstractDbModule 
 
     private Map<K, V> map;
 
+    public int size() {
+        return map.size();
+    }
+
     @Override
     public void put(K key, V value) throws DataStorageException {
         map.put(key, value);
@@ -40,7 +44,7 @@ public class LsmMemory<K extends Key, V extends Value> extends AbstractDbModule 
         map = lsmCacheAlgorithm.swapMemory(map, newData);
     }
 
-    public Map<K, V> pushToDrive() {
+    public Map<K, V> swapMemory() {
         Map<K, V> oldMap = map;
         map = new TreeMap<>();
         return oldMap;

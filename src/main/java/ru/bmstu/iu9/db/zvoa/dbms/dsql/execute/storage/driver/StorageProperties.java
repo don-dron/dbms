@@ -1,6 +1,9 @@
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver;
 
-public class StorageProperties {
+import java.util.Map;
+import java.util.function.Supplier;
+
+public class StorageProperties<K, V> {
     private String path;
     private String name;
 

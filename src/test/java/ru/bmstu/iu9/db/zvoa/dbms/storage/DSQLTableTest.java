@@ -84,7 +84,7 @@ public class DSQLTableTest {
                 .build());
 
         // Swap memory to drive
-        storage.run();
+        storage.pushToDrive();
 
         // Assertions read
         List<Row> rows = table.selectRows(SelectSettings.Builder.newBuilder()

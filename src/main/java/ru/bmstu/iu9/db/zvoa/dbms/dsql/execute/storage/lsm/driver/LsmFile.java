@@ -1,28 +1,27 @@
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
+
+import java.io.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
-
 public class LsmFile<K extends Key, V extends Value> {
-    private File file;
+    private final File file;
 
-    public LsmFile(String path) throws IOException {
-        file = new File(path);
-        if (!file.exists()) {
-            file.createNewFile();
+    public LsmFile(String path) throws DataStorageException {
+        try {
+            file = new File(path);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+        } catch (Exception exception) {
+            throw new DataStorageException(exception.getMessage());
         }
     }
 
@@ -80,7 +79,6 @@ public class LsmFile<K extends Key, V extends Value> {
             objectOutputStream.writeObject(newRecords);
             objectOutputStream.close();
         } catch (Exception exception) {
-            exception.printStackTrace();
             throw new DataStorageException(exception.getMessage());
         }
     }

@@ -6,12 +6,14 @@ import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Schema;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.TableIdentification;
 
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class DSQLSchema extends Schema {
-    private transient final IKeyValueStorage storage;
+    private transient final IKeyValueStorage<TableIdentification, Table> storage;
     private transient final ConcurrentSkipListSet<Table> tables;
 
     private DSQLSchema(Builder builder) {
@@ -21,9 +23,24 @@ public class DSQLSchema extends Schema {
     }
 
     @Override
+    public List<Table> getTables() {
+        return Arrays.asList(tables.toArray(Table[]::new));
+    }
+
+    @Override
     public boolean addTable(Table table) throws DataStorageException {
         if (tables.add(table)) {
             storage.put(new TableIdentification(table.getTableName()), table);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean deleteTable(Table table) throws DataStorageException {
+        if (tables.remove(table)) {
+            storage.put(new TableIdentification(table.getTableName()), null);
             return true;
         } else {
             return false;

@@ -76,7 +76,7 @@ public class DBMS extends AbstractDbModule {
     private void joinExecutorService(ExecutorService executorService) {
         while (true) {
             try {
-                if (executorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                if (executorService.awaitTermination(100, TimeUnit.MILLISECONDS)) {
                     break;
                 } else {
                     Thread.onSpinWait();
@@ -97,15 +97,15 @@ public class DBMS extends AbstractDbModule {
     }
 
     private void initModules(ExecutorService executorService) {
+        for (IDbModule module : additionalModules) {
+            initModule(executorService, module);
+        }
+
         initModule(executorService, queryModule.getQueryRequestStorage());
         initModule(executorService, queryModule.getQueryResponseStorage());
         initModule(executorService, queryModule);
         initModule(executorService, outputModule);
         initModule(executorService, inputModule);
-
-        for (IDbModule module : additionalModules) {
-            initModule(executorService, module);
-        }
     }
 
     private void runModules(ExecutorService executorService) {
@@ -126,7 +126,7 @@ public class DBMS extends AbstractDbModule {
                     try {
                         module.init();
                     } catch (Exception exception) {
-                        logger.error(exception.getMessage());
+                        exception.printStackTrace();
                     }
                 });
     }
