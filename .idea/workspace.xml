@@ -23,7 +23,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="636cd115-ac8a-4ec5-bbf6-f87a6ec92e5a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/schema1/file" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmCacheAlgorithmHalf.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmCacheAlgorithmHalf.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmStorage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/memory/LsmMemory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/memory/LsmMemory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/META-INF/dbms.kotlin_module" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,6 +127,17 @@
     </key>
   </component>
   <component name="RunManager" selected="JUnit.MainTest.mainPipelineTest">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="DSQLTableTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="dbms" />
       <extension name="coverage">
@@ -240,7 +257,7 @@
       </list>
     </recent_temporary>
   </component>
-  <component name="SpellCheckerSettings" BundledDictionaries="0" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" Dictionaries="0" CorrectionsLimit="5" DefaultDictionary="application-level" UseSingleDictionary="true" />
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="false" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -295,80 +312,6 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
-  <component name="WindowStateProjectService">
-    <state x="726" y="63" key="#Auto_Import" timestamp="1613082209000">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="726" y="63" key="#Auto_Import/0.0.1920.1040@0.0.1920.1040" timestamp="1613082209000" />
-    <state x="725" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1613164568016">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="725" y="322" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1613164568016" />
-    <state x="765" y="236" key="#com.intellij.ide.util.MemberChooser" timestamp="1613164423563">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="765" y="236" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1613164423563" />
-    <state x="684" y="389" width="554" height="268" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes" timestamp="1613161815662">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="684" y="389" width="554" height="268" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes/0.0.1920.1040@0.0.1920.1040" timestamp="1613161815662" />
-    <state x="457" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1613076720597">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="457" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1613076720597" />
-    <state width="1876" height="358" key="GridCell.Tab.0.bottom" timestamp="1613167505947">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1876" height="358" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613167505947" />
-    <state width="1876" height="358" key="GridCell.Tab.0.center" timestamp="1613167505947">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1876" height="358" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613167505947" />
-    <state width="1876" height="358" key="GridCell.Tab.0.left" timestamp="1613167505947">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1876" height="358" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613167505947" />
-    <state width="1876" height="358" key="GridCell.Tab.0.right" timestamp="1613167505947">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1876" height="358" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613167505947" />
-    <state width="1876" height="358" key="GridCell.Tab.1.bottom" timestamp="1613167505948">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1876" height="358" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613167505948" />
-    <state width="1876" height="358" key="GridCell.Tab.1.center" timestamp="1613167505947">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1876" height="358" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613167505947" />
-    <state width="1876" height="358" key="GridCell.Tab.1.left" timestamp="1613167505947">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1876" height="358" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613167505947" />
-    <state width="1876" height="358" key="GridCell.Tab.1.right" timestamp="1613167505948">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1876" height="358" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613167505948" />
-    <state x="461" y="165" key="SettingsEditor" timestamp="1612985757664">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="461" y="165" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1612985757664" />
-    <state x="667" y="253" width="585" height="592" key="find.popup" timestamp="1613166752316">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="667" y="253" width="585" height="592" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1613166752316" />
-    <state x="755" y="267" key="refactoring.ChangeSignatureDialog" timestamp="1613156621839">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="755" y="267" key="refactoring.ChangeSignatureDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1613156621839" />
-    <state x="616" y="240" key="run.anything.popup" timestamp="1613166952136">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="616" y="240" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1613166952136" />
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1613166162040">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1613166162040" />
-  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
@@ -378,16 +321,11 @@
           </properties>
           <option name="timeStamp" value="8" />
         </breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java</url>
-          <line>31</line>
-          <option name="timeStamp" value="53" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
-        <PinnedItemInfo typeName="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.Record" fieldName="key" />
+        <PinnedItemInfo />
       </pinned-members>
     </pin-to-top-manager>
     <watches-manager>
@@ -399,11 +337,11 @@
     </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/dbms$MainTest_mainPipelineTest.ic" NAME="MainTest.mainPipelineTest Coverage Results" MODIFIED="1612954110076" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>ru.bmstu.iu9.db.zvoa.dbms.utils.*</FILTER>
+    </SUITE>
     <SUITE FILE_PATH="coverage/dbms$MainTest.ic" NAME="MainTest Coverage Results" MODIFIED="1612033125049" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>ru.bmstu.iu9.db.zvoa.dbms.core.run.main.*</FILTER>
-    </SUITE>
-    <SUITE FILE_PATH="coverage/dbms$MainTest_mainPipelineTest.ic" NAME="MainTest.mainPipelineTest Coverage Results" MODIFIED="1613162078963" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
-      <FILTER>ru.bmstu.iu9.db.zvoa.dbms.*</FILTER>
     </SUITE>
   </component>
 </project>

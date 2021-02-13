@@ -40,7 +40,7 @@ public class LsmMemory<K extends Key, V extends Value> extends AbstractDbModule 
         map = lsmCacheAlgorithm.swapMemory(map, newData);
     }
 
-    public Map<K, V> swapMemory() {
+    public Map<K, V> pushToDrive() {
         Map<K, V> oldMap = map;
         map = new TreeMap<>();
         return oldMap;

@@ -33,7 +33,7 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
 
     @Override
     public void run() {
-        Map<K, V> map = lsmMemory.swapMemory();
+        Map<K, V> map = lsmMemory.pushToDrive();
         map.entrySet().forEach(entry -> {
             try {
                 lsmFileTree.put(entry.getKey(), entry.getValue());
