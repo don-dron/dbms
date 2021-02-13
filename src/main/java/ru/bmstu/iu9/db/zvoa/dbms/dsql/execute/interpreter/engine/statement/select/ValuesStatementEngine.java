@@ -20,6 +20,9 @@ import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.engine.DSQLEngine;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.engine.IEngine;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.RuntimeError;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Row;
+
+import java.util.List;
 
 public class ValuesStatementEngine extends DSQLEngine<ValuesStatement> {
     public ValuesStatementEngine(DataStorage dataStorage) {
@@ -27,7 +30,7 @@ public class ValuesStatementEngine extends DSQLEngine<ValuesStatement> {
     }
 
     @Override
-    public void execute(ValuesStatement valuesStatement) throws RuntimeError {
+    public List<Row> execute(ValuesStatement valuesStatement) throws RuntimeError {
         throw new RuntimeError("Unsupported " + valuesStatement);
     }
 }

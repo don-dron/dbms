@@ -35,7 +35,7 @@ public class InsertEngine extends DSQLEngine<Insert> {
         super(dataStorage);
     }
 
-    public void execute(Insert insert) throws RuntimeError {
+    public Object execute(Insert insert) throws RuntimeError {
         Table table = insert.getTable();
         ItemsList itemsList = insert.getItemsList();
 
@@ -47,7 +47,7 @@ public class InsertEngine extends DSQLEngine<Insert> {
                     .map(value -> Arrays.asList((Object) value))
                     .collect(Collectors.toList());
 
-            dataStorage.insertRows(
+            return dataStorage.insertRows(
                     InsertSettings.Builder.newBuilder()
                             .setSchemaName(table.getSchemaName())
                             .setTableName(table.getName())

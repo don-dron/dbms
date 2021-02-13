@@ -18,9 +18,9 @@ package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.engine.statement.sele
 import net.sf.jsqlparser.statement.select.*;
 import net.sf.jsqlparser.statement.values.ValuesStatement;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.engine.DSQLEngine;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.engine.IEngine;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.RuntimeError;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Row;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class SelectEngine extends DSQLEngine<Select> {
         super(dataStorage);
     }
 
-    public void execute(Select select) throws RuntimeError {
+    public List<Row> execute(Select select) throws RuntimeError {
         SelectBody selectBody = select.getSelectBody();
         List<WithItem> withItems = select.getWithItemsList();
 
@@ -38,13 +38,13 @@ public class SelectEngine extends DSQLEngine<Select> {
         }
 
         if (selectBody instanceof PlainSelect) {
-            new PlainSelectEngine(dataStorage).execute((PlainSelect) selectBody);
+            return new PlainSelectEngine(dataStorage).execute((PlainSelect) selectBody);
         } else if (selectBody instanceof ValuesStatement) {
-            new ValuesStatementEngine(dataStorage).execute((ValuesStatement) selectBody);
+            return new ValuesStatementEngine(dataStorage).execute((ValuesStatement) selectBody);
         } else if (selectBody instanceof SetOperationList) {
-            new SetOperationListEngine(dataStorage).execute((SetOperationList) selectBody);
+            return new SetOperationListEngine(dataStorage).execute((SetOperationList) selectBody);
         } else if (selectBody instanceof WithItem) {
-            new WithItemEngine(dataStorage).execute((WithItem) selectBody);
+            return new WithItemEngine(dataStorage).execute((WithItem) selectBody);
         } else {
             throw new RuntimeError("Undefined select body " + selectBody);
         }

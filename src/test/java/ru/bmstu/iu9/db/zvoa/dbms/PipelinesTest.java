@@ -36,12 +36,11 @@ import ru.bmstu.iu9.db.zvoa.dbms.utils.DBMSUtils;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 /**
@@ -154,11 +153,8 @@ public class PipelinesTest {
         List<Thread> threads = new ArrayList<>();
 
         for (int i = 0; i < CLIENTS_COUNT / 2; i++) {
-            HttpPost httpPost = new HttpPost("http://" + ADDRESS + ":" + PORT);
-            String content = "" +
-                    "\n" +
-                    "select * from schema1.table1\n" +
-                    "where id=" + new Random().nextInt(RANGE) + "\n";
+            HttpPost httpPost = new HttpPost(getUri());
+            String content = getSelectQuery();
             httpPost.setEntity(new StringEntity(content));
 
             SelectThread thread = new SelectThread(httpclient, httpPost, i);
@@ -199,11 +195,8 @@ public class PipelinesTest {
         List<Thread> threads = new ArrayList<>();
 
         for (int i = 0; i < CLIENTS_COUNT / 2; i++) {
-            HttpPost httpPost = new HttpPost("http://" + ADDRESS + ":" + PORT);
-            String content = "" +
-                    "\n" +
-                    "select * from schema1.table1\n" +
-                    "where id=" + new Random().nextInt(RANGE) + "\n";
+            HttpPost httpPost = new HttpPost(getUri());
+            String content = getSelectQuery();
             httpPost.setEntity(new StringEntity(content));
 
             SelectThread thread = new SelectThread(httpclient, httpPost, i);
@@ -231,16 +224,86 @@ public class PipelinesTest {
         dbmsThread.join();
     }
 
+    /**
+     * Select + Insert pipeline set test.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void selectInsertPipelineTestWithAssertions() throws Exception {
+        Thread dbmsThread = new Thread(dbms);
+        dbmsThread.start();
+
+        PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
+        connManager.setMaxTotal(100);
+        HttpClientBuilder clientBuilder = HttpClients.custom().setConnectionManager(connManager);
+        CloseableHttpClient httpClient = clientBuilder.build();
+
+        Set<Integer> startValues = getAllValues(httpClient);
+
+        for (int i = 0; i < CLIENTS_COUNT * REQUEST_PER_CLIENT; i++) {
+            System.out.println("Iteration: " + i);
+            if (new Random().nextBoolean()) {
+                int count = new Random().nextInt(RANGE);
+                startValues.add(count);
+
+                HttpPost httpPost = new HttpPost(getUri());
+                String content = "" +
+                        "insert into schema1.table1 values (" + count + ")\n";
+                httpPost.setEntity(new StringEntity(content));
+                CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpPost);
+                HttpEntity entity = closeableHttpResponse.getEntity();
+                System.out.println(EntityUtils.toString(entity));
+            } else {
+                Set<Integer> endValues = getAllValues(httpClient);
+                assertEquals(endValues.stream().map(String::valueOf).collect(Collectors.joining(", ")),
+                        startValues.stream().map(String::valueOf).collect(Collectors.joining(", ")));
+            }
+        }
+
+        Set<Integer> endValues = getAllValues(httpClient);
+
+        assertEquals(endValues.stream().map(String::valueOf).collect(Collectors.joining(", ")),
+                startValues.stream().map(String::valueOf).collect(Collectors.joining(", ")));
+
+        dbms.close();
+        dbmsThread.join();
+    }
+
+    private Set<Integer> getAllValues(CloseableHttpClient httpClient) throws IOException {
+        HttpPost scanTable = new HttpPost(getUri());
+        String scanQuery = getSelectQuery();
+        scanTable.setEntity(new StringEntity(scanQuery));
+
+        CloseableHttpResponse scanResponse = httpClient.execute(scanTable);
+
+        HttpEntity resultSet = scanResponse.getEntity();
+        String values = EntityUtils.toString(resultSet);
+
+        return Arrays.stream(values.split("\n"))
+                .map(Integer::parseInt).distinct().collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    private String getSelectQuery() {
+        return "" +
+                "select * from schema1.table1\n" +
+                "where id=" + new Random().nextInt(RANGE) + "\n";
+    }
+
+    private String getUri() {
+        return "http://" + ADDRESS + ":" + PORT;
+    }
+
     public class SelectThread extends Thread {
         private final CloseableHttpClient httpClient;
-        private final HttpPost httpGet;
+        private final HttpPost httpPost;
         private final int id;
 
         public SelectThread(CloseableHttpClient httpClient,
-                            HttpPost httpGet,
+                            HttpPost httpPost,
                             int id) {
             this.httpClient = httpClient;
-            this.httpGet = httpGet;
+            this.httpPost = httpPost;
             this.id = id;
         }
 
@@ -248,7 +311,7 @@ public class PipelinesTest {
         public void run() {
             for (int i = 0; i < REQUEST_PER_CLIENT; i++) {
                 try {
-                    CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
+                    CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
 
                     System.out.println("Status of thread " + id + ":" + httpResponse.getStatusLine());
 
@@ -278,10 +341,8 @@ public class PipelinesTest {
         public void run() {
             for (int i = 0; i < REQUEST_PER_CLIENT; i++) {
                 try {
-                    HttpPost httpPost = new HttpPost("http://" + ADDRESS + ":" + PORT);
-                    String content = "" +
-                            "\n" +
-                            "insert into schema1.table1 values (" + new Random().nextInt(RANGE) + ")\n";
+                    HttpPost httpPost = new HttpPost(getUri());
+                    String content = getSelectQuery();
                     httpPost.setEntity(new StringEntity(content));
 
                     CloseableHttpResponse httpResponse = httpClient.execute(httpPost);

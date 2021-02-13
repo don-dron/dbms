@@ -25,7 +25,7 @@ public class DeleteEngine extends DSQLEngine<Delete> {
         super(dataStorage);
     }
 
-    public void execute(Delete delete) throws RuntimeError {
-
+    public Object execute(Delete delete) throws RuntimeError {
+        throw new RuntimeError("Unsupported ");
     }
 }

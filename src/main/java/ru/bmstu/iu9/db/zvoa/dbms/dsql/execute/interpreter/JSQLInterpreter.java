@@ -52,11 +52,8 @@ public class JSQLInterpreter implements IExecutor {
             }
 
             for (DSQLWorker thread : executors) {
-                thread.start();
-            }
-
-            for (DSQLWorker thread : executors) {
                 try {
+                    thread.start();
                     thread.join();
                     results.addLast(thread.getResult());
                 } catch (InterruptedException e) {
@@ -64,7 +61,7 @@ public class JSQLInterpreter implements IExecutor {
                 }
             }
 
-            return results.stream().map(DSQLResult::toString).collect(Collectors.joining(", "));
+            return results.stream().map(DSQLResult::getResult).collect(Collectors.joining(", "));
         } catch (JSQLParserException e) {
             throw new CompilationError(e.getMessage());
         }

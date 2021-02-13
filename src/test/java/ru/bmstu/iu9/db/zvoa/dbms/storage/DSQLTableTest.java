@@ -66,7 +66,7 @@ public class DSQLTableTest {
                 ))
                 .build());
 
-        storage.run();
+        storage.pushToDrive();
 
         List<Row> rows = table.selectRows(SelectSettings.Builder.newBuilder()
                 .build());

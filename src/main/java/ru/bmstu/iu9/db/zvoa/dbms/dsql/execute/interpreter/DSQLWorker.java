@@ -49,7 +49,6 @@ public class DSQLWorker extends Thread {
     }
 
     private String executeStatement(Statement statement) throws RuntimeError {
-        new StatementEngine(dataStorage).execute(statement);
-        return "res";
+        return new StatementEngine(dataStorage).execute(statement).toString();
     }
 }

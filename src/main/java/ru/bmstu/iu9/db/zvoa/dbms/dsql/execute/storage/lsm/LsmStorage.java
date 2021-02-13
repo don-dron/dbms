@@ -38,7 +38,7 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
     private final String path;
     private final LsmMemory<K, V> lsmMemory;
     private final LsmFileTree<K, V> lsmFileTree;
-    private final LsmCacheAlgorithm<K, V> lsmCacheAlgorithm = new LsmCacheAlgorithmHalf<>();
+    private final LsmCacheAlgorithm<K, V> lsmCacheAlgorithm = new LsmCacheAlgorithmAll<>();
 
     public LsmStorage(StorageProperties storageProperties) throws DataStorageException {
         this.path = storageProperties.getPath();
@@ -74,7 +74,7 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
         }
 
         while (isRunning()) {
-            if (lsmMemory.size() >= 1000) {
+            if (lsmMemory.size() >= 12800) {
                 pushToDrive();
             } else {
                 Thread.onSpinWait();

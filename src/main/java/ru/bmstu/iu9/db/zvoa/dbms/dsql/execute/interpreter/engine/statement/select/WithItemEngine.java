@@ -20,6 +20,9 @@ import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.engine.DSQLEngine;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.engine.IEngine;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.RuntimeError;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Row;
+
+import java.util.List;
 
 public class WithItemEngine extends DSQLEngine<WithItem> {
     public WithItemEngine(DataStorage dataStorage) {
@@ -27,7 +30,7 @@ public class WithItemEngine extends DSQLEngine<WithItem> {
     }
 
     @Override
-    public void execute(WithItem withItem) throws RuntimeError {
+    public List<Row> execute(WithItem withItem) throws RuntimeError {
         throw new RuntimeError("Unsupported " + withItem);
     }
 }
