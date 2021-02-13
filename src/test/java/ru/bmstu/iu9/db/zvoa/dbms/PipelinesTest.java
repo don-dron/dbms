@@ -12,12 +12,17 @@ import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.DBMSDataStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.CreateSchemaSettings;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.CreateTableSettings;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
 import ru.bmstu.iu9.db.zvoa.dbms.utils.DBMSUtils;
 
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,11 +34,11 @@ import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
  *
  * @author don-dron Zvorygin Andrey BMSTU IU-9
  */
-public class MainTest {
+public class PipelinesTest {
     private static final String ADDRESS = "127.0.0.1";
     private static final int PORT = 8890;
 
-    private static final int RANGE = 1000000;
+    private static final int RANGE = 10000;
     private static final int CLIENTS_COUNT = 16;
     private static final int REQUEST_PER_CLIENT = 16;
     private static final String SCHEMA_NAME = "schema1";
@@ -50,6 +55,24 @@ public class MainTest {
         MockitoAnnotations.openMocks(this);
         counter = new AtomicInteger();
         dbms = DBMSUtils.createDefaultDBMS();
+        dbms.init();
+        DBMSDataStorage dataStorage = (DBMSDataStorage) dbms.getAdditionalModules().get(1);
+
+        if (dataStorage.getSchema("schema1") == null) {
+            dataStorage.createSchema(CreateSchemaSettings.Builder.newBuilder()
+                    .setSchemaName("schema1")
+                    .build());
+            System.out.println("Create scheme");
+        }
+
+        if (dataStorage.getSchema("schema1").getTable("table1") == null) {
+            dataStorage.createTable(CreateTableSettings.Builder.newBuilder()
+                    .setSchemaName("schema1")
+                    .setTableName("table1")
+                    .setTypes(Arrays.asList(Type.INTEGER))
+                    .build());
+            System.out.println("Create table");
+        }
     }
 
     /**
@@ -61,13 +84,95 @@ public class MainTest {
     }
 
     /**
-     * Main pipeline test.
+     * Insert pipeline test.
      *
      * @throws Exception the exception
      */
     @Test
-    public void mainPipelineTest() throws Exception {
-        dbms.init();
+    public void insertPipelineTest() throws Exception {
+        Thread dbmsThread = new Thread(dbms);
+        dbmsThread.start();
+
+        PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
+        connManager.setMaxTotal(100);
+        HttpClientBuilder clientBuilder = HttpClients.custom().setConnectionManager(connManager);
+        CloseableHttpClient httpclient = clientBuilder.build();
+
+        List<Thread> threads = new ArrayList<>();
+
+        for (int i = CLIENTS_COUNT / 2; i < CLIENTS_COUNT; i++) {
+            InserterThread thread = new InserterThread(httpclient, i);
+            threads.add(thread);
+        }
+
+        assertTimeoutPreemptively(Duration.ofMillis(24000), () -> {
+            for (Thread clientMultiThreaded : threads) {
+                clientMultiThreaded.start();
+            }
+            for (Thread clientMultiThreaded : threads) {
+                clientMultiThreaded.join();
+            }
+        }, () -> "Response is OK: " + counter.get() + "/" + CLIENTS_COUNT * REQUEST_PER_CLIENT);
+
+        while (counter.get() < CLIENTS_COUNT * REQUEST_PER_CLIENT / 2) {
+        }
+
+        dbms.close();
+        dbmsThread.join();
+    }
+
+    /**
+     * Select pipeline test.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void selectPipelineTest() throws Exception {
+        Thread dbmsThread = new Thread(dbms);
+        dbmsThread.start();
+
+        PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
+        connManager.setMaxTotal(100);
+        HttpClientBuilder clientBuilder = HttpClients.custom().setConnectionManager(connManager);
+        CloseableHttpClient httpclient = clientBuilder.build();
+
+        List<Thread> threads = new ArrayList<>();
+
+        for (int i = 0; i < CLIENTS_COUNT / 2; i++) {
+            HttpPost httpPost = new HttpPost("http://" + ADDRESS + ":" + PORT);
+            String content = "" +
+                    "\n" +
+                    "select * from schema1.table1\n" +
+                    "where id=" + new Random().nextInt(RANGE) + "\n";
+            httpPost.setEntity(new StringEntity(content));
+
+            SelectThread thread = new SelectThread(httpclient, httpPost, i);
+            threads.add(thread);
+        }
+
+        assertTimeoutPreemptively(Duration.ofMillis(24000), () -> {
+            for (Thread clientMultiThreaded : threads) {
+                clientMultiThreaded.start();
+            }
+            for (Thread clientMultiThreaded : threads) {
+                clientMultiThreaded.join();
+            }
+        }, () -> "Response is OK: " + counter.get() + "/" + CLIENTS_COUNT * REQUEST_PER_CLIENT);
+
+        while (counter.get() < CLIENTS_COUNT * REQUEST_PER_CLIENT / 2) {
+        }
+
+        dbms.close();
+        dbmsThread.join();
+    }
+
+    /**
+     * Select + Insert pipeline test.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void selectInsertPipelineTest() throws Exception {
         Thread dbmsThread = new Thread(dbms);
         dbmsThread.start();
 

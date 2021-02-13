@@ -2,142 +2,264 @@ package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.LSMStore;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.shared.KVItem;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.IKeyValueStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.FileSystemManager;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLSchema;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLTable;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Schema;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.*;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
+import ru.bmstu.iu9.db.zvoa.dbms.modules.IDbModule;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.*;
 
 public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
     private final Logger logger = LoggerFactory.getLogger(DBMSDataStorage.class);
-    private final FileSystemMount lsmStore;
+    private final FileSystemManager fileSystemManager;
+    private IKeyValueStorage<SchemeIdentification, DSQLSchema> fileSchemasStorage;
     private ConcurrentSkipListSet<Schema> schemas = new ConcurrentSkipListSet<>(Comparator.comparingInt(Schema::hashCode));
 
-    private DBMSDataStorage(Builder builder) throws IOException, DataStorageException {
-        assert (builder.lsmStore != null);
-        this.lsmStore = builder.lsmStore;
-        initStorage();
+    private DBMSDataStorage(Builder builder) {
+        assert (builder.fileSystemManager != null);
+        this.fileSystemManager = builder.fileSystemManager;
     }
 
     @Override
-    public void init() {
-        synchronized (this) {
-            if (isInit()) {
-                return;
-            }
-            logInit();
-            setInit();
+    public synchronized void init() throws DataStorageException {
+        if (isInit()) {
+            return;
         }
+
+        ExecutorService executorService = createExecutorService();
+
+        initModules(executorService);
+
+        executorService.shutdown();
+        joinExecutorService(executorService);
+
+        linkStorages();
+
+        printLog();
+        logInit();
+        setInit();
+    }
+
+    private void printLog() throws DataStorageException {
+        System.out.println("Initialization storage debug.");
+        System.out.println("__________________________________________________________");
+
+        for (Schema schema : schemas) {
+            System.out.println(schema.getSchemaName());
+
+            for (Table table : schema.getTables()) {
+                System.out.println(schema.getSchemaName() + "." + table.getTableName());
+                List<Row> rows = table.selectRows(SelectSettings.Builder.newBuilder().build());
+                System.out.println("Rows: " + rows.size());
+                for (Row row : rows) {
+                    System.out.println(row);
+                }
+            }
+        }
+        System.out.println("__________________________________________________________");
     }
 
     @Override
     public void run() {
+        ExecutorService executorService;
         synchronized (this) {
-            if (isRunning()) {
+            if (isRunning() || isClosed()) {
                 return;
             }
+            executorService = createExecutorService();
+
+            runModules(executorService);
             setRunning();
             logRunning();
         }
 
-        lsmStore.start();
-        try {
-            lsmStore.join();
-        } catch (InterruptedException exception) {
-            throw new IllegalStateException(exception.getMessage());
-        }
+        executorService.shutdown();
+        joinExecutorService(executorService);
     }
 
     @Override
     public void close() throws Exception {
+        printLog();
         synchronized (this) {
             if (isClosed()) {
                 return;
             }
-            lsmStore.shutdown();
-
+            fileSystemManager.close();
             setClosed();
             logClose();
         }
     }
 
-    private synchronized void initStorage() throws DataStorageException, IOException {
-        for (String row : lsmStore.getAllKeys((row) -> true)) {
-            schemas.add(schemaFromRow(row));
-        }
-    }
-
-    private Schema schemaFromRow(String row) throws DataStorageException {
-        try {
-            String schemaName = row;
-            LSMStore schemaStore = new LSMStore(Path.of(lsmStore.getRoot().toString() + "/" + schemaName));
-            DSQLSchema schema = DSQLSchema.Builder.newBuilder()
-                    .setSchemaName(schemaName)
-                    .setLsmStore(schemaStore)
-                    .build();
-            return schema;
-        } catch (IOException exception) {
-            throw new DataStorageException(exception.getMessage());
-        }
-    }
-
-    @Override
-    public synchronized Schema createSchema(CreateSchemaSettings settings) throws DataStorageException {
-        try {
-            if (schemas.stream().anyMatch(schema -> schema.getSchemaName().equals(settings.getSchemaName()))) {
-                throw new DataStorageException("Schema already exist.");
-            } else {
-                LSMStore schemaStore = new LSMStore(Path.of(lsmStore.getRoot().toString() + "/" + settings.getSchemaName()));
-                DSQLSchema schema = DSQLSchema.Builder.newBuilder()
-                        .setSchemaName(settings.getSchemaName())
-                        .setLsmStore(schemaStore)
-                        .build();
-
-                lsmStore.put(new KVItem(settings.getSchemaName(), settings.getSchemaName()));
-                schemas.add(schema);
-                return schema;
+    private void joinExecutorService(ExecutorService executorService) {
+        while (true) {
+            try {
+                if (executorService.awaitTermination(100, TimeUnit.MILLISECONDS)) {
+                    break;
+                } else {
+                    Thread.onSpinWait();
+                }
+            } catch (InterruptedException exception) {
+                logger.warn(exception.getMessage());
             }
-        } catch (IOException ioException) {
-            throw new DataStorageException("Cannot create files for schema on driver: " + ioException.getMessage());
         }
     }
 
-    @Override
-    public synchronized Table createTable(CreateTableSettings settings) throws DataStorageException {
-        return getSchema(settings.getSchemaName()).createTable(settings);
+    private ExecutorService createExecutorService() {
+        return new ThreadPoolExecutor(
+                16,
+                Integer.MAX_VALUE,
+                Integer.MAX_VALUE,
+                TimeUnit.DAYS,
+                new SynchronousQueue<>());
+    }
+
+    private void initModules(ExecutorService executorService) {
+        initModule(fileSystemManager, executorService);
+    }
+
+    private void runModules(ExecutorService executorService) {
+        runModule(fileSystemManager, executorService);
+    }
+
+    private void initModule(IDbModule module, ExecutorService executorService) {
+        executorService.execute(
+                () -> {
+                    try {
+                        module.init();
+                    } catch (Exception exception) {
+                        throw new IllegalStateException(exception.getMessage());
+                    }
+                });
+    }
+
+    private void linkStorages() throws DataStorageException {
+        fileSchemasStorage = fileSystemManager.getRootStorage();
+
+        fileSystemManager
+                .getCurrentSchemas()
+                .entrySet()
+                .stream()
+                .forEach(entry -> {
+                    String name = entry.getKey();
+                    IKeyValueStorage storage = entry.getValue();
+                    DSQLSchema schema = DSQLSchema.Builder.newBuilder()
+                            .setSchemaName(name)
+                            .setStorage(storage)
+                            .build();
+                    schemas.add(schema);
+
+                    fileSystemManager.getCurrentTables(name).entrySet()
+                            .stream()
+                            .forEach(tableEntry -> {
+                                String tableName = tableEntry.getKey();
+
+                                try {
+                                    DSQLTable tableSource = (DSQLTable) storage.get(new TableIdentification(tableName));
+                                    IKeyValueStorage tableStorage = tableEntry.getValue();
+                                    DSQLTable table = DSQLTable.Builder.newBuilder()
+                                            .setName(tableName)
+                                            .setTypes(tableSource.getTypes())
+                                            .setRowToKey(tableSource.getRowKeyFunction())
+                                            .setStorage(tableStorage)
+                                            .build();
+                                    schema.addTable(table);
+                                } catch (DataStorageException dataStorageException) {
+                                    throw new IllegalStateException(dataStorageException.getMessage());
+                                }
+                            });
+                });
+    }
+
+    private void runModule(IDbModule dbModule, ExecutorService executorService) {
+        executorService.execute(dbModule);
+    }
+
+    public Table createTable(CreateTableSettings settings) throws DataStorageException, IOException {
+        Schema schema = useSchema(settings.getSchemaName());
+
+        if (schema.getTable(settings.getTableName()) != null) {
+            throw new DataStorageException("Table already exist.");
+        } else {
+            IKeyValueStorage tableStorage = fileSystemManager.createTableStorage(settings);
+            DSQLTable table = DSQLTable.Builder.newBuilder()
+                    .setName(settings.getTableName())
+                    .setStorage(tableStorage)
+                    .setTypes(settings.getTypes())
+                    .build();
+            schema.addTable(table);
+            return table;
+        }
+    }
+
+    public Schema createSchema(CreateSchemaSettings settings) throws DataStorageException, IOException {
+        if (schemas.stream().anyMatch(schema -> schema.getSchemaName().equals(settings.getSchemaName()))) {
+            throw new DataStorageException("Schema already exist.");
+        } else {
+            IKeyValueStorage schemaStorage = fileSystemManager.createSchemaStorage(settings);
+            DSQLSchema schema = DSQLSchema.Builder.newBuilder()
+                    .setSchemaName(settings.getSchemaName())
+                    .setStorage(schemaStorage)
+                    .build();
+            fileSchemasStorage.put(new SchemeIdentification(schema.getSchemaName()), schema);
+            schemas.add(schema);
+            return schema;
+        }
+    }
+
+    public Table deleteTable(CreateTableSettings settings) throws Exception {
+        Schema schema = useSchema(settings.getSchemaName());
+        Table table = schema.useTable(settings.getTableName());
+        IKeyValueStorage tableStorage = fileSystemManager.getCurrentTables(settings.getSchemaName()).get(table.getTableName());
+        tableStorage.close();
+        schema.deleteTable(table);
+        return table;
+    }
+
+    public Schema deleteSchema(DeleteSchemaSettings settings) throws Exception {
+        Schema schema = useSchema(settings.getSchemaName());
+        IKeyValueStorage schemaStorage = fileSystemManager.getCurrentSchemas().get(schema.getSchemaName());
+        schemaStorage.close();
+        fileSchemasStorage.put(new SchemeIdentification(schema.getSchemaName()), null);
+        schemas.remove(schema);
+        return schema;
     }
 
     @Override
-    public synchronized List<Table.Row> insertRows(InsertSettings insertSettings) throws DataStorageException {
-        return getSchema(insertSettings.getSchemaName())
-                .getTable(insertSettings.getTableName())
+    public List<Row> insertRows(InsertSettings insertSettings) throws DataStorageException {
+        return useSchema(insertSettings.getSchemaName())
+                .useTable(insertSettings.getTableName())
                 .insertRows(insertSettings);
     }
 
     @Override
-    public synchronized List<Table.Row> selectRows(SelectSettings selectSettings) throws DataStorageException {
-        return getSchema(selectSettings.getSchemaName())
-                .getTable(selectSettings.getTableName())
+    public List<Row> selectRows(SelectSettings selectSettings) throws DataStorageException {
+        return useSchema(selectSettings.getSchemaName())
+                .useTable(selectSettings.getTableName())
                 .selectRows(selectSettings);
     }
 
     @Override
-    public synchronized List<Table.Row> deleteRows(DeleteSettings deleteSettings) throws DataStorageException {
-        return getSchema(deleteSettings.getSchemaName())
-                .getTable(deleteSettings.getTableName())
+    public List<Row> deleteRows(DeleteSettings deleteSettings) throws DataStorageException {
+        return useSchema(deleteSettings.getSchemaName())
+                .useTable(deleteSettings.getTableName())
                 .deleteRows(deleteSettings);
     }
 
-    private Schema getSchema(String schemaName) throws DataStorageException {
+    public Schema getSchema(String schemaName) throws DataStorageException {
+        Schema schema = schemas.stream()
+                .filter(sch -> sch.getSchemaName().equals(schemaName))
+                .findFirst()
+                .orElse(null);
+        return schema;
+    }
+
+    private Schema useSchema(String schemaName) throws DataStorageException {
         Schema schema = schemas.stream()
                 .filter(sch -> sch.getSchemaName().equals(schemaName))
                 .findFirst()
@@ -146,14 +268,14 @@ public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
     }
 
     public static class Builder {
-        private IKeyValueStorage lsmStore;
+        private FileSystemManager fileSystemManager;
 
         public static Builder newBuilder() {
             return new Builder();
         }
 
-        public Builder setLsmStore(IKeyValueStorage lsmStore) {
-            this.lsmStore = lsmStore;
+        public Builder setFileSystemManager(FileSystemManager fileSystemManager) {
+            this.fileSystemManager = fileSystemManager;
             return this;
         }
 

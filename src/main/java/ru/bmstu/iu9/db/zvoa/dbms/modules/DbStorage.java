@@ -76,6 +76,9 @@ public class DbStorage<T> extends AbstractDbModule implements IDbStorage<T> {
             if (isRunning()) {
                 return;
             }
+            if (isClosed()) {
+                return;
+            }
             setRunning();
             logRunning();
         }

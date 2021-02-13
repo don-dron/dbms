@@ -1,12 +1,10 @@
 package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage;
 
-public class CreateSchemaSettings {
+public class DeleteSchemaSettings {
     private final String schemaName;
-    private final String schemaPath;
 
-    private CreateSchemaSettings(Builder builder) {
+    private DeleteSchemaSettings(Builder builder) {
         this.schemaName = builder.schemaName;
-        this.schemaPath = builder.schemaPath;
     }
 
     public String getSchemaName() {
@@ -15,15 +13,9 @@ public class CreateSchemaSettings {
 
     public static class Builder {
         private String schemaName;
-        private String schemaPath;
 
         public static Builder newBuilder() {
             return new Builder();
-        }
-
-        public Builder setSchemaPath(String schemaPath) {
-            this.schemaPath = schemaPath;
-            return this;
         }
 
         public Builder setSchemaName(String schemaName) {
@@ -31,8 +23,8 @@ public class CreateSchemaSettings {
             return this;
         }
 
-        public CreateSchemaSettings build() {
-            return new CreateSchemaSettings(this);
+        public DeleteSchemaSettings build() {
+            return new DeleteSchemaSettings(this);
         }
     }
 }

@@ -23,32 +23,32 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="636cd115-ac8a-4ec5-bbf6-f87a6ec92e5a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/driver/FileSystemMount.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/IKeyValueStorage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/Key.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmStorage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/Value.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/memory/LsmCache.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/storage/LSMStorageTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFile.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/LongRowToKey.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/JSQLInterpreter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/JSQLInterpreter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/DBMSDataStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/DBMSDataStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/KVStore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/driver/KVStore.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/LSMStore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/driver/LSMStore.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/lsm/LSMCache.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/driver/lsm/LSMCache.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/lsm/LSMFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/driver/lsm/LSMFile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/lsm/LSMFlusher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/driver/lsm/LSMFlusher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/lsm/LSMLog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/driver/lsm/LSMLog.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/shared/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/driver/shared/Constants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/driver/shared/KVItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/driver/shared/KVItem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/memory/DSQLSchema.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/memory/DSQLSchema.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/storage/memory/DSQLTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/memory/DSQLTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/CreateSchemaSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/CreateSchemaSettings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/main/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/main/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/utils/DBMSUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/utils/DBMSUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/MainTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/MainTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/META-INF/dbms.kotlin_module" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/META-INF/dbms.kotlin_module" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/DBMS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/DBMS.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/DBMSDataStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/DBMSDataStorage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/driver/FileSystemManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/driver/FileSystemManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmStorage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/memory/LsmMemory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/memory/LsmMemory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/memory/DSQLSchema.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/memory/DSQLSchema.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/io/http/DBMSServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/io/http/DBMSServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/DefaultKey.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/DefaultKey.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/Schema.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/Schema.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/Table.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/Table.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/InputRequestModule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/InputRequestModule.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/OutputResponseModule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/OutputResponseModule.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/modules/AbstractDbModule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/modules/AbstractDbModule.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/modules/DbStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/modules/DbStorage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/query/QueryModule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/query/QueryModule.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/MainTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/PipelinesTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/storage/DSQLTableTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/storage/DSQLTableTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/storage/LsmStorageTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/storage/LsmStorageTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/resources/log4j.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/log4j.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/resources/simplelogger.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/simplelogger.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/log4j.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/log4j.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/simplelogger.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/simplelogger.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -113,12 +113,22 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory" />
+      <recent name="ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage" />
+      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.engine.statement.select" />
+      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.compiler.translator" />
+      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.compiler.optimizer" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\dron\Desktop\dbms\src\main\java\ru\bmstu\iu9\db\zvoa\dbms\dsql\execute\interpreter\storage\driver" />
       <recent name="C:\Users\dron\Desktop\dbms\src\main\java\ru\bmstu\iu9\db\zvoa\dbms\dsql\execute\interpreter\storage\driver\lsm" />
       <recent name="C:\Users\dron\Desktop\dbms\src\main\java\ru\bmstu\iu9\db\zvoa\dbms\dsql\execute\compiler\parser\feature" />
       <recent name="C:\Users\dron\Desktop\dbms\src\main\java\ru\bmstu\iu9\db\zvoa\dbms\dsql\execute\compiler\parser" />
       <recent name="C:\Users\dron\Desktop\dbms\src\main\java\ru\bmstu\iu9\db\zvoa\dbms\dsql\execute\compiler\semanter" />
+    </key>
+    <key name="MoveInnerDialog.RECENTS_KEY">
+      <recent name="ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="ru.bmstu.iu9.db.zvoa.dbms" />
@@ -130,105 +140,88 @@
       <recent name="C:\Users\dron\Desktop\dbms\src\main\java\ru\bmstu\iu9\db\zvoa\dbms\dsql\execute\compiler" />
       <recent name="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/impl" />
     </key>
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.engine.statement.select" />
-      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.compiler.translator" />
-      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.compiler.optimizer" />
-      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.compiler.semanter" />
-      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.translator" />
+    <key name="CreateBuilderDialog.RecentsKey">
+      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver" />
     </key>
     <key name="CreateClassDialog.RecentsKey">
       <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.memory" />
       <recent name="ru.bmstu.iu9.db.zvoa.dbms.modules" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.MainTest.mainPipelineTest">
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="LexerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="JUnit.LsmStorageTest.simpleWriteReadTest">
+    <configuration name="DSQLTableTest.selectLastChangesTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="dbms" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.compiler.parser.*" />
+          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.storage.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.compiler.lexer" />
-      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.compiler.lexer.LexerTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="MainTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="dbms" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.core.run.main.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.core.run.main" />
-      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.core.run.main.MainTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="MainTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="dbms" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.utils.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms" />
-      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.MainTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="MainTest.mainDummyTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="dbms" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.utils.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms" />
-      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.MainTest" />
-      <option name="METHOD_NAME" value="mainDummyTest" />
+      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.storage" />
+      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.storage.DSQLTableTest" />
+      <option name="METHOD_NAME" value="selectLastChangesTest" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="MainTest.mainPipelineTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="LsmStorageTest.simpleWriteReadTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="dbms" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.utils.*" />
+          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.storage.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.storage" />
+      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.storage.LsmStorageTest" />
+      <option name="METHOD_NAME" value="simpleWriteReadTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PipelinesTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="dbms" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms" />
-      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.MainTest" />
+      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.PipelinesTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PipelinesTest.mainPipelineTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="dbms" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms" />
+      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.PipelinesTest" />
       <option name="METHOD_NAME" value="mainPipelineTest" />
       <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ru.bmstu.iu9.db.zvoa.dbms in dbms" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="dbms" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms" />
+      <option name="TEST_OBJECT" value="package" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -257,22 +250,24 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="JUnit.MainTest" />
-      <item itemvalue="JUnit.LexerTest" />
-      <item itemvalue="JUnit.MainTest.mainDummyTest" />
-      <item itemvalue="JUnit.MainTest.mainPipelineTest" />
+      <item itemvalue="JUnit.LsmStorageTest.simpleWriteReadTest" />
+      <item itemvalue="JUnit.DSQLTableTest.selectLastChangesTest" />
       <item itemvalue="Maven.dbms" />
+      <item itemvalue="JUnit.ru.bmstu.iu9.db.zvoa.dbms in dbms" />
+      <item itemvalue="JUnit.PipelinesTest.mainPipelineTest" />
+      <item itemvalue="JUnit.PipelinesTest" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.MainTest.mainPipelineTest" />
-        <item itemvalue="JUnit.MainTest.mainDummyTest" />
-        <item itemvalue="JUnit.LexerTest" />
-        <item itemvalue="JUnit.MainTest" />
+        <item itemvalue="JUnit.LsmStorageTest.simpleWriteReadTest" />
+        <item itemvalue="JUnit.DSQLTableTest.selectLastChangesTest" />
+        <item itemvalue="JUnit.ru.bmstu.iu9.db.zvoa.dbms in dbms" />
+        <item itemvalue="JUnit.PipelinesTest" />
+        <item itemvalue="JUnit.PipelinesTest.mainPipelineTest" />
       </list>
     </recent_temporary>
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="false" />
+  <component name="SpellCheckerSettings" BundledDictionaries="0" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" Dictionaries="0" CorrectionsLimit="5" DefaultDictionary="application-level" UseSingleDictionary="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -300,6 +295,13 @@
       <workItem from="1612729717812" duration="2340000" />
       <workItem from="1612732347155" duration="27000" />
       <workItem from="1612781580810" duration="11257000" />
+      <workItem from="1612985500259" duration="260000" />
+      <workItem from="1612985774480" duration="11260000" />
+      <workItem from="1613074070866" duration="11392000" />
+      <workItem from="1613150458288" duration="12289000" />
+      <workItem from="1613163190120" duration="3621000" />
+      <workItem from="1613166837867" duration="750000" />
+      <workItem from="1613226630156" duration="14973000" />
     </task>
     <servers />
   </component>
@@ -321,6 +323,96 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
+  <component name="WindowStateProjectService">
+    <state x="726" y="63" key="#Auto_Import" timestamp="1613082209000">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="726" y="63" key="#Auto_Import/0.0.1920.1040@0.0.1920.1040" timestamp="1613082209000" />
+    <state x="725" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1613164568016">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="725" y="322" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1613164568016" />
+    <state x="765" y="236" key="#com.intellij.ide.util.MemberChooser" timestamp="1613164423563">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="765" y="236" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1613164423563" />
+    <state x="784" y="444" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog" timestamp="1613229250382">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="784" y="444" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1613229250382" />
+    <state x="684" y="389" width="554" height="268" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes" timestamp="1613161815662">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="684" y="389" width="554" height="268" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes/0.0.1920.1040@0.0.1920.1040" timestamp="1613161815662" />
+    <state x="733" y="364" key="#com.intellij.refactoring.move.moveInner.MoveInnerDialog" timestamp="1613229251992">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="733" y="364" key="#com.intellij.refactoring.move.moveInner.MoveInnerDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1613229251992" />
+    <state x="676" y="338" key="#com.intellij.refactoring.move.moveMembers.MoveMembersDialog" timestamp="1613229244903">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="676" y="338" key="#com.intellij.refactoring.move.moveMembers.MoveMembersDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1613229244903" />
+    <state x="457" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1613076720597">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="457" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1613076720597" />
+    <state width="450" height="466" key="DebuggerActiveHint" timestamp="1613240115690">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="450" height="466" key="DebuggerActiveHint/0.0.1920.1040@0.0.1920.1040" timestamp="1613240115690" />
+    <state width="1876" height="300" key="GridCell.Tab.0.bottom" timestamp="1613241868455">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="300" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613241868455" />
+    <state width="1876" height="300" key="GridCell.Tab.0.center" timestamp="1613241868454">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="300" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613241868454" />
+    <state width="1876" height="300" key="GridCell.Tab.0.left" timestamp="1613241868454">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="300" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613241868454" />
+    <state width="1876" height="300" key="GridCell.Tab.0.right" timestamp="1613241868454">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="300" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613241868454" />
+    <state width="1876" height="300" key="GridCell.Tab.1.bottom" timestamp="1613241868385">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="300" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613241868385" />
+    <state width="1876" height="300" key="GridCell.Tab.1.center" timestamp="1613241868385">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="300" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613241868385" />
+    <state width="1876" height="300" key="GridCell.Tab.1.left" timestamp="1613241868385">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="300" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613241868385" />
+    <state width="1876" height="300" key="GridCell.Tab.1.right" timestamp="1613241868385">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="300" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613241868385" />
+    <state x="461" y="165" key="SettingsEditor" timestamp="1612985757664">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="461" y="165" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1612985757664" />
+    <state x="667" y="253" width="585" height="640" key="find.popup" timestamp="1613232942282">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="667" y="253" width="585" height="640" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1613232942282" />
+    <state x="755" y="267" key="refactoring.ChangeSignatureDialog" timestamp="1613156621839">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="755" y="267" key="refactoring.ChangeSignatureDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1613156621839" />
+    <state x="616" y="240" key="run.anything.popup" timestamp="1613166952136">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="616" y="240" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1613166952136" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1613239004265">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1613239004265" />
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
@@ -330,20 +422,53 @@
           </properties>
           <option name="timeStamp" value="8" />
         </breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFile.java</url>
+          <line>99</line>
+          <option name="timeStamp" value="74" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFile.java</url>
+          <line>81</line>
+          <option name="timeStamp" value="75" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFile.java</url>
+          <line>119</line>
+          <option name="timeStamp" value="76" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFile.java</url>
+          <line>139</line>
+          <option name="timeStamp" value="77" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo typeName="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.Record" fieldName="key" />
+      </pinned-members>
+    </pin-to-top-manager>
     <watches-manager>
       <configuration name="JUnit">
         <watch expression="((DefaultFullHttpRequest)fullHttpRequest).version" custom="io.netty.handler.codec.http.DefaultFullHttpRequest" />
+        <watch expression="records.get(2)" />
+        <watch expression="records" />
+        <watch expression="itemToStorage.entrySet().toArray()[0]" />
+        <watch expression="((java.util.concurrent.ConcurrentHashMap.MapEntry)dataStorage.fileSystemManager.itemToStorage.entrySet().toArray()[1]).getValue()" custom="java.util.concurrent.ConcurrentHashMap.MapEntry" />
+        <watch expression="((java.util.concurrent.ConcurrentHashMap.MapEntry)dataStorage.fileSystemManager.itemToStorage.entrySet().toArray()[1]).getValue()" language="JAVA" custom="java.util.concurrent.ConcurrentHashMap.MapEntry" />
+        <watch expression="itemToStorage.entrySet().toArray()[0]" />
+        <watch expression="((java.util.concurrent.ConcurrentHashMap.MapEntry)itemToStorage.entrySet().toArray()[2]).getValue()" custom="java.util.concurrent.ConcurrentHashMap.MapEntry" />
+        <watch expression="((java.util.concurrent.ConcurrentSkipListSet)((DSQLSchema)((ConcurrentSkipListSet)((DBMSDataStorage)this).schemas).toArray()[0]).tables).toArray()[0]" custom="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.DBMSDataStorage,ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLSchema,java.util.concurrent.ConcurrentSkipListSet" />
       </configuration>
     </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/dbms$MainTest_mainPipelineTest.ic" NAME="MainTest.mainPipelineTest Coverage Results" MODIFIED="1612954110076" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
-      <FILTER>ru.bmstu.iu9.db.zvoa.dbms.utils.*</FILTER>
-    </SUITE>
     <SUITE FILE_PATH="coverage/dbms$MainTest.ic" NAME="MainTest Coverage Results" MODIFIED="1612033125049" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>ru.bmstu.iu9.db.zvoa.dbms.core.run.main.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/dbms$MainTest_mainPipelineTest.ic" NAME="MainTest.mainPipelineTest Coverage Results" MODIFIED="1613238738863" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>ru.bmstu.iu9.db.zvoa.dbms.*</FILTER>
     </SUITE>
   </component>
 </project>

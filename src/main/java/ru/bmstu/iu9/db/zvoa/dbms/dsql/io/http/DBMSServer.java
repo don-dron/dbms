@@ -134,6 +134,9 @@ public class DBMSServer extends AbstractDbModule implements Consumer<HttpRespons
             if (isRunning()) {
                 return;
             }
+            if (isClosed()) {
+                return;
+            }
             setRunning();
             logRunning();
 

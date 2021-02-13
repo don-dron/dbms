@@ -1,4 +1,6 @@
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm;
 
-public class Value {
+import java.io.Serializable;
+
+public interface Value extends Serializable {
 }

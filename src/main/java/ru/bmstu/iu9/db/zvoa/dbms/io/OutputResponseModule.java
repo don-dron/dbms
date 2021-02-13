@@ -54,6 +54,9 @@ public class OutputResponseModule<T> extends AbstractDbModule {
             if (isRunning()) {
                 return;
             }
+            if (isClosed()) {
+                return;
+            }
             setRunning();
             logRunning();
         }

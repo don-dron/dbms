@@ -26,7 +26,6 @@ public class DBMS extends AbstractDbModule {
     private final InputRequestModule inputModule;
     private final OutputResponseModule outputModule;
     private final List<IDbModule> additionalModules;
-    private ExecutorService executorService;
 
     private DBMS(Builder builder) {
         this.queryModule = builder.queryModule;
@@ -37,76 +36,47 @@ public class DBMS extends AbstractDbModule {
 
     @Override
     public synchronized void init() {
-        synchronized (this) {
-            if (isInit()) {
-                return;
-            }
-            executorService = new ThreadPoolExecutor(
-                    16,
-                    Integer.MAX_VALUE,
-                    Integer.MAX_VALUE,
-                    TimeUnit.DAYS,
-                    new SynchronousQueue<Runnable>());
-            initModules();
-
-            executorService.shutdown();
-
-            while (true) {
-                try {
-                    if (executorService.awaitTermination(1, TimeUnit.SECONDS)) {
-                        break;
-                    } else {
-                        Thread.onSpinWait();
-                    }
-                } catch (InterruptedException exception) {
-                    logger.warn(exception.getMessage());
-                }
-            }
-
-            setInit();
-            logInit();
+        if (isInit()) {
+            return;
         }
-    }
 
-    private void initModules() {
-        initModule(queryModule.getQueryRequestStorage());
-        initModule(queryModule.getQueryResponseStorage());
-        initModule(queryModule);
-        initModule(outputModule);
-        initModule(inputModule);
+        ExecutorService executorService = createExecutorService();
+        initModules(executorService);
+        executorService.shutdown();
 
-        for (IDbModule module : additionalModules) {
-            initModule(module);
-        }
-    }
+        joinExecutorService(executorService);
 
-    private void initModule(IDbModule module) {
-        executorService.execute(() -> module.init());
+        setInit();
+        logInit();
     }
 
     @Override
     public void run() {
+        ExecutorService executorService;
         synchronized (this) {
             if (isRunning()) {
                 return;
             }
 
-            executorService = new ThreadPoolExecutor(
-                    16,
-                    Integer.MAX_VALUE,
-                    Integer.MAX_VALUE,
-                    TimeUnit.DAYS,
-                    new SynchronousQueue<>());
+            executorService = createExecutorService();
 
-            runModules();
+            runModules(executorService);
             setRunning();
             logRunning();
-            executorService.shutdown();
         }
 
+        executorService.shutdown();
+        joinExecutorService(executorService);
+    }
+
+    public List<IDbModule> getAdditionalModules() {
+        return additionalModules;
+    }
+
+    private void joinExecutorService(ExecutorService executorService) {
         while (true) {
             try {
-                if (executorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                if (executorService.awaitTermination(100, TimeUnit.MILLISECONDS)) {
                     break;
                 } else {
                     Thread.onSpinWait();
@@ -117,19 +87,51 @@ public class DBMS extends AbstractDbModule {
         }
     }
 
-    private void runModules() {
-        runModule(queryModule.getQueryRequestStorage());
-        runModule(queryModule.getQueryResponseStorage());
-        runModule(queryModule);
-        runModule(inputModule);
-        runModule(outputModule);
+    private ExecutorService createExecutorService() {
+        return new ThreadPoolExecutor(
+                16,
+                Integer.MAX_VALUE,
+                Integer.MAX_VALUE,
+                TimeUnit.DAYS,
+                new SynchronousQueue<>());
+    }
+
+    private void initModules(ExecutorService executorService) {
+        for (IDbModule module : additionalModules) {
+            initModule(executorService, module);
+        }
+
+        initModule(executorService, queryModule.getQueryRequestStorage());
+        initModule(executorService, queryModule.getQueryResponseStorage());
+        initModule(executorService, queryModule);
+        initModule(executorService, outputModule);
+        initModule(executorService, inputModule);
+    }
+
+    private void runModules(ExecutorService executorService) {
+        runModule(executorService, queryModule.getQueryRequestStorage());
+        runModule(executorService, queryModule.getQueryResponseStorage());
+        runModule(executorService, queryModule);
+        runModule(executorService, inputModule);
+        runModule(executorService, outputModule);
 
         for (IDbModule module : additionalModules) {
-            runModule(module);
+            runModule(executorService, module);
         }
     }
 
-    private void runModule(IDbModule dbModule) {
+    private void initModule(ExecutorService executorService, IDbModule module) {
+        executorService.execute(
+                () -> {
+                    try {
+                        module.init();
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
+                });
+    }
+
+    private void runModule(ExecutorService executorService, IDbModule dbModule) {
         executorService.execute(dbModule);
     }
 

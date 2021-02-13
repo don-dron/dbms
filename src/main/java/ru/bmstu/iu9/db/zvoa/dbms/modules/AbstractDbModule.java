@@ -2,6 +2,9 @@ package ru.bmstu.iu9.db.zvoa.dbms.modules;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
+
+import java.io.IOException;
 
 /**
  * The type Abstract db module.
@@ -10,10 +13,10 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractDbModule implements IDbModule {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private State state = State.NOT_INIT;
+    private volatile State state = State.NOT_INIT;
 
     @Override
-    public abstract void init();
+    public abstract void init() throws DataStorageException, IOException;
 
     @Override
     public abstract void run();
