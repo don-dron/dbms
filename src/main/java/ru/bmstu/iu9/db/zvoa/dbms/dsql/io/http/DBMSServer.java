@@ -222,59 +222,64 @@ public class DBMSServer extends AbstractDbModule implements Consumer<HttpRespons
 
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
-            FullHttpRequest fullHttpRequest = ((FullHttpRequest) msg).copy();
-            ((FullHttpRequest) msg).release();
+            ByteBuf byteBuf = null;
+            try {
+                FullHttpRequest fullHttpRequest = ((FullHttpRequest) msg).copy();
+                ((FullHttpRequest) msg).release();
 
-            ByteBuf byteBuf = fullHttpRequest.content();
-            String content = new StringBuffer(byteBuf.getCharSequence(0, byteBuf.readableBytes(), StandardCharsets.UTF_8))
-                    .toString();
+                byteBuf = fullHttpRequest.content();
+                String content = new StringBuffer(byteBuf.getCharSequence(0, byteBuf.readableBytes(), StandardCharsets.UTF_8))
+                        .toString();
 
-            HttpRequest request = new HttpRequest(
-                    UUID.randomUUID().toString(),
-                    content,
-                    connectionInformation,
-                    Instant.now().toEpochMilli());
+                HttpRequest request = new HttpRequest(
+                        UUID.randomUUID().toString(),
+                        content,
+                        connectionInformation,
+                        Instant.now().toEpochMilli());
 
-            while (true) {
-                try {
-                    requests.get(connectionInformation).put(request);
-                    break;
-                } catch (InterruptedException exception) {
-                    logger.warn(exception.getMessage());
+                while (true) {
+                    try {
+                        requests.get(connectionInformation).put(request);
+                        break;
+                    } catch (InterruptedException exception) {
+                        logger.warn(exception.getMessage());
+                    }
                 }
+                DBMSServer.this.liveQueue.put(request, connectionInformation);
+                requestsCount.getAndIncrement();
+                logger.debug("Put request " + request + " http server.");
+
+                HttpResponse httpResponse;
+                while (true) {
+                    try {
+                        httpResponse = responses.get(connectionInformation).poll(10, TimeUnit.MILLISECONDS);
+                    } catch (InterruptedException exception) {
+                        logger.warn(exception.getMessage());
+                        continue;
+                    }
+
+                    if (httpResponse == null) {
+                        Thread.yield();
+                    } else {
+                        break;
+                    }
+                }
+
+                ByteBuf responseContent = Unpooled.copiedBuffer(httpResponse.getResponse(), CharsetUtil.UTF_8);
+                FullHttpResponse response =
+                        new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, responseContent);
+                response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html");
+                response.headers().set(HttpHeaderNames.CONTENT_LENGTH, responseContent.readableBytes());
+
+                logger.debug("Send response " + response + " http server.");
+
+                responseCount.getAndIncrement();
+                ctx.writeAndFlush(response);
+
+                logger.debug("Request count: " + requestsCount.get() + "\nResponse count: " + responseCount.get());
+            } finally {
+                byteBuf.release();
             }
-            DBMSServer.this.liveQueue.put(request, connectionInformation);
-            requestsCount.getAndIncrement();
-            logger.debug("Put request " + request + " http server.");
-
-            HttpResponse httpResponse;
-            while (true) {
-                try {
-                    httpResponse = responses.get(connectionInformation).poll(10, TimeUnit.MILLISECONDS);
-                } catch (InterruptedException exception) {
-                    logger.warn(exception.getMessage());
-                    continue;
-                }
-
-                if (httpResponse == null) {
-                    Thread.onSpinWait();
-                } else {
-                    break;
-                }
-            }
-
-            ByteBuf responseContent = Unpooled.copiedBuffer(httpResponse.getResponse(), CharsetUtil.UTF_8);
-            FullHttpResponse response =
-                    new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, responseContent);
-            response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html");
-            response.headers().set(HttpHeaderNames.CONTENT_LENGTH, responseContent.readableBytes());
-
-            logger.debug("Send response " + response + " http server.");
-
-            responseCount.getAndIncrement();
-            ctx.writeAndFlush(response);
-
-            logger.debug("Request count: " + requestsCount.get() + "\nResponse count: " + responseCount.get());
         }
 
         @Override

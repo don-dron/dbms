@@ -89,7 +89,7 @@ public class QueryModule extends AbstractDbModule {
                 logger.debug("End execute query " + request);
                 queryResponseStorage.put(response);
             } else {
-                Thread.onSpinWait();
+                Thread.yield();
             }
         }
     }

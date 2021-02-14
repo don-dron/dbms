@@ -27,7 +27,7 @@ import java.util.Map;
 public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModule {
 
     private final File directory;
-    private final LsmFile<K, V> file;
+    private final SSTable<K, V> file;
 
     public LsmFileTree(String path) throws DataStorageException {
         try {
@@ -36,7 +36,7 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
                 directory.mkdir();
             }
 
-            file = new LsmFile(path + "/file");
+            file = new SSTable(path + "/file");
         } catch (Exception exception) {
             throw new DataStorageException(exception.getMessage());
         }
@@ -75,5 +75,9 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
 
     public Map<K, V> readKeyBlock(K startKey, int blockSize) {
         return null;
+    }
+
+    public void putAll(Map<K, V> map) throws DataStorageException {
+        file.putAll(map);
     }
 }

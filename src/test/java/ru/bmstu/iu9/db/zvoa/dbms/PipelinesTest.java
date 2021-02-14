@@ -37,7 +37,9 @@ import ru.bmstu.iu9.db.zvoa.dbms.utils.DBMSUtils;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -119,7 +121,7 @@ public class PipelinesTest {
             threads.add(thread);
         }
 
-        assertTimeoutPreemptively(Duration.ofMillis(24000), () -> {
+        assertTimeoutPreemptively(Duration.ofMillis(36000), () -> {
             for (Thread clientMultiThreaded : threads) {
                 clientMultiThreaded.start();
             }
@@ -161,7 +163,7 @@ public class PipelinesTest {
             threads.add(thread);
         }
 
-        assertTimeoutPreemptively(Duration.ofMillis(24000), () -> {
+        assertTimeoutPreemptively(Duration.ofMillis(36000), () -> {
             for (Thread clientMultiThreaded : threads) {
                 clientMultiThreaded.start();
             }
@@ -208,7 +210,7 @@ public class PipelinesTest {
             threads.add(thread);
         }
 
-        assertTimeoutPreemptively(Duration.ofMillis(24000), () -> {
+        assertTimeoutPreemptively(Duration.ofMillis(36000), () -> {
             for (Thread clientMultiThreaded : threads) {
                 clientMultiThreaded.start();
             }
@@ -242,7 +244,6 @@ public class PipelinesTest {
         Set<Integer> startValues = getAllValues(httpClient);
 
         for (int i = 0; i < CLIENTS_COUNT * REQUEST_PER_CLIENT; i++) {
-            System.out.println("Iteration: " + i);
             if (new Random().nextBoolean()) {
                 int count = new Random().nextInt(RANGE);
                 startValues.add(count);
@@ -253,12 +254,140 @@ public class PipelinesTest {
                 httpPost.setEntity(new StringEntity(content));
                 CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpPost);
                 HttpEntity entity = closeableHttpResponse.getEntity();
-                System.out.println(EntityUtils.toString(entity));
+                EntityUtils.toString(entity);
             } else {
                 Set<Integer> endValues = getAllValues(httpClient);
                 assertEquals(endValues.stream().map(String::valueOf).collect(Collectors.joining(", ")),
                         startValues.stream().map(String::valueOf).collect(Collectors.joining(", ")));
             }
+        }
+
+        Set<Integer> endValues = getAllValues(httpClient);
+
+        assertEquals(endValues.stream().map(String::valueOf).collect(Collectors.joining(", ")),
+                startValues.stream().map(String::valueOf).collect(Collectors.joining(", ")));
+
+        dbms.close();
+        dbmsThread.join();
+    }
+
+    /**
+     * Concurrency select + Insert pipeline set test.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void concurrencySelectInsertPipelineTestWithAssertions() throws Exception {
+        Thread dbmsThread = new Thread(dbms);
+        dbmsThread.start();
+
+        PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
+        connManager.setMaxTotal(100);
+        HttpClientBuilder clientBuilder = HttpClients.custom().setConnectionManager(connManager);
+        CloseableHttpClient httpClient = clientBuilder.build();
+
+        Set<Integer> startValues = getAllValues(httpClient);
+        List<Thread> threads = new ArrayList<>();
+        for (int j = 0; j < CLIENTS_COUNT; j++) {
+            Thread thread = new Thread(() -> {
+                for (int i = 0; i < REQUEST_PER_CLIENT; i++) {
+                    if (new Random().nextBoolean()) {
+                        int count = new Random().nextInt(RANGE);
+                        startValues.add(count);
+
+                        HttpPost httpPost = new HttpPost(getUri());
+                        String content = "" +
+                                "insert into schema1.table1 values (" + count + ")\n";
+                        try {
+                            httpPost.setEntity(new StringEntity(content));
+                            CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpPost);
+                            HttpEntity entity = closeableHttpResponse.getEntity();
+                            EntityUtils.toString(entity);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        try {
+                            Set<Integer> endValues = getAllValues(httpClient);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+            threads.add(thread);
+        }
+
+        for (int j = 0; j < CLIENTS_COUNT; j++) {
+            threads.get(j).start();
+        }
+
+        for (int j = 0; j < CLIENTS_COUNT; j++) {
+            threads.get(j).join();
+        }
+
+        Set<Integer> endValues = getAllValues(httpClient);
+
+        assertEquals(endValues.stream().map(String::valueOf).collect(Collectors.joining(", ")),
+                startValues.stream().map(String::valueOf).collect(Collectors.joining(", ")));
+
+        dbms.close();
+        dbmsThread.join();
+    }
+
+    /**
+     * Concurrency select + Insert pipeline set test. Most write.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void concurrencyMostWriteSelectInsertPipelineTestWithAssertions() throws Exception {
+        Thread dbmsThread = new Thread(dbms);
+        dbmsThread.start();
+
+        PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
+        connManager.setMaxTotal(100);
+        HttpClientBuilder clientBuilder = HttpClients.custom().setConnectionManager(connManager);
+        CloseableHttpClient httpClient = clientBuilder.build();
+
+        Set<Integer> startValues = getAllValues(httpClient);
+        List<Thread> threads = new ArrayList<>();
+        for (int j = 0; j < CLIENTS_COUNT; j++) {
+            Thread thread = new Thread(() -> {
+                for (int i = 0; i < REQUEST_PER_CLIENT * REQUEST_PER_CLIENT; i++) {
+                    if (new Random().nextInt(10) != 0) {
+                        int count = new Random().nextInt(RANGE);
+                        startValues.add(count);
+
+                        HttpPost httpPost = new HttpPost(getUri());
+                        String content = "" +
+                                "insert into schema1.table1 values (" + count + ")\n";
+                        try {
+                            httpPost.setEntity(new StringEntity(content));
+                            CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpPost);
+                            HttpEntity entity = closeableHttpResponse.getEntity();
+                            EntityUtils.toString(entity);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        try {
+                            Set<Integer> endValues = getAllValues(httpClient);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+            threads.add(thread);
+        }
+
+        for (int j = 0; j < CLIENTS_COUNT; j++) {
+            threads.get(j).start();
+        }
+
+        for (int j = 0; j < CLIENTS_COUNT; j++) {
+            threads.get(j).join();
         }
 
         Set<Integer> endValues = getAllValues(httpClient);
@@ -280,8 +409,9 @@ public class PipelinesTest {
         HttpEntity resultSet = scanResponse.getEntity();
         String values = EntityUtils.toString(resultSet);
 
-        return Arrays.stream(values.split("\n"))
-                .map(Integer::parseInt).distinct().collect(Collectors.toCollection(TreeSet::new));
+        return values.isEmpty() ? new TreeSet<>() : Arrays.stream(values.split("\n"))
+                .filter(Predicate.not(Objects::isNull))
+                .map(Integer::parseInt).collect(Collectors.toCollection(ConcurrentSkipListSet::new));
     }
 
     private String getSelectQuery() {
@@ -312,12 +442,9 @@ public class PipelinesTest {
             for (int i = 0; i < REQUEST_PER_CLIENT; i++) {
                 try {
                     CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
-
-                    System.out.println("Status of thread " + id + ":" + httpResponse.getStatusLine());
-
                     HttpEntity entity = httpResponse.getEntity();
                     if (entity != null) {
-                        System.out.println("Bytes read by thread thread " + id + " : " + EntityUtils.toString(entity));
+                        EntityUtils.toString(entity);
                         counter.getAndIncrement();
                     }
                 } catch (Exception e) {
@@ -347,11 +474,9 @@ public class PipelinesTest {
 
                     CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
 
-                    System.out.println("Status of thread " + id + ":" + httpResponse.getStatusLine());
-
                     HttpEntity entity = httpResponse.getEntity();
                     if (entity != null) {
-                        System.out.println("Bytes read by thread thread " + id + " : " + EntityUtils.toString(entity));
+                        EntityUtils.toString(entity);
                         counter.getAndIncrement();
                     }
                 } catch (Exception e) {

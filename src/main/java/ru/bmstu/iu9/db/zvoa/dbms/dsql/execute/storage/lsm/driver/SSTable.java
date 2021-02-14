@@ -21,15 +21,14 @@ import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageExceptio
 
 import java.io.*;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-public class LsmFile<K extends Key, V extends Value> {
+public class SSTable<K extends Key, V extends Value> {
     private final File file;
 
-    public LsmFile(String path) throws DataStorageException {
+    public SSTable(String path) throws DataStorageException {
         try {
             file = new File(path);
             if (!file.exists()) {
@@ -98,6 +97,41 @@ public class LsmFile<K extends Key, V extends Value> {
         }
     }
 
+    public void putAll(Map<K, V> output) throws DataStorageException {
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+
+            Record[] newRecords;
+
+            if (fileInputStream.available() != 0) {
+                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                Record<K, V>[] records = (Record<K, V>[]) objectInputStream.readObject();
+                objectInputStream.close();
+                newRecords = Arrays.stream(records).collect(Collectors.toMap(
+                        Record::getKey,
+                        Record::getValue,
+                        (a, b) -> a,
+                        () -> new TreeMap<>(output)))
+                        .entrySet()
+                        .stream()
+                        .map(kvEntry -> new Record<>(kvEntry.getKey(), kvEntry.getValue()))
+                        .toArray(Record[]::new);
+            } else {
+                newRecords = output.entrySet()
+                        .stream()
+                        .map(kvEntry -> new Record<>(kvEntry.getKey(), kvEntry.getValue()))
+                        .toArray(Record[]::new);
+            }
+
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(newRecords);
+            objectOutputStream.close();
+        } catch (Exception exception) {
+            throw new DataStorageException(exception.getMessage());
+        }
+    }
+
     public V readKey(K key) throws DataStorageException {
         try {
             FileInputStream fileInputStream = new FileInputStream(file);
@@ -129,7 +163,7 @@ public class LsmFile<K extends Key, V extends Value> {
                         (a, b) -> a,
                         TreeMap::new));
             } else {
-                return Collections.emptyMap();
+                return new TreeMap<>();
             }
         } catch (Exception exception) {
             throw new DataStorageException(exception.getMessage());
@@ -149,7 +183,7 @@ public class LsmFile<K extends Key, V extends Value> {
                         (a, b) -> a,
                         TreeMap::new));
             } else {
-                return Collections.emptyMap();
+                return new TreeMap<>();
             }
         } catch (Exception exception) {
             throw new DataStorageException(exception.getMessage());

@@ -30,7 +30,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class LsmFileTreeTest {
+public class SSTableTreeTest {
     public static final String path = "test_file";
 
     public String readFile(String path) throws IOException {

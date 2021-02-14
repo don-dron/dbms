@@ -25,6 +25,8 @@ import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -37,8 +39,8 @@ public class LsmMemory<K extends Key, V extends Value> extends AbstractDbModule 
     }
 
     @Override
-    public void put(K key, V value) throws DataStorageException {
-        map.put(key, value);
+    public V put(K key, V value) throws DataStorageException {
+        return map.put(key, value);
     }
 
     @Override
@@ -48,11 +50,12 @@ public class LsmMemory<K extends Key, V extends Value> extends AbstractDbModule 
 
     @Override
     public Map<K, V> getValues(Predicate<Map.Entry<K, V>> predicate) throws DataStorageException {
-        return map.entrySet().stream().filter(predicate).collect(Collectors.toMap(
+        Map<K, V> result = map.entrySet().stream().filter(predicate).collect(Collectors.toMap(
                 Map.Entry::getKey,
                 Map.Entry::getValue,
                 (a, b) -> a,
                 TreeMap::new));
+        return result;
     }
 
     public void updateCache(LsmCacheAlgorithm lsmCacheAlgorithm, Map<K, V> newData) {

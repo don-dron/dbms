@@ -114,10 +114,10 @@ public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
     private void joinExecutorService(ExecutorService executorService) {
         while (true) {
             try {
-                if (executorService.awaitTermination(100, TimeUnit.MILLISECONDS)) {
+                if (executorService.awaitTermination(0, TimeUnit.MILLISECONDS)) {
                     break;
                 } else {
-                    Thread.onSpinWait();
+                    Thread.yield();
                 }
             } catch (InterruptedException exception) {
                 logger.warn(exception.getMessage());

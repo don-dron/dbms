@@ -84,7 +84,7 @@ public class OutputResponseModule<T> extends AbstractDbModule {
                 logger.debug("Output module handle response " + t);
                 consumer.accept(t);
             } else {
-                Thread.onSpinWait();
+                Thread.yield();
             }
         }
     }

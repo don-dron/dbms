@@ -15,11 +15,9 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.memory;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.MemoryMap;
-
 import java.util.*;
 
-public class BPlusTree<K extends Comparable<? super K>, V> implements MemoryMap<K, V> {
+public class BPlusTree<K extends Comparable<? super K>, V> implements Map<K, V> {
     private static final int DEFAULT_BRANCHING_FACTOR = 128;
     private int branchingFactor;
 
@@ -37,20 +35,65 @@ public class BPlusTree<K extends Comparable<? super K>, V> implements MemoryMap<
         root = new LeafNode();
     }
 
-    public V search(K key) {
-        return root.getValue(key);
+    @Override
+    public int size() {
+        return 0;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public boolean containsKey(Object key) {
+        return false;
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        return false;
+    }
+
+    @Override
+    public void clear() {
+
+    }
+
+    @Override
+    public Set<K> keySet() {
+        return null;
+    }
+
+    @Override
+    public Collection<V> values() {
+        return null;
+    }
+
+    @Override
+    public Set<Entry<K, V>> entrySet() {
+        return null;
+    }
+
+    public V get(Object key) {
+        return root.getValue((K) key);
     }
 
     public List<V> searchRange(K key1, K key2) {
         return root.getRange(key1, key2);
     }
 
-    public V insert(K key, V value) {
+    @Override
+    public void putAll(Map<? extends K, ? extends V> m) {
+        m.entrySet().forEach(entry -> put(entry.getKey(), entry.getValue()));
+    }
+
+    public V put(K key, V value) {
         return root.insertValue(key, value);
     }
 
-    public V delete(K key) {
-        return root.deleteValue(key);
+    public V remove(Object key) {
+        return root.deleteValue((K) key);
     }
 
     public String toString() {

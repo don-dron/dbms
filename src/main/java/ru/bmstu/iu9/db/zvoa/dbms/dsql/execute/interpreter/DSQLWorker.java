@@ -22,7 +22,7 @@ import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.engine.statement.State
 import ru.bmstu.iu9.db.zvoa.dbms.execute.RuntimeError;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorage;
 
-public class DSQLWorker extends Thread {
+public class DSQLWorker {
     private final Logger logger = LoggerFactory.getLogger(DSQLWorker.class);
     private Statement statement;
     private DataStorage dataStorage;
@@ -36,8 +36,7 @@ public class DSQLWorker extends Thread {
     public DSQLResult getResult() {
         return result;
     }
-
-    @Override
+    
     public void run() {
         logger.debug("Start executing statement : " + statement);
 

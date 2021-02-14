@@ -23,6 +23,7 @@ import java.io.Serializable;
 public class Record<K extends Key, V extends Value> implements Serializable, Comparable {
     private K key;
     private V value;
+    private long timestamp;
 
     public Record() {
     }
@@ -30,6 +31,11 @@ public class Record<K extends Key, V extends Value> implements Serializable, Com
     public Record(K key, V value) {
         this.key = key;
         this.value = value;
+        this.timestamp = System.currentTimeMillis();
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 
     public V getValue() {

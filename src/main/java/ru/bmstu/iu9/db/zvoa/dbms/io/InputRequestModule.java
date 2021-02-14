@@ -81,7 +81,7 @@ public class InputRequestModule<T> extends AbstractDbModule {
                 logger.debug("Input module handle request " + t);
                 queryRequestStorage.put(requestHandler.execute(t));
             } else {
-                Thread.onSpinWait();
+                Thread.yield();
             }
         }
     }

@@ -88,11 +88,10 @@ public final class DBMSUtils {
 
         DBMS dbms = DBMS.Builder.newBuilder()
                 .setAdditionalModules(Arrays.asList(httpServer, dataStorage))
-                .setQueryModule(QueryModule.Builder.newBuilder()
+                .setQueryModuleBuilder(QueryModule.Builder.newBuilder()
                         .setQueryHandler(new DSQLQueryHandler(new JSQLInterpreter(dataStorage)))
                         .setQueryRequestStorage(queryRequestStorage)
-                        .setQueryResponseStorage(queryResponseStorage)
-                        .build())
+                        .setQueryResponseStorage(queryResponseStorage))
                 .setInputModule(new InputRequestModule(httpServer,
                         queryRequestStorage,
                         new HttpRequestHandler()))

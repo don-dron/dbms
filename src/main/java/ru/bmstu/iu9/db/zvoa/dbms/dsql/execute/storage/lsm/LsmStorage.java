@@ -28,6 +28,8 @@ import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -39,6 +41,8 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
     private final LsmMemory<K, V> lsmMemory;
     private final LsmFileTree<K, V> lsmFileTree;
     private final LsmCacheAlgorithm<K, V> lsmCacheAlgorithm = new LsmCacheAlgorithmAll<>();
+    private final ReadWriteLock memoryLock = new ReentrantReadWriteLock();
+    private final ReadWriteLock fileTreeLock = new ReentrantReadWriteLock();
 
     public LsmStorage(StorageProperties storageProperties) throws DataStorageException {
         this.path = storageProperties.getPath();
@@ -73,25 +77,31 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
             logger.debug("Run storage " + path);
         }
 
-        while (isRunning()) {
-            if (lsmMemory.size() >= 12800) {
-                pushToDrive();
-            } else {
-                Thread.onSpinWait();
+        try {
+            while (isRunning()) {
+                if (lsmMemory.size() >= 4096) {
+                    pushToDrive();
+                } else {
+                    Thread.yield();
+                }
             }
+            pushToDrive();
+        } catch (DataStorageException dataStorageException) {
+            dataStorageException.printStackTrace();
         }
-        pushToDrive();
     }
 
-    public void pushToDrive() {
-        Map<K, V> map = lsmMemory.swapMemory();
-        map.entrySet().forEach(entry -> {
-            try {
-                lsmFileTree.put(entry.getKey(), entry.getValue());
-            } catch (DataStorageException dataStorageException) {
-                dataStorageException.printStackTrace();
-            }
-        });
+    public void pushToDrive() throws DataStorageException {
+        memoryLock.writeLock().lock();
+        fileTreeLock.writeLock().lock();
+
+        try {
+            Map<K, V> map = lsmMemory.swapMemory();
+            lsmFileTree.putAll(map);
+        } finally {
+            fileTreeLock.writeLock().unlock();
+            memoryLock.writeLock().unlock();
+        }
     }
 
     @Override
@@ -107,20 +117,38 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
     }
 
     @Override
-    public void put(K key, V value) throws DataStorageException {
-        lsmMemory.put(key, value);
+    public V put(K key, V value) throws DataStorageException {
+        memoryLock.writeLock().lock();
+        try {
+            return lsmMemory.put(key, value);
+        } finally {
+            memoryLock.writeLock().unlock();
+        }
     }
 
     @Override
     public V get(K key) throws DataStorageException {
-        V value = lsmMemory.get(key);
+        memoryLock.readLock().lock();
+        V value;
+        try {
+            value = lsmMemory.get(key);
+        } finally {
+            memoryLock.readLock().unlock();
+        }
 
         if (value == null) {
-            Map<K, V> map = new TreeMap<>();
-            map.put(key, lsmFileTree.readKey(key));
-            lsmMemory.updateCache(lsmCacheAlgorithm, map);
-            value = lsmMemory.get(key);
-            return value;
+            memoryLock.writeLock().lock();
+            fileTreeLock.readLock().lock();
+            Map<K, V> map = lsmFileTree.readAllKeys();
+            try {
+                lsmMemory.updateCache(lsmCacheAlgorithm, map);
+                value = lsmMemory.get(key);
+
+                return value;
+            } finally {
+                fileTreeLock.readLock().unlock();
+                memoryLock.writeLock().unlock();
+            }
         } else {
             return value;
         }
@@ -128,21 +156,22 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
 
     @Override
     public Map<K, V> getValues(Predicate<Map.Entry<K, V>> predicate) throws DataStorageException {
-        Map<K, V> inFile = lsmFileTree.readAllKeys()
-                .entrySet()
-                .stream()
-                .filter(predicate)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        Map<K, V> inMemory = lsmMemory.getValues(predicate);
+        memoryLock.readLock().lock();
+        fileTreeLock.readLock().lock();
+        try {
+            Map<K, V> inFile = lsmFileTree.readAllKeys();
+            Map<K, V> inMemory = lsmMemory.getValues(predicate);
 
-        Map<K, V> result =
-                inFile.entrySet()
-                        .stream()
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                Map.Entry::getValue,
-                                (v1, v2) -> v1,
-                                () -> new TreeMap<>(inMemory)));
-        return result;
+            return inFile.entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue,
+                            (v1, v2) -> v1,
+                            () -> new TreeMap<>(inMemory)));
+        } finally {
+            fileTreeLock.readLock().unlock();
+            memoryLock.readLock().unlock();
+        }
     }
 }
