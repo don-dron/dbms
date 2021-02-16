@@ -15,6 +15,7 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.storage;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.StorageProperties;
@@ -28,12 +29,13 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LsmStorageTest {
-    public static final String path = "test_file";
+    public static final String path = "test_file2";
 
     public String readFile(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)));
     }
 
+    @AfterEach
     @BeforeEach
     public void deleteFile() {
         File file = new File(path);

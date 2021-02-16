@@ -15,6 +15,7 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.storage;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.StorageProperties;
@@ -35,9 +36,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DSQLTableTest {
-    public static final String path = "test_file";
+    public static final String path = "test_file1";
 
     @BeforeEach
+    @AfterEach
     public void deleteFile() {
         File file = new File(path);
         if (file.exists()) {

@@ -54,7 +54,7 @@ public class PipelinesTest {
     private static final String ADDRESS = "127.0.0.1";
     private static final int PORT = 8890;
 
-    private static final int RANGE = 10000;
+    private static final int RANGE = 1000000;
     private static final int CLIENTS_COUNT = 16;
     private static final int REQUEST_PER_CLIENT = 16;
     private static final String SCHEMA_NAME = "schema1";
@@ -355,7 +355,8 @@ public class PipelinesTest {
         for (int j = 0; j < CLIENTS_COUNT; j++) {
             Thread thread = new Thread(() -> {
                 for (int i = 0; i < REQUEST_PER_CLIENT * REQUEST_PER_CLIENT; i++) {
-                    if (new Random().nextInt(10) != 0) {
+                    if (true) {
+                        System.out.println(i);
                         int count = new Random().nextInt(RANGE);
                         startValues.add(count);
 

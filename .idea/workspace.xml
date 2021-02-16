@@ -23,29 +23,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="636cd115-ac8a-4ec5-bbf6-f87a6ec92e5a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/Meta.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/DBMS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/DBMS.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/DSQLWorker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/DSQLWorker.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/JSQLInterpreter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/interpreter/JSQLInterpreter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/DBMSDataStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/DBMSDataStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/IKeyValueStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/IKeyValueStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/driver/FileSystemManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/driver/FileSystemManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/SSTable.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/Record.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/Record.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/memory/BPlusTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/memory/BPlusTree.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/memory/LsmMemory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/memory/LsmMemory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/io/http/DBMSServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/io/http/DBMSServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/InputRequestModule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/InputRequestModule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/OutputResponseModule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/io/OutputResponseModule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/modules/DbStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/modules/DbStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/query/QueryModule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/query/QueryModule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/utils/DBMSUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/utils/DBMSUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/SSTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/SSTable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/memory/LsmMemory.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/PipelinesTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/PipelinesTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/storage/LsmFileTreeTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/storage/SSTableTreeTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/simplelogger.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/simplelogger.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/simplelogger.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/simplelogger.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/storage/DSQLTableTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/storage/DSQLTableTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/storage/LsmStorageTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/storage/LsmStorageTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/storage/SSTableTreeTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/storage/SSTableTreeTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -147,6 +136,45 @@
     </key>
   </component>
   <component name="RunManager" selected="JUnit.PipelinesTest.concurrencyMostWriteSelectInsertPipelineTestWithAssertions">
+    <configuration name="All in dbms" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="dbms" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="LsmStorageTest.simpleWriteReadTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="dbms" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.storage.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.storage" />
+      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.storage.LsmStorageTest" />
+      <option name="METHOD_NAME" value="simpleWriteReadTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PipelinesTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="dbms" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms" />
+      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.PipelinesTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="PipelinesTest.concurrencyMostWriteSelectInsertPipelineTestWithAssertions" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="dbms" />
       <extension name="coverage">
@@ -163,38 +191,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="PipelinesTest.concurrencySelectInsertPipelineTestWithAssertions" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="dbms" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms" />
-      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.PipelinesTest" />
-      <option name="METHOD_NAME" value="concurrencySelectInsertPipelineTestWithAssertions" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="PipelinesTest.selectInsertPipelineTestWithAssertions" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="dbms" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms" />
-      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.PipelinesTest" />
-      <option name="METHOD_NAME" value="selectInsertPipelineTestWithAssertions()" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="ru.bmstu.iu9.db.zvoa.dbms in dbms" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="dbms" />
       <extension name="coverage">
@@ -204,20 +200,6 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms" />
-      <option name="TEST_OBJECT" value="package" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ru.bmstu.iu9.db.zvoa.dbms.storage in dbms" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="dbms" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.storage.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.storage" />
       <option name="TEST_OBJECT" value="package" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -248,19 +230,19 @@
     </configuration>
     <list>
       <item itemvalue="JUnit.ru.bmstu.iu9.db.zvoa.dbms in dbms" />
-      <item itemvalue="Maven.dbms" />
-      <item itemvalue="JUnit.PipelinesTest.selectInsertPipelineTestWithAssertions" />
-      <item itemvalue="JUnit.PipelinesTest.concurrencySelectInsertPipelineTestWithAssertions" />
+      <item itemvalue="JUnit.LsmStorageTest.simpleWriteReadTest" />
+      <item itemvalue="JUnit.All in dbms" />
+      <item itemvalue="JUnit.PipelinesTest" />
       <item itemvalue="JUnit.PipelinesTest.concurrencyMostWriteSelectInsertPipelineTestWithAssertions" />
-      <item itemvalue="JUnit.ru.bmstu.iu9.db.zvoa.dbms.storage in dbms" />
+      <item itemvalue="Maven.dbms" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="JUnit.PipelinesTest.concurrencyMostWriteSelectInsertPipelineTestWithAssertions" />
-        <item itemvalue="JUnit.ru.bmstu.iu9.db.zvoa.dbms.storage in dbms" />
+        <item itemvalue="JUnit.PipelinesTest" />
+        <item itemvalue="JUnit.All in dbms" />
+        <item itemvalue="JUnit.LsmStorageTest.simpleWriteReadTest" />
         <item itemvalue="JUnit.ru.bmstu.iu9.db.zvoa.dbms in dbms" />
-        <item itemvalue="JUnit.PipelinesTest.concurrencySelectInsertPipelineTestWithAssertions" />
-        <item itemvalue="JUnit.PipelinesTest.selectInsertPipelineTestWithAssertions" />
       </list>
     </recent_temporary>
   </component>
@@ -301,7 +283,8 @@
       <workItem from="1613226630156" duration="15784000" />
       <workItem from="1613242716998" duration="3834000" />
       <workItem from="1613246582634" duration="28000" />
-      <workItem from="1613299184441" duration="13234000" />
+      <workItem from="1613299184441" duration="31189000" />
+      <workItem from="1613499760053" duration="10815000" />
     </task>
     <servers />
   </component>
@@ -328,18 +311,18 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="726" y="63" key="#Auto_Import/0.0.1920.1040@0.0.1920.1040" timestamp="1613082209000" />
-    <state x="725" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1613164568016">
+    <state x="725" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1613500054458">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="725" y="322" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1613164568016" />
+    <state x="725" y="322" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1613500054458" />
     <state x="765" y="236" key="#com.intellij.ide.util.MemberChooser" timestamp="1613305342911">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="765" y="236" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1613305342911" />
-    <state x="784" y="444" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog" timestamp="1613229250382">
+    <state x="784" y="444" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog" timestamp="1613321164009">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="784" y="444" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1613229250382" />
+    <state x="784" y="444" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1613321164009" />
     <state x="684" y="389" width="554" height="268" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes" timestamp="1613161815662">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -356,42 +339,42 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="457" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1613314937152" />
-    <state width="450" height="466" key="DebuggerActiveHint" timestamp="1613244550505">
+    <state width="826" height="466" key="DebuggerActiveHint" timestamp="1613508104901">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="450" height="466" key="DebuggerActiveHint/0.0.1920.1040@0.0.1920.1040" timestamp="1613244550505" />
-    <state width="1876" height="271" key="GridCell.Tab.0.bottom" timestamp="1613312133806">
+    <state width="826" height="466" key="DebuggerActiveHint/0.0.1920.1040@0.0.1920.1040" timestamp="1613508104901" />
+    <state width="1876" height="384" key="GridCell.Tab.0.bottom" timestamp="1613510702388">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="271" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613312133806" />
-    <state width="1876" height="271" key="GridCell.Tab.0.center" timestamp="1613312133806">
+    <state width="1876" height="384" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613510702388" />
+    <state width="1876" height="384" key="GridCell.Tab.0.center" timestamp="1613510702388">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="271" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613312133806" />
-    <state width="1876" height="271" key="GridCell.Tab.0.left" timestamp="1613312133806">
+    <state width="1876" height="384" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613510702388" />
+    <state width="1876" height="384" key="GridCell.Tab.0.left" timestamp="1613510702388">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="271" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613312133806" />
-    <state width="1876" height="271" key="GridCell.Tab.0.right" timestamp="1613312133806">
+    <state width="1876" height="384" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613510702388" />
+    <state width="1876" height="384" key="GridCell.Tab.0.right" timestamp="1613510702388">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="271" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613312133806" />
-    <state width="1876" height="271" key="GridCell.Tab.1.bottom" timestamp="1613312133806">
+    <state width="1876" height="384" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613510702388" />
+    <state width="1876" height="384" key="GridCell.Tab.1.bottom" timestamp="1613510702314">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="271" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613312133806" />
-    <state width="1876" height="271" key="GridCell.Tab.1.center" timestamp="1613312133806">
+    <state width="1876" height="384" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613510702314" />
+    <state width="1876" height="384" key="GridCell.Tab.1.center" timestamp="1613510702314">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="271" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613312133806" />
-    <state width="1876" height="271" key="GridCell.Tab.1.left" timestamp="1613312133806">
+    <state width="1876" height="384" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613510702314" />
+    <state width="1876" height="384" key="GridCell.Tab.1.left" timestamp="1613510702314">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="271" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613312133806" />
-    <state width="1876" height="271" key="GridCell.Tab.1.right" timestamp="1613312133806">
+    <state width="1876" height="384" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613510702314" />
+    <state width="1876" height="384" key="GridCell.Tab.1.right" timestamp="1613510702314">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="271" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613312133806" />
+    <state width="1876" height="384" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613510702314" />
     <state x="775" y="454" key="ReplaceDuplicatesPrompt" timestamp="1613244422155">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -404,22 +387,22 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="690" y="270" key="extract.method.dialog/0.0.1920.1040@0.0.1920.1040" timestamp="1613244417277" />
-    <state x="667" y="253" width="984" height="682" key="find.popup" timestamp="1613304808682">
+    <state x="667" y="253" width="984" height="682" key="find.popup" timestamp="1613332444864">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="667" y="253" width="984" height="682" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1613304808682" />
+    <state x="667" y="253" width="984" height="682" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1613332444864" />
     <state x="755" y="267" key="refactoring.ChangeSignatureDialog" timestamp="1613156621839">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="755" y="267" key="refactoring.ChangeSignatureDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1613156621839" />
-    <state x="616" y="240" key="run.anything.popup" timestamp="1613166952136">
+    <state x="616" y="240" key="run.anything.popup" timestamp="1613502539410">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="616" y="240" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1613166952136" />
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1613301440587">
+    <state x="616" y="240" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1613502539410" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1613325138933">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1613301440587" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1613325138933" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -431,9 +414,19 @@
           <option name="timeStamp" value="8" />
         </breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/SSTable.java</url>
-          <line>188</line>
-          <option name="timeStamp" value="77" />
+          <url>file://$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java</url>
+          <line>149</line>
+          <option name="timeStamp" value="108" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java</url>
+          <line>56</line>
+          <option name="timeStamp" value="122" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java</url>
+          <line>49</line>
+          <option name="timeStamp" value="123" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -464,6 +457,9 @@
       <FILTER>ru.bmstu.iu9.db.zvoa.dbms.*</FILTER>
     </SUITE>
     <SUITE FILE_PATH="coverage/dbms$MainTest_mainPipelineTest.ic" NAME="MainTest.mainPipelineTest Coverage Results" MODIFIED="1613238738863" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>ru.bmstu.iu9.db.zvoa.dbms.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/dbms$PipelinesTest_concurrencyMostWriteSelectInsertPipelineTestWithAssertions.ic" NAME="PipelinesTest.concurrencyMostWriteSelectInsertPipelineTestWithAssertions Coverage Results" MODIFIED="1613500315493" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>ru.bmstu.iu9.db.zvoa.dbms.*</FILTER>
     </SUITE>
   </component>

@@ -21,13 +21,13 @@ import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.DBMSDataStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.IKeyValueStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.StorageProperties;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.LsmFileTree;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.memory.LsmMemory;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
@@ -38,7 +38,7 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
     private static final int MAX_CACHE_SIZE = 100;
 
     private final String path;
-    private final LsmMemory<K, V> lsmMemory;
+    private Map<K, V> lsmMemory;
     private final LsmFileTree<K, V> lsmFileTree;
     private final LsmCacheAlgorithm<K, V> lsmCacheAlgorithm = new LsmCacheAlgorithmAll<>();
     private final ReadWriteLock memoryLock = new ReentrantReadWriteLock();
@@ -47,7 +47,7 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
     public LsmStorage(StorageProperties storageProperties) throws DataStorageException {
         this.path = storageProperties.getPath();
         this.lsmFileTree = new LsmFileTree(storageProperties.getPath());
-        this.lsmMemory = new LsmMemory();
+        this.lsmMemory = new TreeMap<>();
     }
 
     @Override
@@ -56,7 +56,6 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
             return;
         }
 
-        lsmMemory.init();
         setInit();
         logInit();
         logger.debug("Init storage " + path);
@@ -77,31 +76,26 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
             logger.debug("Run storage " + path);
         }
 
-        try {
-            while (isRunning()) {
-                if (lsmMemory.size() >= 4096) {
-                    pushToDrive();
-                } else {
-                    Thread.yield();
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        executorService.submit(() -> {
+            try {
+                while (isRunning()) {
+                    if (lsmMemory.size() >= 64) {
+                        pushToDrive();
+                    } else {
+                        Thread.yield();
+                    }
                 }
+                pushToDrive();
+            } catch (DataStorageException dataStorageException) {
+                dataStorageException.printStackTrace();
             }
-            pushToDrive();
-        } catch (DataStorageException dataStorageException) {
-            dataStorageException.printStackTrace();
-        }
-    }
+        });
 
-    public void pushToDrive() throws DataStorageException {
-        memoryLock.writeLock().lock();
-        fileTreeLock.writeLock().lock();
+        executorService.submit(lsmFileTree);
 
-        try {
-            Map<K, V> map = lsmMemory.swapMemory();
-            lsmFileTree.putAll(map);
-        } finally {
-            fileTreeLock.writeLock().unlock();
-            memoryLock.writeLock().unlock();
-        }
+        executorService.shutdown();
+        joinExecutorService(executorService);
     }
 
     @Override
@@ -110,9 +104,47 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
             if (isClosed()) {
                 return;
             }
+            lsmFileTree.close();
             setClosed();
             logClose();
             logger.debug("Close storage " + path);
+        }
+    }
+
+    private void joinExecutorService(ExecutorService executorService) {
+        while (true) {
+            try {
+                if (executorService.awaitTermination(0, TimeUnit.MILLISECONDS)) {
+                    break;
+                } else {
+                    Thread.yield();
+                }
+            } catch (InterruptedException exception) {
+                logger.warn(exception.getMessage());
+            }
+        }
+    }
+
+    private ExecutorService createExecutorService() {
+        return new ThreadPoolExecutor(
+                16,
+                Integer.MAX_VALUE,
+                Integer.MAX_VALUE,
+                TimeUnit.DAYS,
+                new SynchronousQueue<>());
+    }
+
+    public void pushToDrive() throws DataStorageException {
+        memoryLock.writeLock().lock();
+        fileTreeLock.writeLock().lock();
+
+        try {
+            Map<K, V> map = lsmMemory;
+            lsmFileTree.putAll(map);
+            lsmMemory = new TreeMap<>();
+        } finally {
+            fileTreeLock.writeLock().unlock();
+            memoryLock.writeLock().unlock();
         }
     }
 
@@ -139,9 +171,9 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
         if (value == null) {
             memoryLock.writeLock().lock();
             fileTreeLock.readLock().lock();
-            Map<K, V> map = lsmFileTree.readAllKeys();
+
             try {
-                lsmMemory.updateCache(lsmCacheAlgorithm, map);
+                lsmMemory = lsmFileTree.readAllKeys();
                 value = lsmMemory.get(key);
 
                 return value;
@@ -160,7 +192,11 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
         fileTreeLock.readLock().lock();
         try {
             Map<K, V> inFile = lsmFileTree.readAllKeys();
-            Map<K, V> inMemory = lsmMemory.getValues(predicate);
+            Map<K, V> inMemory = lsmMemory.entrySet().stream().filter(predicate).collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    Map.Entry::getValue,
+                    (a, b) -> a,
+                    TreeMap::new));
 
             return inFile.entrySet()
                     .stream()
