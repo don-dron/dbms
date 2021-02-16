@@ -169,7 +169,9 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
                                 .orElse(0) + 1);
 
                 ssTable.putAll(recordList.toArray(Record[]::new));
-
+//
+//                System.out.println("write");
+//                log(ssTable);
                 addTable(level + 1, ssTable);
             } catch (DataStorageException dataStorageException) {
                 dataStorageException.printStackTrace();
@@ -226,10 +228,20 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
         }
     }
 
+    private void log(SSTable<K, V> ssTable) {
+        if (ssTable.getMeta().getKeys().length != 0) {
+            System.out.println("Range: " + ssTable.getLevel() + " " +
+                    ssTable.getMeta().getKeys()[0] + " "
+                    + ssTable.getMeta().getKeys()[ssTable.getMeta().getKeys().length - 1]);
+        }
+    }
+
     public Map<K, V> readAllKeys(Collection<SSTable<K, V>> tables) throws DataStorageException {
         return tables.stream()
                 .flatMap(ssTable -> {
                             try {
+//                                System.out.println("read");
+//                                log(ssTable);
                                 return Arrays.stream(ssTable.readAllRecords());
                             } catch (DataStorageException dataStorageException) {
                                 dataStorageException.printStackTrace();

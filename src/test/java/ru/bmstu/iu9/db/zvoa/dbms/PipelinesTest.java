@@ -356,7 +356,7 @@ public class PipelinesTest {
             Thread thread = new Thread(() -> {
                 for (int i = 0; i < REQUEST_PER_CLIENT * REQUEST_PER_CLIENT; i++) {
                     if (true) {
-                        System.out.println(i);
+//                        System.out.println(i);
                         int count = new Random().nextInt(RANGE);
                         startValues.add(count);
 

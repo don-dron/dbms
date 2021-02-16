@@ -44,7 +44,7 @@ public class DBMS extends AbstractDbModule {
         this.inputModule = builder.inputModule;
         this.queryModules = new ArrayList<>();
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 8; i++) {
             queryModules.add(builder.queryModule.build());
         }
 

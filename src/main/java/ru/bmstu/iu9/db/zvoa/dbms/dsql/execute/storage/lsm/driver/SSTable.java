@@ -50,6 +50,10 @@ public class SSTable<K extends Key, V extends Value> {
         }
     }
 
+    public Meta getMeta() {
+        return meta;
+    }
+
     public int getIndex() {
         return index;
     }

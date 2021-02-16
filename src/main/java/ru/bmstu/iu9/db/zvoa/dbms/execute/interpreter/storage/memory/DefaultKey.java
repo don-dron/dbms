@@ -24,10 +24,6 @@ public class DefaultKey implements Key {
         this.id = id;
     }
 
-    public long getId() {
-        return id;
-    }
-
     @Override
     public int compareTo(Object o) {
         return Long.compare(id, ((DefaultKey) o).id);
