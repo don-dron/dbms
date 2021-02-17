@@ -23,12 +23,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="636cd115-ac8a-4ec5-bbf6-f87a6ec92e5a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmLogger.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/DBMS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/DBMS.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmStorage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/SSTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/SSTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/DefaultKey.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/DefaultKey.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/PipelinesTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/PipelinesTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/Meta.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/Meta.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -278,7 +277,8 @@
       <workItem from="1613242716998" duration="3834000" />
       <workItem from="1613246582634" duration="28000" />
       <workItem from="1613299184441" duration="31189000" />
-      <workItem from="1613499760053" duration="13315000" />
+      <workItem from="1613499760053" duration="13916000" />
+      <workItem from="1613584042543" duration="5037000" />
     </task>
     <servers />
   </component>
@@ -337,38 +337,38 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="826" height="466" key="DebuggerActiveHint/0.0.1920.1040@0.0.1920.1040" timestamp="1613508104901" />
-    <state width="1876" height="266" key="GridCell.Tab.0.bottom" timestamp="1613512878126">
+    <state width="1876" height="397" key="GridCell.Tab.0.bottom" timestamp="1613589639832">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="266" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613512878126" />
-    <state width="1876" height="266" key="GridCell.Tab.0.center" timestamp="1613512878125">
+    <state width="1876" height="397" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613589639832" />
+    <state width="1876" height="397" key="GridCell.Tab.0.center" timestamp="1613589639832">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="266" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613512878125" />
-    <state width="1876" height="266" key="GridCell.Tab.0.left" timestamp="1613512878125">
+    <state width="1876" height="397" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613589639832" />
+    <state width="1876" height="397" key="GridCell.Tab.0.left" timestamp="1613589639831">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="266" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613512878125" />
-    <state width="1876" height="266" key="GridCell.Tab.0.right" timestamp="1613512878126">
+    <state width="1876" height="397" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613589639831" />
+    <state width="1876" height="397" key="GridCell.Tab.0.right" timestamp="1613589639832">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="266" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613512878126" />
-    <state width="1876" height="266" key="GridCell.Tab.1.bottom" timestamp="1613512878028">
+    <state width="1876" height="397" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613589639832" />
+    <state width="1876" height="397" key="GridCell.Tab.1.bottom" timestamp="1613589639832">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="266" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613512878028" />
-    <state width="1876" height="266" key="GridCell.Tab.1.center" timestamp="1613512878028">
+    <state width="1876" height="397" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613589639832" />
+    <state width="1876" height="397" key="GridCell.Tab.1.center" timestamp="1613589639832">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="266" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613512878028" />
-    <state width="1876" height="266" key="GridCell.Tab.1.left" timestamp="1613512878028">
+    <state width="1876" height="397" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613589639832" />
+    <state width="1876" height="397" key="GridCell.Tab.1.left" timestamp="1613589639832">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="266" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613512878028" />
-    <state width="1876" height="266" key="GridCell.Tab.1.right" timestamp="1613512878028">
+    <state width="1876" height="397" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613589639832" />
+    <state width="1876" height="397" key="GridCell.Tab.1.right" timestamp="1613589639832">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="266" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613512878028" />
+    <state width="1876" height="397" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613589639832" />
     <state x="775" y="454" key="ReplaceDuplicatesPrompt" timestamp="1613244422155">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -407,16 +407,6 @@
           </properties>
           <option name="timeStamp" value="8" />
         </breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java</url>
-          <line>149</line>
-          <option name="timeStamp" value="108" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java</url>
-          <line>56</line>
-          <option name="timeStamp" value="122" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <pin-to-top-manager>

@@ -35,7 +35,7 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
     private final File directory;
     private final Map<Integer, ConcurrentLinkedDeque<SSTable<K, V>>> levelMap = new ConcurrentHashMap<>();
     private final ReadWriteLock fileTreeLock = new ReentrantReadWriteLock();
-    private int POW = 4;
+    private static final int POW = 4;
 
     public LsmFileTree(String path) throws DataStorageException {
         try {
@@ -91,16 +91,14 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
         }
     }
 
-    public class Merger extends Thread {
-        @Override
-        public void run() {
-            while (isRunning()) {
-                if (!tryMerge()) {
-                    Thread.yield();
-                }
+    @Override
+    public void close() throws Exception {
+        synchronized (this) {
+            if (isClosed()) {
+                return;
             }
-
-            tryMerge();
+            setClosed();
+            logClose();
         }
     }
 
@@ -169,9 +167,6 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
                                 .orElse(0) + 1);
 
                 ssTable.putAll(recordList.toArray(Record[]::new));
-//
-//                System.out.println("write");
-//                log(ssTable);
                 addTable(level + 1, ssTable);
             } catch (DataStorageException dataStorageException) {
                 dataStorageException.printStackTrace();
@@ -184,17 +179,6 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
             levelMap.get(table.getLevel()).remove(table);
             table.delete();
         });
-    }
-
-    @Override
-    public void close() throws Exception {
-        synchronized (this) {
-            if (isClosed()) {
-                return;
-            }
-            setClosed();
-            logClose();
-        }
     }
 
     public void putAll(Map<K, V> map) throws DataStorageException {
@@ -211,7 +195,10 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
                             .map(SSTable::getIndex)
                             .max(Integer::compareTo)
                             .orElse(0) + 1);
-            ssTable.putAll(map.entrySet().stream().map(entry -> new Record(entry.getKey(), entry.getValue())).toArray(Record[]::new));
+            ssTable.putAll(map.entrySet()
+                    .stream()
+                    .map(entry -> new Record(entry.getKey(), entry.getValue()))
+                    .toArray(Record[]::new));
 
             addTable(0, ssTable);
         } finally {
@@ -236,12 +223,30 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
         }
     }
 
+    public boolean mayBeContains(Key key, SSTable<K, V> ssTable) {
+        Key[] keys = ssTable.getMeta().getKeys();
+        boolean result = keys.length != 0 && keys[0].compareTo(key) < 1 && key.compareTo(keys[keys.length - 1]) < 1;
+        return result;
+    }
+
+    public Map<K, V> readKeyBlock(K startKey, int blockSize) throws DataStorageException {
+        try {
+            fileTreeLock.readLock().lock();
+            return readAllKeys(levelMap
+                    .values()
+                    .stream()
+                    .flatMap(Collection::stream)
+                    .filter(ssTable -> mayBeContains(startKey, ssTable))
+                    .collect(Collectors.toList()));
+        } finally {
+            fileTreeLock.readLock().unlock();
+        }
+    }
+
     public Map<K, V> readAllKeys(Collection<SSTable<K, V>> tables) throws DataStorageException {
         return tables.stream()
                 .flatMap(ssTable -> {
                             try {
-//                                System.out.println("read");
-//                                log(ssTable);
                                 return Arrays.stream(ssTable.readAllRecords());
                             } catch (DataStorageException dataStorageException) {
                                 dataStorageException.printStackTrace();
@@ -257,11 +262,16 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
                         TreeMap::new));
     }
 
-    public Map<K, V> readKeysByNumbers(int start, int end) throws DataStorageException {
-        return null;
-    }
+    public class Merger extends Thread {
+        @Override
+        public void run() {
+            while (isRunning()) {
+                if (!tryMerge()) {
+                    Thread.yield();
+                }
+            }
 
-    public Map<K, V> readKeyBlock(K startKey, int blockSize) {
-        return null;
+            tryMerge();
+        }
     }
 }

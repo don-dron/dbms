@@ -17,20 +17,49 @@ package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver;
 
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 
-import java.io.Serializable;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 
-public class Meta<K extends Key, V extends Value> implements Serializable {
-    private K[] keys;
+public class LsmLogger<K extends Key, V extends Value> {
+    private final File file;
+    private final FileOutputStream fileOutputStream;
+    private final ObjectOutputStream objectOutputStream;
 
-    public Meta() {
+    public LsmLogger(String path) throws DataStorageException {
+        try {
+            this.file = new File(path);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            fileOutputStream = new FileOutputStream(file);
+            objectOutputStream = new ObjectOutputStream(fileOutputStream);
+        } catch (Exception exception) {
+            throw new DataStorageException(exception.getMessage());
+        }
     }
 
-    public Meta(K[] keys) {
-        this.keys = keys;
+    public void putAll(K key, V value) {
+        try {
+            objectOutputStream.writeObject(key);
+            objectOutputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public K[] getKeys() {
-        return keys;
+    public void close() {
+        try {
+            objectOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void delete() {
+        file.delete();
     }
 }
