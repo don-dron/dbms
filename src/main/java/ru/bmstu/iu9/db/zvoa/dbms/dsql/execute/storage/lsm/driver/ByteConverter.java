@@ -13,16 +13,26 @@
  * OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
  * OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory;
+package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver;
 
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
 
-import java.io.Serializable;
-import java.util.function.Function;
+import java.util.List;
 
-public class DefaultRowToKey implements Function<Row, Key>, Serializable {
-    @Override
-    public Key apply(Row row) {
-        return new DefaultKey(row.hashCode());
-    }
+public interface ByteConverter<K extends Key, V extends Value> {
+
+    public List<Type> getKeyTypes();
+
+    public List<Type> getValueTypes();
+
+    public V bytesToValue(byte[] bytes, int offset);
+
+    public K bytesToKey(byte[] bytes, int offset);
+
+    public byte[] keyToBytes(K key);
+
+    public byte[] valueToBytes(V value);
 }
+

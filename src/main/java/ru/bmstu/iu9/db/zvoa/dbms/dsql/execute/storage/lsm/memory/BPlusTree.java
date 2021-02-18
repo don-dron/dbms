@@ -222,7 +222,6 @@ public class BPlusTree<K extends Comparable<? super K>, V> implements Map<K, V> 
 
         @Override
         void merge(Node sibling) {
-            @SuppressWarnings("unchecked")
             InternalNode node = (InternalNode) sibling;
             keys.add(node.getFirstLeafKey());
             keys.addAll(node.keys);
@@ -375,7 +374,6 @@ public class BPlusTree<K extends Comparable<? super K>, V> implements Map<K, V> 
 
         @Override
         void merge(Node sibling) {
-            @SuppressWarnings("unchecked")
             LeafNode node = (LeafNode) sibling;
             keys.addAll(node.keys);
             values.addAll(node.values);

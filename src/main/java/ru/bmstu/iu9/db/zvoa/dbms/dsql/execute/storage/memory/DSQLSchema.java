@@ -28,10 +28,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class DSQLSchema extends Schema {
-    private transient final IKeyValueStorage<TableIdentification, Table> storage;
-    private transient final ConcurrentSkipListSet<Table> tables;
+    private transient IKeyValueStorage<TableIdentification, Table> storage;
+    private transient ConcurrentSkipListSet<Table> tables;
 
-    private DSQLSchema(Builder builder) {
+    public DSQLSchema(Builder builder) {
         super(builder.schemaName, builder.schemaPath);
         storage = builder.storage;
         tables = builder.tables;
@@ -78,6 +78,10 @@ public class DSQLSchema extends Schema {
                 .orElseThrow(() -> new DataStorageException("Table " + tableName + " not found"));
     }
 
+    public void setStorage(IKeyValueStorage schemaStorage) {
+        this.storage = schemaStorage;
+    }
+
     public static class Builder {
         private IKeyValueStorage storage;
         private String schemaName;
@@ -98,8 +102,9 @@ public class DSQLSchema extends Schema {
             return this;
         }
 
-        public void setSchemaPath(String schemaPath) {
+        public Builder setSchemaPath(String schemaPath) {
             this.schemaPath = schemaPath;
+            return this;
         }
 
         public Builder setTables(Set<Table> tables) {

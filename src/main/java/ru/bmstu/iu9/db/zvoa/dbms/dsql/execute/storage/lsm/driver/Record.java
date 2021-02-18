@@ -18,14 +18,18 @@ package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
 
-import java.io.Serializable;
-
-public class Record<K extends Key, V extends Value> implements Serializable, Comparable {
+public class Record<K extends Key, V extends Value> implements Comparable {
     private K key;
     private V value;
     private long timestamp;
 
     public Record() {
+    }
+
+    public Record(K key, V value, long timestamp) {
+        this.key = key;
+        this.value = value;
+        this.timestamp = timestamp;
     }
 
     public Record(K key, V value) {

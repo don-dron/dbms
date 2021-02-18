@@ -16,16 +16,35 @@
 package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory;
 
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
 
-public class DefaultKey implements Key {
-    private long id;
+import java.util.Arrays;
+import java.util.List;
 
-    public DefaultKey(long id) {
-        this.id = id;
+public class DefaultKey extends Key {
+    private Type type;
+    private Comparable comparable;
+
+    public DefaultKey(Type type, Comparable comparable) {
+        this.type = type;
+        this.comparable = comparable;
+    }
+
+    public Comparable getComparable() {
+        return comparable;
+    }
+
+    public Type getType() {
+        return type;
     }
 
     @Override
     public int compareTo(Object o) {
-        return Long.compare(id, ((DefaultKey) o).id);
+        return comparable.compareTo(((DefaultKey) o).getComparable());
+    }
+
+    @Override
+    public String toString() {
+        return comparable.toString();
     }
 }

@@ -17,12 +17,14 @@ package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory;
 
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
 
+import java.util.Arrays;
 import java.util.List;
 
-public abstract class Schema implements Value {
-    private final String schemaName;
-    private final String schemaPath;
+public abstract class Schema extends Value {
+    private String schemaName;
+    private String schemaPath;
 
     public Schema(String schemaName, String schemaPath) {
         assert (schemaName != null);
@@ -47,5 +49,4 @@ public abstract class Schema implements Value {
     public String getSchemaName() {
         return schemaName;
     }
-
 }

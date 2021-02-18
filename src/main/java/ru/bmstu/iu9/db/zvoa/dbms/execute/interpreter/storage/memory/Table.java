@@ -19,50 +19,44 @@ import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
-public abstract class Table implements Value {
-    private final String tableName;
-    private final String tablePath;
-    private final Function<Row, Key> rowKeyFunction;
-    private final List<Type> types;
+public abstract class Table extends Value {
+    private String tableName;
+    private String tablePath;
+    private Integer rowKeyFunction;
+    private List<Type> types;
 
     public Table(String tableName,
                  String tablePath,
                  List<Type> types,
-                 Function<Row, Key> rowKeyFunction) {
+                 Integer rowKeyFunction) {
         this.tableName = tableName;
         this.types = types;
-        this.rowKeyFunction = rowKeyFunction == null ? getDefaultKeyFunction() : rowKeyFunction;
+        this.rowKeyFunction = rowKeyFunction == null ? 0 : rowKeyFunction;
         this.tablePath = tablePath == null ? tableName : tablePath;
     }
 
-    public Function<Row, Key> getRowKeyFunction() {
-        return rowKeyFunction;
-    }
-
-    public Function<Row, Key> getDefaultKeyFunction() {
-        if (types == null || types.isEmpty()) {
-            return new DefaultRowToKey();
-        } else {
-            Type type = types.get(0);
-
-            if (type == Type.INTEGER) {
-                return new LongRowToKey();
-            } else {
-                return new DefaultRowToKey();
-            }
-        }
-    }
-
-    public String getTablePath() {
-        return tablePath;
+    public Type getKeyType() {
+        return types.get(rowKeyFunction);
     }
 
     public List<Type> getTypes() {
         return types;
+    }
+
+    public Integer getRowKeyFunction() {
+        return rowKeyFunction;
+    }
+
+    public List<Type> getTableTypes() {
+        return Arrays.asList(Type.STRING, Type.STRING, Type.INTEGER, Type.STRING);
+    }
+
+    public String getTablePath() {
+        return tablePath;
     }
 
     public String getTableName() {
@@ -70,7 +64,7 @@ public abstract class Table implements Value {
     }
 
     public Key getRowKey(Row row) {
-        return rowKeyFunction.apply(row);
+        return new DefaultKey(types.get(rowKeyFunction), (Comparable) row.getValues().get(rowKeyFunction));
     }
 
     public abstract List<Row> selectRows(SelectSettings selectSettings) throws DataStorageException;

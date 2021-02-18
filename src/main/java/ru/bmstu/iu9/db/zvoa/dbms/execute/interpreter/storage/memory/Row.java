@@ -18,20 +18,17 @@ package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory;
 
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
 
 import java.util.List;
 
-public class Row implements Value {
-    private transient Table table;
-    private List<Object> values;
+public class Row extends Value {
+    private final transient Table table;
+    private final List<Object> values;
 
     public Row(Table table, List<Object> values) {
         this.table = table;
         this.values = values;
-    }
-
-    public void setTable(Table table) {
-        this.table = table;
     }
 
     public Key getKey() {

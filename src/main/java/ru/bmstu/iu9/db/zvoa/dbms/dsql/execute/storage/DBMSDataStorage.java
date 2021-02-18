@@ -178,8 +178,8 @@ public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
                                     DSQLTable tableSource = (DSQLTable) storage.get(new TableIdentification(tableName));
                                     IKeyValueStorage tableStorage = tableEntry.getValue();
                                     DSQLTable table = DSQLTable.Builder.newBuilder()
-                                            .setName(tableName)
-                                            .setTypes(tableSource.getTypes())
+                                            .setName(tableSource.getTableName())
+                                            .setTypes(tableSource.getTableTypes())
                                             .setRowToKey(tableSource.getRowKeyFunction())
                                             .setStorage(tableStorage)
                                             .build();
@@ -201,12 +201,12 @@ public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
         if (schema.getTable(settings.getTableName()) != null) {
             throw new DataStorageException("Table already exist.");
         } else {
-            IKeyValueStorage tableStorage = fileSystemManager.createTableStorage(settings);
             DSQLTable table = DSQLTable.Builder.newBuilder()
                     .setName(settings.getTableName())
-                    .setStorage(tableStorage)
-                    .setTypes(settings.getTypes())
+                    .setTypes(settings.getValuesTypes())
                     .build();
+            IKeyValueStorage tableStorage = fileSystemManager.createTableStorage(table, settings);
+            table.setStorage(tableStorage);
             schema.addTable(table);
             return table;
         }
@@ -216,11 +216,11 @@ public class DBMSDataStorage extends AbstractDbModule implements DataStorage {
         if (schemas.stream().anyMatch(schema -> schema.getSchemaName().equals(settings.getSchemaName()))) {
             throw new DataStorageException("Schema already exist.");
         } else {
-            IKeyValueStorage schemaStorage = fileSystemManager.createSchemaStorage(settings);
             DSQLSchema schema = DSQLSchema.Builder.newBuilder()
                     .setSchemaName(settings.getSchemaName())
-                    .setStorage(schemaStorage)
                     .build();
+            IKeyValueStorage schemaStorage = fileSystemManager.createSchemaStorage(schema, settings);
+            schema.setStorage(schemaStorage);
             fileSchemasStorage.put(new SchemeIdentification(schema.getSchemaName()), schema);
             schemas.add(schema);
             return schema;

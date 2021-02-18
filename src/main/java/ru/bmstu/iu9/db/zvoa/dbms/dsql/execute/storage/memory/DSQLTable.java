@@ -26,11 +26,15 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class DSQLTable extends Table {
-    private transient final IKeyValueStorage<Key, Row> storage;
+    private transient IKeyValueStorage<Key, Row> storage;
 
-    private DSQLTable(Builder builder) {
+    public DSQLTable(Builder builder) {
         super(builder.name, builder.path, builder.types, builder.rowKeyFunction);
         storage = builder.storage;
+    }
+
+    public void setStorage(IKeyValueStorage<Key, Row> storage) {
+        this.storage = storage;
     }
 
     public List<Row> selectRows(SelectSettings selectSettings) throws DataStorageException {
@@ -40,7 +44,6 @@ public class DSQLTable extends Table {
             return storage.getValues(x -> true)
                     .values()
                     .stream()
-                    .peek(row -> row.setTable(this))
                     .collect(Collectors.toList());
         }
     }
@@ -69,7 +72,7 @@ public class DSQLTable extends Table {
         }
     }
 
-    protected Row createRow(List<Object> values) {
+    public Row createRow(List<Object> values) {
         return new Row(this, values);
     }
 
@@ -77,7 +80,7 @@ public class DSQLTable extends Table {
         private String name;
         private String path;
         private List<Type> types;
-        private Function<Row, Key> rowKeyFunction;
+        private int rowKeyFunction;
         private IKeyValueStorage<Key, Row> storage;
 
         public static Builder newBuilder() {
@@ -89,11 +92,12 @@ public class DSQLTable extends Table {
             return this;
         }
 
-        public void setPath(String path) {
+        public Builder setPath(String path) {
             this.path = path;
+            return this;
         }
 
-        public Builder setRowToKey(Function<Row, Key> rowToKey) {
+        public Builder setRowToKey(int rowToKey) {
             this.rowKeyFunction = rowToKey;
             return this;
         }

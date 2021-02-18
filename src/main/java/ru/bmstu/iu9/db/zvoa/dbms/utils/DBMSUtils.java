@@ -23,6 +23,7 @@ import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.FileSystemManager;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.FileSystemManagerConfig;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.StorageProperties;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.LsmStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.RootConverter;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpRequestHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpResponseHandler;
@@ -67,7 +68,7 @@ public final class DBMSUtils {
         DBMSServer httpServer = new DBMSServer(config.getPort());
         FileSystemManager fileSystemManager = new FileSystemManager(
                 FileSystemManagerConfig.Builder.newBuilder()
-                        .setStorageProperties(new StorageProperties("Root", config.getMountPath()))
+                        .setStorageProperties(new StorageProperties(new RootConverter(), "Root", config.getMountPath()))
                         .setStorageSupplier((properties) -> {
                             try {
                                 return new LsmStorage(properties);
