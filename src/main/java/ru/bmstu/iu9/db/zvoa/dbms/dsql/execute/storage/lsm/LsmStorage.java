@@ -20,7 +20,9 @@ import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.DBMSDataStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.IKeyValueStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.StorageProperties;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.ByteConverter;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.LsmFileTree;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.LsmLogger;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 
@@ -38,18 +40,20 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
     private static final int MAX_CACHE_SIZE = 100;
 
     private final String path;
-    private Map<K, V> lsmMemory;
-    //    private final LsmLogger<K, V> lsmLogger;
     private final LsmFileTree<K, V> lsmFileTree;
     private final LsmCacheAlgorithm<K, V> lsmCacheAlgorithm = new LsmCacheAlgorithmAll<>();
     private final ReadWriteLock memoryLock = new ReentrantReadWriteLock();
     private final ReadWriteLock fileTreeLock = new ReentrantReadWriteLock();
+    private final ByteConverter<K, V> byteConverter;
+    private Map<K, V> lsmMemory;
+    private LsmLogger<K, V> lsmLogger;
 
     public LsmStorage(StorageProperties<K, V> storageProperties) throws DataStorageException {
         this.path = storageProperties.getPath();
+        this.byteConverter = storageProperties.getByteConverter();
         this.lsmFileTree = new LsmFileTree<K, V>(storageProperties.getByteConverter(), storageProperties.getPath());
         this.lsmMemory = new TreeMap<>();
-//        this.lsmLogger = new LsmLogger<>(storageProperties.getPath() + "/log");
+        this.lsmLogger = new LsmLogger<>(storageProperties.getByteConverter(), storageProperties.getPath() + "/log");
     }
 
     @Override
@@ -144,6 +148,9 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
             Map<K, V> map = lsmMemory;
             lsmFileTree.putAll(map);
             lsmMemory = new TreeMap<>();
+            lsmLogger.close();
+            lsmLogger.delete();
+            lsmLogger = new LsmLogger<>(byteConverter, path + "/log");
         } finally {
             fileTreeLock.writeLock().unlock();
             memoryLock.writeLock().unlock();
@@ -154,6 +161,7 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
     public V put(K key, V value) throws DataStorageException {
         memoryLock.writeLock().lock();
         try {
+            lsmLogger.put(key, value);
             V v = lsmMemory.put(key, value);
 
             return v;

@@ -37,7 +37,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DSQLTableTest {
-    public static final String path = "test_file1";
+    public static final String path = "test_file";
 
     @BeforeEach
     @AfterEach
