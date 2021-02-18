@@ -41,8 +41,10 @@ public class SSTable<K extends Key, V extends Value> {
 
             if (!file.exists()) {
                 file.createNewFile();
+                meta = new Meta<>((K[]) new Key[0]);
             } else {
                 try {
+                    meta = new Meta<>(readAllKey());
                 } catch (Exception exception) {
                     throw new DataStorageException(exception.getMessage());
                 }
@@ -104,9 +106,13 @@ public class SSTable<K extends Key, V extends Value> {
             List<byte[]> keys = new ArrayList<>();
             List<byte[]> values = new ArrayList<>();
 
+            List<K> keyList = new ArrayList<>();
+
             for (Record<K, V> record : records) {
                 byte[] key = byteConverter.keyToBytes(record.getKey());
                 byte[] value = byteConverter.valueToBytes(record.getValue());
+
+                keyList.add(record.getKey());
 
                 offsets.add(currentOffset);
                 startData += 4;
@@ -128,6 +134,8 @@ public class SSTable<K extends Key, V extends Value> {
 
                 currentOffset += key.length + value.length;
             }
+
+            meta = new Meta<K, V>(keyList.toArray((int value) -> (K[]) new Key[value]));
 
             byte[] allByteArray = new byte[allocate];
             ByteBuffer buff = ByteBuffer.wrap(allByteArray);
@@ -152,6 +160,50 @@ public class SSTable<K extends Key, V extends Value> {
             throw new DataStorageException(exception.getMessage());
         }
     }
+
+
+    public K[] readAllKey() throws DataStorageException {
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            if (fileInputStream.available() != 0) {
+                BufferedInputStream bis = new BufferedInputStream(fileInputStream);
+                byte[] bytes = bis.readAllBytes();
+
+                int offset = 0;
+                int startData = BytesUtil.bytesToInt(bytes, offset);
+                offset += 4;
+
+                int size = BytesUtil.bytesToInt(bytes, offset);
+                offset += 4;
+
+                List<Integer> offsets = new ArrayList<>();
+
+                for (int i = 0; i < size; i++) {
+                    offsets.add(BytesUtil.bytesToInt(bytes, offset));
+                    offset += 4;
+                    offset += 4;
+                    offset += 8;
+                }
+
+                List<K> keyList = new ArrayList<>();
+
+                for (int i = 0; i < size; i++) {
+                    offset = startData + offsets.get(i);
+
+                    K key = byteConverter.bytesToKey(bytes, offset);
+                    keyList.add(key);
+                }
+
+                return keyList.toArray((int value) -> (K[]) new Key[value]);
+            } else {
+                return (K[]) new Key[0];
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            throw new DataStorageException(exception.getMessage());
+        }
+    }
+
 
     public Record<K, V>[] readAllRecords() throws DataStorageException {
         try {
@@ -183,11 +235,14 @@ public class SSTable<K extends Key, V extends Value> {
                     offset += 8;
                 }
 
+                List<K> keyList = new ArrayList<>();
+
                 for (int i = 0; i < size; i++) {
 
                     offset = startData + offsets.get(i);
 
                     K key = byteConverter.bytesToKey(bytes, offset);
+                    keyList.add(key);
 
                     offset += lengths.get(i);
 
@@ -197,6 +252,7 @@ public class SSTable<K extends Key, V extends Value> {
                     records.add(record);
                 }
 
+                meta = new Meta<K, V>(keyList.toArray((int value) -> (K[]) new Key[value]));
                 return records.toArray(Record[]::new);
             } else {
                 return new Record[0];

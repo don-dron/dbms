@@ -254,6 +254,7 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
         return tables.stream()
                 .flatMap(ssTable -> {
                             try {
+//                                log(ssTable);
                                 return Arrays.stream(ssTable.readAllRecords());
                             } catch (DataStorageException dataStorageException) {
                                 dataStorageException.printStackTrace();

@@ -24,10 +24,9 @@
   <component name="ChangeListManager">
     <list default="true" id="636cd115-ac8a-4ec5-bbf6-f87a6ec92e5a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmLogger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmLogger.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/memory/BPlusTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/memory/BPlusTree.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/storage/DSQLTableTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ru/bmstu/iu9/db/zvoa/dbms/storage/DSQLTableTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/SSTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/SSTable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/DefaultKey.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/DefaultKey.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,22 +128,7 @@
       <recent name="ru.bmstu.iu9.db.zvoa.dbms.modules" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.PipelinesTest.concurrencyMostWriteSelectInsertPipelineTestWithAssertions">
-    <configuration name="DSQLTableTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="dbms" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.storage.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.storage" />
-      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.storage.DSQLTableTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="JUnit.PipelinesTest">
     <configuration name="LsmStorageTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="dbms" />
       <extension name="coverage">
@@ -155,6 +139,21 @@
       </extension>
       <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.storage" />
       <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.storage.LsmStorageTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PipelinesTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="dbms" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ru.bmstu.iu9.db.zvoa.dbms.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ru.bmstu.iu9.db.zvoa.dbms" />
+      <option name="MAIN_CLASS_NAME" value="ru.bmstu.iu9.db.zvoa.dbms.PipelinesTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -231,18 +230,18 @@
     <list>
       <item itemvalue="JUnit.PipelinesTest.concurrencyMostWriteSelectInsertPipelineTestWithAssertions" />
       <item itemvalue="Maven.dbms" />
-      <item itemvalue="JUnit.DSQLTableTest" />
       <item itemvalue="JUnit.LsmStorageTest" />
       <item itemvalue="JUnit.SSTableTreeTest" />
       <item itemvalue="JUnit.ru.bmstu.iu9.db.zvoa.dbms in dbms" />
+      <item itemvalue="JUnit.PipelinesTest" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.PipelinesTest" />
         <item itemvalue="JUnit.PipelinesTest.concurrencyMostWriteSelectInsertPipelineTestWithAssertions" />
         <item itemvalue="JUnit.ru.bmstu.iu9.db.zvoa.dbms in dbms" />
         <item itemvalue="JUnit.SSTableTreeTest" />
         <item itemvalue="JUnit.LsmStorageTest" />
-        <item itemvalue="JUnit.DSQLTableTest" />
       </list>
     </recent_temporary>
   </component>
@@ -316,10 +315,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="725" y="322" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1613500054458" />
-    <state x="765" y="236" key="#com.intellij.ide.util.MemberChooser" timestamp="1613675527026">
+    <state x="765" y="236" key="#com.intellij.ide.util.MemberChooser" timestamp="1613689019122">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="765" y="236" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1613675527026" />
+    <state x="765" y="236" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1613689019122" />
     <state x="784" y="444" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog" timestamp="1613321164009">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -348,38 +347,38 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="826" height="466" key="DebuggerActiveHint/0.0.1920.1040@0.0.1920.1040" timestamp="1613602437133" />
-    <state width="1876" height="446" key="GridCell.Tab.0.bottom" timestamp="1613686213564">
+    <state width="1876" height="423" key="GridCell.Tab.0.bottom" timestamp="1613689033490">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="446" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613686213564" />
-    <state width="1876" height="446" key="GridCell.Tab.0.center" timestamp="1613686213564">
+    <state width="1876" height="423" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613689033490" />
+    <state width="1876" height="423" key="GridCell.Tab.0.center" timestamp="1613689033490">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="446" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613686213564" />
-    <state width="1876" height="446" key="GridCell.Tab.0.left" timestamp="1613686213564">
+    <state width="1876" height="423" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613689033490" />
+    <state width="1876" height="423" key="GridCell.Tab.0.left" timestamp="1613689033490">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="446" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613686213564" />
-    <state width="1876" height="446" key="GridCell.Tab.0.right" timestamp="1613686213564">
+    <state width="1876" height="423" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613689033490" />
+    <state width="1876" height="423" key="GridCell.Tab.0.right" timestamp="1613689033490">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="446" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613686213564" />
-    <state width="1876" height="446" key="GridCell.Tab.1.bottom" timestamp="1613686213493">
+    <state width="1876" height="423" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613689033490" />
+    <state width="1876" height="423" key="GridCell.Tab.1.bottom" timestamp="1613689033416">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="446" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613686213493" />
-    <state width="1876" height="446" key="GridCell.Tab.1.center" timestamp="1613686213493">
+    <state width="1876" height="423" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613689033416" />
+    <state width="1876" height="423" key="GridCell.Tab.1.center" timestamp="1613689033416">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="446" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613686213493" />
-    <state width="1876" height="446" key="GridCell.Tab.1.left" timestamp="1613686213493">
+    <state width="1876" height="423" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613689033416" />
+    <state width="1876" height="423" key="GridCell.Tab.1.left" timestamp="1613689033416">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="446" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613686213493" />
-    <state width="1876" height="446" key="GridCell.Tab.1.right" timestamp="1613686213493">
+    <state width="1876" height="423" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613689033416" />
+    <state width="1876" height="423" key="GridCell.Tab.1.right" timestamp="1613689033416">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="446" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613686213493" />
+    <state width="1876" height="423" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613689033416" />
     <state x="775" y="454" key="ReplaceDuplicatesPrompt" timestamp="1613244422155">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -404,10 +403,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="616" y="240" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1613685512814" />
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1613681619053">
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1613689013009">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1613681619053" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1613689013009" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

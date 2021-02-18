@@ -42,4 +42,9 @@ public class DefaultKey extends Key {
     public int compareTo(Object o) {
         return comparable.compareTo(((DefaultKey) o).getComparable());
     }
+
+    @Override
+    public String toString() {
+        return comparable.toString();
+    }
 }
