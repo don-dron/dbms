@@ -33,12 +33,14 @@ import java.util.stream.Stream;
 public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModule {
 
     private final File directory;
+    private final ByteConverter<K, V> byteConverter;
     private final Map<Integer, ConcurrentLinkedDeque<SSTable<K, V>>> levelMap = new ConcurrentHashMap<>();
     private final ReadWriteLock fileTreeLock = new ReentrantReadWriteLock();
     private static final int POW = 4;
 
-    public LsmFileTree(String path) throws DataStorageException {
+    public LsmFileTree(ByteConverter<K, V> byteConverter, String path) throws DataStorageException {
         try {
+            this.byteConverter = byteConverter;
             this.directory = new File(path);
             if (!directory.exists()) {
                 directory.mkdir();
@@ -48,6 +50,7 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
                 String[] strings = file.getName().split("_");
                 int level = Integer.parseInt(strings[1]);
                 SSTable<K, V> ssTable = new SSTable<>(
+                        byteConverter,
                         path,
                         level,
                         Integer.parseInt(strings[2]));
@@ -159,7 +162,9 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
                     levelMap.put(level + 1, new ConcurrentLinkedDeque<>());
                 }
 
-                SSTable<K, V> ssTable = new SSTable<>(directory.getAbsolutePath(), level + 1,
+                SSTable<K, V> ssTable = new SSTable<>(
+                        byteConverter,
+                        directory.getAbsolutePath(), level + 1,
                         levelMap.get(level + 1)
                                 .stream()
                                 .map(SSTable::getIndex)
@@ -189,7 +194,9 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
                 levelMap.put(0, new ConcurrentLinkedDeque<>());
             }
 
-            SSTable<K, V> ssTable = new SSTable<>(directory.getAbsolutePath(), 0,
+            SSTable<K, V> ssTable = new SSTable<>(byteConverter,
+                    directory.getAbsolutePath(),
+                    0,
                     levelMap.get(0)
                             .stream()
                             .map(SSTable::getIndex)
@@ -265,7 +272,7 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
     public class Merger extends Thread {
         @Override
         public void run() {
-            while (isRunning()) {
+            while (LsmFileTree.this.isRunning()) {
                 if (!tryMerge()) {
                     Thread.yield();
                 }

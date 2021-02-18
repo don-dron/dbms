@@ -32,26 +32,6 @@ public abstract class Schema extends Value {
         this.schemaPath = schemaPath == null ? schemaName : schemaPath;
     }
 
-    public Schema(List<Object> list) {
-        buildFromMemory(list);
-    }
-
-    @Override
-    public void buildFromMemory(List<Object> objects) {
-        schemaName = (String) objects.get(0);
-        schemaPath = (String) objects.get(1);
-    }
-
-    @Override
-    public List<Type> getTypes() {
-        return Arrays.asList(Type.STRING, Type.STRING);
-    }
-
-    @Override
-    public List<Object> toObjects() {
-        return Arrays.asList(schemaName, schemaPath);
-    }
-
     public abstract List<Table> getTables() throws DataStorageException;
 
     public abstract boolean addTable(Table table) throws DataStorageException;

@@ -21,13 +21,15 @@ public class CreateTableSettings {
     private final String schemaName;
     private final String tableName;
     private final String tablePath;
-    private final List<Type> types;
+    private final List<Type> keysTypes;
+    private final List<Type> valuesTypes;
 
     private CreateTableSettings(Builder builder) {
         this.schemaName = builder.schemaName;
         this.tableName = builder.tableName;
         this.tablePath = builder.tablePath;
-        this.types = builder.types;
+        this.keysTypes = builder.keysTypes;
+        this.valuesTypes = builder.valuesTypes;
     }
 
     public String getTablePath() {
@@ -42,15 +44,20 @@ public class CreateTableSettings {
         return tableName;
     }
 
-    public List<Type> getTypes() {
-        return types;
+    public List<Type> getKeyTypes() {
+        return valuesTypes;
+    }
+
+    public List<Type> getValuesTypes() {
+        return valuesTypes;
     }
 
     public static class Builder {
         private String schemaName;
         private String tableName;
         private String tablePath;
-        private List<Type> types;
+        private List<Type> keysTypes;
+        private List<Type> valuesTypes;
 
         public static Builder newBuilder() {
             return new CreateTableSettings.Builder();
@@ -67,7 +74,7 @@ public class CreateTableSettings {
         }
 
         public Builder setTypes(List<Type> types) {
-            this.types = types;
+            this.valuesTypes = types;
             return this;
         }
 

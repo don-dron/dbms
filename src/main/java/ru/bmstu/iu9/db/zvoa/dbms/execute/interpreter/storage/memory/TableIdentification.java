@@ -28,27 +28,12 @@ public class TableIdentification extends Key {
         this.name = name;
     }
 
-    public TableIdentification(List<Object> list) {
-        buildFromMemory(list);
-    }
-
     @Override
     public int compareTo(Object o) {
         return name.compareTo(((TableIdentification) o).name);
     }
 
-    @Override
-    public List<Object> toObjects() {
-        return Arrays.asList(name);
-    }
-
-    @Override
-    public List<Type> getTypes() {
-        return Arrays.asList(Type.STRING);
-    }
-
-    @Override
-    public void buildFromMemory(List<Object> objects) {
-        name = (String) objects.get(0);
+    public String getTableName() {
+        return name;
     }
 }

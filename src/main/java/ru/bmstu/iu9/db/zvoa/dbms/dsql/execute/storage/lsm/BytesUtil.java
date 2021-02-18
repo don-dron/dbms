@@ -84,7 +84,7 @@ public final class BytesUtil {
         return new String(bytes, offset + 4, length);
     }
 
-    public static byte[] listObjectsToBytes(List<Object> values) {
+    public static byte[] listObjectsToBytes(List<Object> values, List<Type> types) {
         List<byte[]> lst = values.stream().map(BytesUtil::primitiveToBytes).collect(Collectors.toList());
 
         byte[] allByteArray = new byte[lst.stream().map(x -> x.length).reduce(Integer::sum).orElse(0)];

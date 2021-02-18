@@ -22,7 +22,6 @@ import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public abstract class Table extends Value {
     private String tableName;
@@ -40,53 +39,24 @@ public abstract class Table extends Value {
         this.tablePath = tablePath == null ? tableName : tablePath;
     }
 
-    public Table(List<Object> list) {
-        buildFromMemory(list);
+    public Type getKeyType() {
+        return types.get(rowKeyFunction);
+    }
+
+    public List<Type> getTypes() {
+        return types;
     }
 
     public Integer getRowKeyFunction() {
         return rowKeyFunction;
     }
 
-    @Override
-    public List<Object> toObjects() {
-        return Arrays.asList(
-                tableName,
-                tablePath,
-                rowKeyFunction,
-                types
-                        .stream()
-                        .map(Enum::name)
-                        .collect(Collectors.joining(",")));
-    }
-
     public List<Type> getTableTypes() {
         return Arrays.asList(Type.STRING, Type.STRING, Type.INTEGER, Type.STRING);
     }
 
-    @Override
-    public void buildFromMemory(List<Object> objects) {
-        tableName = (String) objects.get(0);
-        tablePath = (String) objects.get(1);
-        rowKeyFunction = (Integer) objects.get(2);
-        types = Arrays.stream(((String) objects.get(3)).split(",")).map(str -> {
-            if (str.equals("INTEGER")) {
-                return Type.INTEGER;
-            } else if (str.equals("STRING")) {
-                return Type.STRING;
-            } else {
-                throw new IllegalArgumentException("sadasd");
-            }
-        }).collect(Collectors.toList());
-    }
-
     public String getTablePath() {
         return tablePath;
-    }
-
-    @Override
-    public List<Type> getTypes() {
-        return types;
     }
 
     public String getTableName() {

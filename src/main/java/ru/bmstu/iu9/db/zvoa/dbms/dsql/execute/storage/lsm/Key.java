@@ -22,13 +22,5 @@ import java.util.List;
 public abstract class Key implements Comparable {
     public Key() {
     }
-
-    public Key(List<Object> objects) {
-        buildFromMemory(objects);
-    }
-
-    public abstract List<Object> toObjects();
-    public abstract void buildFromMemory(List<Object> objects);
-    public abstract List<Type> getTypes();
 }
 

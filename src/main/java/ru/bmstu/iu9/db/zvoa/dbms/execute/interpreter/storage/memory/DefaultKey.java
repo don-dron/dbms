@@ -30,11 +30,6 @@ public class DefaultKey extends Key {
         this.comparable = comparable;
     }
 
-    public DefaultKey(Type type, List<Object> list) {
-        this.type = type;
-        buildFromMemory(list);
-    }
-
     public Comparable getComparable() {
         return comparable;
     }
@@ -46,21 +41,5 @@ public class DefaultKey extends Key {
     @Override
     public int compareTo(Object o) {
         return comparable.compareTo(((DefaultKey) o).getComparable());
-    }
-
-    @Override
-    public List<Object> toObjects() {
-        return Arrays.asList(comparable);
-    }
-
-    @Override
-    public void buildFromMemory(List<Object> objects) {
-        comparable = (Comparable) objects.get(0);
-    }
-
-    @Override
-    public List<Type> getTypes() {
-        assert type != null;
-        return Arrays.asList(type);
     }
 }

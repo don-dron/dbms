@@ -22,12 +22,4 @@ import java.util.List;
 public abstract class Value {
     public Value() {
     }
-
-    public Value(List<Object> objects) {
-        buildFromMemory(objects);
-    }
-
-    public abstract void buildFromMemory(List<Object> objects);
-    public abstract List<Object> toObjects();
-    public abstract List<Type> getTypes();
 }

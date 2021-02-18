@@ -18,39 +18,31 @@ package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.BytesUtil;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLSchema;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLTable;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.*;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class SSTable<K extends Key, V extends Value> {
     private final File file;
     private final int level;
     private final int index;
-    private Meta meta;
+    private final ByteConverter<K, V> byteConverter;
+    private Meta<K, V> meta;
 
-    public SSTable(String path, int level, int index) throws DataStorageException {
+    public SSTable(ByteConverter<K, V> byteConverter, String path, int level, int index) throws DataStorageException {
         try {
             file = new File(path + "/" + "sstable_" + level + "_" + index);
             this.index = index;
             this.level = level;
+            this.byteConverter = byteConverter;
+
             if (!file.exists()) {
                 file.createNewFile();
             } else {
                 try {
-//                    FileInputStream fileInputStream = new FileInputStream(file);
-//                    ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-//                    meta = (Meta<K, V>) objectInputStream.readObject();
-//                    objectInputStream.close();
                 } catch (Exception exception) {
                     throw new DataStorageException(exception.getMessage());
                 }
@@ -101,53 +93,9 @@ public class SSTable<K extends Key, V extends Value> {
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
 
-            byte[] keyType = null;
-
-            if (records[0].getKey() instanceof TableIdentification) {
-                keyType = BytesUtil.stringToBytes("TB");
-            } else if (records[0].getKey() instanceof SchemeIdentification) {
-                keyType = BytesUtil.stringToBytes("SC");
-            } else {
-                keyType = BytesUtil.stringToBytes("PR");
-            }
-
-            byte[] valueType = null;
-
-            if (records[0].getValue() instanceof Table) {
-                valueType = BytesUtil.stringToBytes("TB");
-            } else if (records[0].getValue() instanceof Schema) {
-                valueType = BytesUtil.stringToBytes("SC");
-            } else {
-                valueType = BytesUtil.stringToBytes("PR");
-            }
-
-            byte[] keyTypes = BytesUtil.stringToBytes(records[0]
-                    .getKey()
-                    .getTypes()
-                    .stream()
-                    .map(Enum::name)
-                    .collect(Collectors.joining(",")));
-
-            byte[] valueTypes = BytesUtil.stringToBytes(records[0]
-                    .getValue()
-                    .toObjects()
-                    .stream()
-                    .map(x -> {
-                        if (x instanceof Integer) {
-                            return "INTEGER";
-                        } else if (x instanceof String) {
-                            return "STRING";
-                        } else if (x instanceof Long) {
-                            return "LONG";
-                        } else {
-                            throw new IllegalArgumentException("sadasadasdssd");
-                        }
-                    })
-                    .collect(Collectors.joining(",")));
-
             int size = records.length;
-            int startData = 0 + 8 + keyType.length + valueType.length + keyTypes.length + valueTypes.length;
-            int allocate = 0 + 8 + keyType.length + valueType.length + keyTypes.length + valueTypes.length;
+            int startData = 0 + 8;
+            int allocate = 0 + 8;
             int currentOffset = 0;
 
             List<Integer> offsets = new ArrayList<>();
@@ -156,9 +104,9 @@ public class SSTable<K extends Key, V extends Value> {
             List<byte[]> keys = new ArrayList<>();
             List<byte[]> values = new ArrayList<>();
 
-            for (Record record : records) {
-                byte[] key = BytesUtil.listObjectsToBytes(record.getKey().toObjects());
-                byte[] value = BytesUtil.listObjectsToBytes(record.getValue().toObjects());
+            for (Record<K, V> record : records) {
+                byte[] key = byteConverter.keyToBytes(record.getKey());
+                byte[] value = byteConverter.valueToBytes(record.getValue());
 
                 offsets.add(currentOffset);
                 startData += 4;
@@ -183,10 +131,6 @@ public class SSTable<K extends Key, V extends Value> {
 
             byte[] allByteArray = new byte[allocate];
             ByteBuffer buff = ByteBuffer.wrap(allByteArray);
-            buff.put(keyType);
-            buff.put(valueType);
-            buff.put(keyTypes);
-            buff.put(valueTypes);
             buff.putInt(startData);
             buff.putInt(size);
 
@@ -217,64 +161,6 @@ public class SSTable<K extends Key, V extends Value> {
                 byte[] bytes = bis.readAllBytes();
 
                 int offset = 0;
-                String keyType = BytesUtil.bytesToString(bytes, offset);
-                offset += 4 + keyType.getBytes().length;
-
-                String valueType = BytesUtil.bytesToString(bytes, offset);
-                offset += 4 + valueType.getBytes().length;
-
-                KeyBuilder keyBuilder = null;
-
-                ValueBuilder valueBuilder = null;
-
-                String stringKeyTypes = BytesUtil.bytesToString(bytes, offset);
-                offset += 4 + stringKeyTypes.getBytes().length;
-
-                String stringValueTypes = BytesUtil.bytesToString(bytes, offset);
-                offset += 4 + stringValueTypes.getBytes().length;
-
-                List<Type> keyTypes = Arrays.stream(stringKeyTypes.split(","))
-                        .map(str -> {
-                            if (str.equals("INTEGER")) {
-                                return Type.INTEGER;
-                            } else if (str.equals("STRING")) {
-                                return Type.STRING;
-                            } else if (str.equals("LONG")) {
-                                return Type.LONG;
-                            } else {
-                                throw new IllegalArgumentException("sadasd");
-                            }
-                        }).collect(Collectors.toList());
-
-                List<Type> valueTypes = Arrays.stream(stringValueTypes.split(","))
-                        .map(str -> {
-                            if (str.equals("INTEGER")) {
-                                return Type.INTEGER;
-                            } else if (str.equals("STRING")) {
-                                return Type.STRING;
-                            } else if (str.equals("LONG")) {
-                                return Type.LONG;
-                            } else {
-                                throw new IllegalArgumentException("sadasd");
-                            }
-                        }).collect(Collectors.toList());
-
-                if (keyType.equals("TB")) {
-                    keyBuilder = TableIdentification::new;
-                } else if (keyType.equals("SC")) {
-                    keyBuilder = SchemeIdentification::new;
-                } else {
-                    keyBuilder = (lst) -> new DefaultKey(keyTypes.get(0), lst);
-                }
-
-                if (valueType.equals("TB")) {
-                    valueBuilder = DSQLTable::new;
-                } else if (valueType.equals("SC")) {
-                    valueBuilder = DSQLSchema::new;
-                } else {
-                    valueBuilder = Row::new;
-                }
-
                 int startData = BytesUtil.bytesToInt(bytes, offset);
                 offset += 4;
 
@@ -301,13 +187,11 @@ public class SSTable<K extends Key, V extends Value> {
 
                     offset = startData + offsets.get(i);
 
-                    List<Object> objects = BytesUtil.listFromBytes(bytes, offset, keyTypes);
-                    Key key = keyBuilder.apply(objects);
+                    K key = byteConverter.bytesToKey(bytes, offset);
 
                     offset += lengths.get(i);
 
-                    objects = BytesUtil.listFromBytes(bytes, offset, valueTypes);
-                    Value value = valueBuilder.apply(objects);
+                    V value = byteConverter.bytesToValue(bytes, offset);
 
                     Record record = new Record(key, value, timestamps.get(i));
                     records.add(record);
@@ -321,12 +205,6 @@ public class SSTable<K extends Key, V extends Value> {
             exception.printStackTrace();
             throw new DataStorageException(exception.getMessage());
         }
-    }
-
-    public interface KeyBuilder extends Function<List<Object>, Key> {
-    }
-
-    public interface ValueBuilder extends Function<List<Object>, Value> {
     }
 
     public void delete() {

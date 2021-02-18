@@ -15,16 +15,19 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver;
 
-import java.util.Map;
-import java.util.function.Supplier;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.ByteConverter;
 
-public class StorageProperties<K, V> {
+public class StorageProperties<K extends Key, V extends Value> {
     private String path;
     private String name;
+    private ByteConverter<K, V> byteConverter;
 
-    public StorageProperties(String name, String path) {
+    public StorageProperties(ByteConverter<K, V> byteConverter, String name, String path) {
         this.name = name;
         this.path = path;
+        this.byteConverter = byteConverter;
     }
 
     public String getPath() {
@@ -33,6 +36,10 @@ public class StorageProperties<K, V> {
 
     public String getName() {
         return name;
+    }
+
+    public ByteConverter<K, V> getByteConverter() {
+        return byteConverter;
     }
 
     public enum StorageType {

@@ -37,10 +37,6 @@ public class DSQLSchema extends Schema {
         tables = builder.tables;
     }
 
-    public DSQLSchema(List<Object> list) {
-        super(list);
-    }
-
     @Override
     public List<Table> getTables() {
         return Arrays.asList(tables.toArray(Table[]::new));
@@ -82,6 +78,10 @@ public class DSQLSchema extends Schema {
                 .orElseThrow(() -> new DataStorageException("Table " + tableName + " not found"));
     }
 
+    public void setStorage(IKeyValueStorage schemaStorage) {
+        this.storage = schemaStorage;
+    }
+
     public static class Builder {
         private IKeyValueStorage storage;
         private String schemaName;
@@ -102,8 +102,9 @@ public class DSQLSchema extends Schema {
             return this;
         }
 
-        public void setSchemaPath(String schemaPath) {
+        public Builder setSchemaPath(String schemaPath) {
             this.schemaPath = schemaPath;
+            return this;
         }
 
         public Builder setTables(Set<Table> tables) {

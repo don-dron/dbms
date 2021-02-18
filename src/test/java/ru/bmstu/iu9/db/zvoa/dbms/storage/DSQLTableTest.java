@@ -21,12 +21,13 @@ import org.junit.jupiter.api.Test;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.StorageProperties;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.LsmStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.TableConverter;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLTable;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.InsertSettings;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.SelectSettings;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Row;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,15 +50,17 @@ public class DSQLTableTest {
 
     @Test
     public void writeTest() throws DataStorageException, IOException {
-        LsmStorage<Key, Row> storage = new LsmStorage<>(new StorageProperties("table", path));
-
-        storage.init();
-
         DSQLTable table = DSQLTable.Builder.newBuilder()
                 .setName("Table")
+                .setTypes(Arrays.asList(Type.INTEGER, Type.STRING, Type.INTEGER))
                 .setRowToKey(0)
-                .setStorage(storage)
                 .build();
+        LsmStorage<Key, Row> storage = new LsmStorage<>(new StorageProperties(new TableConverter(table,
+                Arrays.asList(table.getKeyType()),
+                table.getTypes()), "table", path));
+
+        table.setStorage(storage);
+        storage.init();
 
         table.insertRows(InsertSettings.Builder.newBuilder()
                 .setRows(Arrays.asList(
@@ -81,15 +84,19 @@ public class DSQLTableTest {
 
     @Test
     public void selectLastChangesTest() throws DataStorageException, IOException {
-        LsmStorage<Key, Row> storage = new LsmStorage<>(new StorageProperties("table", path));
-
-        storage.init();
-
         DSQLTable table = DSQLTable.Builder.newBuilder()
                 .setName("Table")
                 .setRowToKey(0)
-                .setStorage(storage)
+                .setTypes(Arrays.asList(Type.INTEGER, Type.STRING, Type.INTEGER))
                 .build();
+        LsmStorage<Key, Row> storage = new LsmStorage<>(new StorageProperties(new TableConverter(table,
+                Arrays.asList(table.getKeyType()),
+                table.getTypes()), "table", path));
+
+        table.setStorage(storage);
+
+        storage.init();
+
         // 1. Put rows (to memory)
         table.insertRows(InsertSettings.Builder.newBuilder()
                 .setRows(Arrays.asList(

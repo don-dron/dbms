@@ -33,8 +33,8 @@ public class DSQLTable extends Table {
         storage = builder.storage;
     }
 
-    public DSQLTable(List<Object> list) {
-        super(list);
+    public void setStorage(IKeyValueStorage<Key, Row> storage) {
+        this.storage = storage;
     }
 
     public List<Row> selectRows(SelectSettings selectSettings) throws DataStorageException {
@@ -44,7 +44,6 @@ public class DSQLTable extends Table {
             return storage.getValues(x -> true)
                     .values()
                     .stream()
-                    .peek(row -> row.setTable(this))
                     .collect(Collectors.toList());
         }
     }
@@ -73,7 +72,7 @@ public class DSQLTable extends Table {
         }
     }
 
-    protected Row createRow(List<Object> values) {
+    public Row createRow(List<Object> values) {
         return new Row(this, values);
     }
 
@@ -93,8 +92,9 @@ public class DSQLTable extends Table {
             return this;
         }
 
-        public void setPath(String path) {
+        public Builder setPath(String path) {
             this.path = path;
+            return this;
         }
 
         public Builder setRowToKey(int rowToKey) {

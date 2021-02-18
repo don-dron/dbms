@@ -18,6 +18,8 @@ package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.IKeyValueStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.SchemeConverter;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.TableConverter;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLSchema;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLTable;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.CreateSchemaSettings;
@@ -26,10 +28,7 @@ import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageExceptio
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -47,8 +46,10 @@ public class FileSystemManager extends AbstractDbModule {
         executorService = createExecutorService();
     }
 
-    public synchronized IKeyValueStorage createTableStorage(CreateTableSettings settings) throws DataStorageException, IOException {
-        StorageProperties storageProperties = new StorageProperties(settings.getTableName(),
+    public synchronized IKeyValueStorage createTableStorage(DSQLTable table, CreateTableSettings settings) throws DataStorageException, IOException {
+        StorageProperties storageProperties = new StorageProperties(
+                new TableConverter(table, Arrays.asList(table.getKeyType()), table.getTypes()),
+                settings.getTableName(),
                 rootDirectory.getPath() + "/" + settings.getSchemaName() + "/" + settings.getTableName());
         IKeyValueStorage storage = storageSupplier.apply(storageProperties);
         FileItem fileItem = new FileItem(settings.getSchemaName(), settings.getTableName(), StorageProperties.StorageType.TABLE);
@@ -60,8 +61,8 @@ public class FileSystemManager extends AbstractDbModule {
         return storage;
     }
 
-    public synchronized IKeyValueStorage createSchemaStorage(CreateSchemaSettings settings) throws DataStorageException, IOException {
-        StorageProperties storageProperties = new StorageProperties(settings.getSchemaName(),
+    public synchronized IKeyValueStorage createSchemaStorage(DSQLSchema schema, CreateSchemaSettings settings) throws DataStorageException, IOException {
+        StorageProperties storageProperties = new StorageProperties(new SchemeConverter(), settings.getSchemaName(),
                 rootDirectory.getPath() + "/" + settings.getSchemaName());
         IKeyValueStorage storage = storageSupplier.apply(storageProperties);
         FileItem fileItem = new FileItem(settings.getSchemaName(), null, StorageProperties.StorageType.SCHEMA);
@@ -110,7 +111,7 @@ public class FileSystemManager extends AbstractDbModule {
                     try {
                         storage.getValue().getValues(x -> true).values().forEach(value -> {
                             DSQLSchema schemaValue = ((DSQLSchema) value);
-                            StorageProperties storageProperties = new StorageProperties(schemaValue.getSchemaName(),
+                            StorageProperties storageProperties = new StorageProperties(new SchemeConverter(), schemaValue.getSchemaName(),
                                     rootDirectory.getPath() + "/" + schemaValue.getSchemaName());
                             IKeyValueStorage keyValueStorage = storageSupplier.apply(storageProperties);
                             try {
@@ -146,7 +147,11 @@ public class FileSystemManager extends AbstractDbModule {
                     try {
                         storage.getValue().getValues(x -> true).values().forEach(value -> {
                             DSQLTable tableValue = ((DSQLTable) value);
-                            StorageProperties storageProperties = new StorageProperties(tableValue.getTableName(),
+                            StorageProperties storageProperties = new StorageProperties(
+                                    new TableConverter(tableValue,
+                                            Arrays.asList(tableValue.getKeyType()),
+                                            tableValue.getTypes()),
+                                    tableValue.getTableName(),
                                     rootDirectory.getPath() + "/" + storage.getKey().getSchema() + "/" + tableValue.getTableName());
                             IKeyValueStorage tableStorageByDrive = storageSupplier.apply(storageProperties);
                             try {

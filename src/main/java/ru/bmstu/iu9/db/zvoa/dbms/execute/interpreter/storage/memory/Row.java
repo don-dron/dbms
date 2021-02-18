@@ -23,20 +23,12 @@ import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
 import java.util.List;
 
 public class Row extends Value {
-    private transient Table table;
-    private List<Object> values;
+    private final transient Table table;
+    private final List<Object> values;
 
     public Row(Table table, List<Object> values) {
         this.table = table;
         this.values = values;
-    }
-
-    public Row(List<Object> list) {
-        buildFromMemory(list);
-    }
-
-    public void setTable(Table table) {
-        this.table = table;
     }
 
     public Key getKey() {
@@ -56,20 +48,5 @@ public class Row extends Value {
         return "Row{" +
                 "values=" + values +
                 '}';
-    }
-
-    @Override
-    public void buildFromMemory(List<Object> objects) {
-        values = objects;
-    }
-
-    @Override
-    public List<Object> toObjects() {
-        return values;
-    }
-
-    @Override
-    public List<Type> getTypes() {
-        return table.getTypes();
     }
 }

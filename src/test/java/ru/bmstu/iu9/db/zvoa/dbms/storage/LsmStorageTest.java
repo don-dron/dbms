@@ -19,9 +19,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.StorageProperties;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.LsmStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.TableConverter;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLTable;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.DefaultKey;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Row;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
 
@@ -51,17 +54,20 @@ public class LsmStorageTest {
 
     @Test
     public void simpleWriteReadTest() throws Exception {
-        LsmStorage<TestKey, Row> storage = new LsmStorage<>(new StorageProperties("table", path));
-
         Table table = DSQLTable.Builder.newBuilder()
                 .setName("table")
                 .setTypes(Arrays.asList(Type.STRING, Type.INTEGER))
                 .build();
-        TestValue testValue = new TestValue("Andrey", 20);
-        testValue.setTable(table);
+
+        LsmStorage<Key, Row> storage = new LsmStorage<>(new StorageProperties(new TableConverter(table,
+                Arrays.asList(Type.INTEGER),
+                table.getTypes()), "table", path));
+
+        Row testValue = new Row(table, Arrays.asList("Andrey", 20));
+
         storage.init();
-        storage.put(new TestKey(1), testValue);
+        storage.put(new DefaultKey(Type.INTEGER, 1), testValue);
         storage.pushToDrive();
-        assertEquals("Andrey", storage.get(new TestKey(1)).getValues().get(0));
+        assertEquals("Andrey", storage.get(new DefaultKey(Type.INTEGER, 1)).getValues().get(0));
     }
 }

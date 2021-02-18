@@ -85,7 +85,7 @@ public class PipelinesTest {
             dataStorage.createTable(CreateTableSettings.Builder.newBuilder()
                     .setSchemaName("schema1")
                     .setTableName("table1")
-                    .setTypes(Arrays.asList(Type.INTEGER))
+                    .setTypes(Arrays.asList(Type.LONG))
                     .build());
             System.out.println("Create table");
         }
@@ -356,7 +356,6 @@ public class PipelinesTest {
             Thread thread = new Thread(() -> {
                 for (int i = 0; i < REQUEST_PER_CLIENT * REQUEST_PER_CLIENT; i++) {
                     if (true) {
-                        System.out.println(i);
                         int count = new Random().nextInt(RANGE);
                         startValues.add(count);
 
@@ -395,7 +394,6 @@ public class PipelinesTest {
 
         assertEquals(endValues.stream().map(String::valueOf).collect(Collectors.joining(", ")),
                 startValues.stream().map(String::valueOf).collect(Collectors.joining(", ")));
-
         dbms.close();
         dbmsThread.join();
     }

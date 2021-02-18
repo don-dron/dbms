@@ -18,14 +18,20 @@ package ru.bmstu.iu9.db.zvoa.dbms.storage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.LsmFileTree;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.TableConverter;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLTable;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.DefaultKey;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Row;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -34,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SSTableTreeTest {
     public static final String path = "test_file";
+    private Table table;
 
     public String readFile(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)));
@@ -46,52 +53,62 @@ public class SSTableTreeTest {
         if (file.exists()) {
             file.delete();
         }
+        table = DSQLTable.Builder.newBuilder()
+                .setName("table")
+                .setTypes(Arrays.asList(Type.STRING, Type.INTEGER))
+                .build();
     }
 
     @Test
     public void simpleWriteReadTest() throws DataStorageException, IOException {
-        LsmFileTree<TestKey, TestValue> lsmFileTree = new LsmFileTree<>(path);
+        LsmFileTree<DefaultKey, Row> lsmFileTree = new LsmFileTree<>(new TableConverter(table,
+                Arrays.asList(Type.INTEGER),
+                table.getTypes()), path);
 
-        Map<TestKey,TestValue> map = new TreeMap<>();
-        map.put(new TestKey(1), new TestValue("Andrey", 20));
+        Map<DefaultKey, Row> map = new TreeMap<>();
+        map.put(new DefaultKey(Type.INTEGER, 1), new Row(table, Arrays.asList("Andrey", 20)));
         lsmFileTree.putAll(map);
-        assertEquals(lsmFileTree.readAllKeys().get(new TestKey(1)).name, "Andrey");
+        assertEquals(lsmFileTree.readAllKeys().get(new DefaultKey(Type.INTEGER, 1)).getValues().get(0), "Andrey");
     }
 
     @Test
     public void writeTest() throws DataStorageException, IOException {
-        LsmFileTree<TestKey, TestValue> lsmFileTree = new LsmFileTree<>(path);
+        LsmFileTree<DefaultKey, Row> lsmFileTree = new LsmFileTree<>(new TableConverter(table,
+                Arrays.asList(Type.INTEGER),
+                        table.getTypes()), path);
 
-        Map<TestKey,TestValue> map = new TreeMap<>();
-        map.put(new TestKey(1), new TestValue("Andrey", 20));
-        map.put(new TestKey(4), new TestValue("John", 16));
-        map.put(new TestKey(3), new TestValue("Max", 4));
-        map.put(new TestKey(2), new TestValue("Alex", 76));
+        Map<DefaultKey, Row> map = new TreeMap<>();
+        map.put(new DefaultKey(Type.INTEGER, 1), new Row(table, Arrays.asList("Andrey", 20)));
+        map.put(new DefaultKey(Type.INTEGER, 4), new Row(table, Arrays.asList("John", 16)));
+        map.put(new DefaultKey(Type.INTEGER, 3), new Row(table, Arrays.asList("Max", 4)));
+        map.put(new DefaultKey(Type.INTEGER, 2), new Row(table, Arrays.asList("Alex", 76)));
 
         lsmFileTree.putAll(map);
         map = lsmFileTree.readAllKeys();
-        assertEquals(map.get(new TestKey(1)).name, "Andrey");
-        assertEquals(map.get(new TestKey(2)).name, "Alex");
-        assertEquals(map.get(new TestKey(3)).name, "Max");
-        assertEquals(map.get(new TestKey(4)).name, "John");
+        assertEquals(map.get(new DefaultKey(Type.INTEGER, 1)).getValues().get(0), "Andrey");
+        assertEquals(map.get(new DefaultKey(Type.INTEGER, 2)).getValues().get(0), "Alex");
+        assertEquals(map.get(new DefaultKey(Type.INTEGER, 3)).getValues().get(0), "Max");
+        assertEquals(map.get(new DefaultKey(Type.INTEGER, 4)).getValues().get(0), "John");
     }
 
     @Test
     public void readAllTest() throws DataStorageException, IOException {
-        LsmFileTree<TestKey, TestValue> lsmFileTree = new LsmFileTree<>(path);
+        LsmFileTree<DefaultKey, Row> lsmFileTree = new LsmFileTree<>(new TableConverter(table,
+                Arrays.asList(Type.INTEGER),
+                table.getTypes()), path);
 
-        Map<TestKey,TestValue> map = new TreeMap<>();
-        map.put(new TestKey(1), new TestValue("Andrey", 20));
-        map.put(new TestKey(4), new TestValue("John", 16));
-        map.put(new TestKey(3), new TestValue("Max", 4));
-        map.put(new TestKey(2), new TestValue("Alex", 76));
+        Map<DefaultKey, Row> map = new TreeMap<>();
+        map.put(new DefaultKey(Type.INTEGER, 1), new Row(table, Arrays.asList("Andrey", 20)));
+        map.put(new DefaultKey(Type.INTEGER, 4), new Row(table, Arrays.asList("John", 16)));
+        map.put(new DefaultKey(Type.INTEGER, 3), new Row(table, Arrays.asList("Max", 4)));
+        map.put(new DefaultKey(Type.INTEGER, 2), new Row(table, Arrays.asList("Alex", 76)));
 
         lsmFileTree.putAll(map);
         map = lsmFileTree.readAllKeys();
 
-        assertTrue(map.containsKey(new TestKey(1)));
-        assertTrue(map.containsKey(new TestKey(2)));
-        assertTrue(map.containsKey(new TestKey(3)));
-        assertTrue(map.containsKey(new TestKey(4)));
+        assertTrue(map.containsKey(new DefaultKey(Type.INTEGER, 1)));
+        assertTrue(map.containsKey(new DefaultKey(Type.INTEGER, 2)));
+        assertTrue(map.containsKey(new DefaultKey(Type.INTEGER, 3)));
+        assertTrue(map.containsKey(new DefaultKey(Type.INTEGER, 4)));
     }
 }
