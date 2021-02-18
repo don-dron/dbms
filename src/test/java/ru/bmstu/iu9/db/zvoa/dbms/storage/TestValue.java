@@ -15,25 +15,17 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.storage;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Row;
 
-public class TestValue implements Value {
+import java.util.Arrays;
+
+public class TestValue extends Row {
     public String name;
-    public Integer age;
-
-    public TestValue() {
-    }
+    public int age;
 
     public TestValue(String name, int age) {
+        super(Arrays.asList(name, age));
         this.name = name;
         this.age = age;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public String getName() {
-        return name;
     }
 }

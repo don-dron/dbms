@@ -40,7 +40,7 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
 
     private final String path;
     private Map<K, V> lsmMemory;
-    private final LsmLogger<K, V> lsmLogger;
+//    private final LsmLogger<K, V> lsmLogger;
     private final LsmFileTree<K, V> lsmFileTree;
     private final LsmCacheAlgorithm<K, V> lsmCacheAlgorithm = new LsmCacheAlgorithmAll<>();
     private final ReadWriteLock memoryLock = new ReentrantReadWriteLock();
@@ -50,7 +50,7 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
         this.path = storageProperties.getPath();
         this.lsmFileTree = new LsmFileTree(storageProperties.getPath());
         this.lsmMemory = new TreeMap<>();
-        this.lsmLogger = new LsmLogger<>(storageProperties.getPath() + "/log");
+//        this.lsmLogger = new LsmLogger<>(storageProperties.getPath() + "/log");
     }
 
     @Override

@@ -16,16 +16,39 @@
 package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory;
 
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
 
-public class SchemeIdentification implements Key {
+import java.util.Arrays;
+import java.util.List;
+
+public class SchemeIdentification extends Key {
     private String name;
 
     public SchemeIdentification(String name) {
         this.name = name;
     }
 
+    public SchemeIdentification(List<Object> list) {
+        buildFromMemory(list);
+    }
+
     @Override
     public int compareTo(Object o) {
         return name.compareTo(((SchemeIdentification) o).name);
+    }
+
+    @Override
+    public List<Type> getTypes() {
+        return Arrays.asList(Type.STRING);
+    }
+
+    @Override
+    public List<Object> toObjects() {
+        return Arrays.asList(name);
+    }
+
+    @Override
+    public void buildFromMemory(List<Object> objects) {
+        name = (String) objects.get(0);
     }
 }

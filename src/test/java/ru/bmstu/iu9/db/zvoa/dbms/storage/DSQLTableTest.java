@@ -55,7 +55,7 @@ public class DSQLTableTest {
 
         DSQLTable table = DSQLTable.Builder.newBuilder()
                 .setName("Table")
-                .setRowToKey(row -> new TestKey((Integer) row.getValues().get(0)))
+                .setRowToKey(0)
                 .setStorage(storage)
                 .build();
 
@@ -87,7 +87,7 @@ public class DSQLTableTest {
 
         DSQLTable table = DSQLTable.Builder.newBuilder()
                 .setName("Table")
-                .setRowToKey(row -> new TestKey((Integer) row.getValues().get(0)))
+                .setRowToKey(0)
                 .setStorage(storage)
                 .build();
         // 1. Put rows (to memory)

@@ -26,11 +26,15 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class DSQLTable extends Table {
-    private transient final IKeyValueStorage<Key, Row> storage;
+    private transient IKeyValueStorage<Key, Row> storage;
 
-    private DSQLTable(Builder builder) {
+    public DSQLTable(Builder builder) {
         super(builder.name, builder.path, builder.types, builder.rowKeyFunction);
         storage = builder.storage;
+    }
+
+    public DSQLTable(List<Object> list) {
+        super(list);
     }
 
     public List<Row> selectRows(SelectSettings selectSettings) throws DataStorageException {
@@ -77,7 +81,7 @@ public class DSQLTable extends Table {
         private String name;
         private String path;
         private List<Type> types;
-        private Function<Row, Key> rowKeyFunction;
+        private int rowKeyFunction;
         private IKeyValueStorage<Key, Row> storage;
 
         public static Builder newBuilder() {
@@ -93,7 +97,7 @@ public class DSQLTable extends Table {
             this.path = path;
         }
 
-        public Builder setRowToKey(Function<Row, Key> rowToKey) {
+        public Builder setRowToKey(int rowToKey) {
             this.rowKeyFunction = rowToKey;
             return this;
         }

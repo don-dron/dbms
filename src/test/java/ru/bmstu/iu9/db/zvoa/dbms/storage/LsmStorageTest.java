@@ -20,16 +20,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.StorageProperties;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.LsmStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLTable;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Row;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LsmStorageTest {
-    public static final String path = "test_file2";
+    public static final String path = "test_file";
 
     public String readFile(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)));
@@ -46,11 +51,17 @@ public class LsmStorageTest {
 
     @Test
     public void simpleWriteReadTest() throws Exception {
-        LsmStorage<TestKey, TestValue> storage = new LsmStorage<>(new StorageProperties("table", path));
+        LsmStorage<TestKey, Row> storage = new LsmStorage<>(new StorageProperties("table", path));
 
+        Table table = DSQLTable.Builder.newBuilder()
+                .setName("table")
+                .setTypes(Arrays.asList(Type.STRING, Type.INTEGER))
+                .build();
+        TestValue testValue = new TestValue("Andrey", 20);
+        testValue.setTable(table);
         storage.init();
-        storage.put(new TestKey(1), new TestValue("Andrey", 20));
+        storage.put(new TestKey(1), testValue);
         storage.pushToDrive();
-        assertEquals("Andrey", storage.get(new TestKey(1)).name);
+        assertEquals("Andrey", storage.get(new TestKey(1)).getValues().get(0));
     }
 }

@@ -15,7 +15,20 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm;
 
-import java.io.Serializable;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
 
-public interface Key extends Serializable, Comparable {
+import java.util.List;
+
+public abstract class Key implements Comparable {
+    public Key() {
+    }
+
+    public Key(List<Object> objects) {
+        buildFromMemory(objects);
+    }
+
+    public abstract List<Object> toObjects();
+    public abstract void buildFromMemory(List<Object> objects);
+    public abstract List<Type> getTypes();
 }
+

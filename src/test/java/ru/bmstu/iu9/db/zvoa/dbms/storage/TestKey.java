@@ -15,24 +15,16 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.storage;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.DefaultKey;
 
-public class TestKey implements Key {
-    public Integer id;
+public class TestKey extends DefaultKey {
 
-    public TestKey() {
+    public TestKey(Integer integer) {
+        super(Type.INTEGER, integer);
     }
 
-    public TestKey(int id) {
-        this.id = id;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        return id - ((TestKey) o).id;
+    public TestKey(Type type, Comparable comparable) {
+        super(type, comparable);
     }
 }
