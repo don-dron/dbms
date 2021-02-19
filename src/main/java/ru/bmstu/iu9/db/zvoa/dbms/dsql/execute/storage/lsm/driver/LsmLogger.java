@@ -15,21 +15,23 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver;
 
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.BytesUtil;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class LsmLogger<K extends Key, V extends Value> {
     private final File file;
-    private final FileOutputStream fileOutputStream;
-    private final BufferedOutputStream bos;
     private final ByteConverter<K, V> byteConverter;
+    private final Map<K, V> oldData;
+    private FileOutputStream fileOutputStream;
+    private BufferedOutputStream bos;
+    private int count;
 
     public LsmLogger(ByteConverter<K, V> byteConverter, String path) throws DataStorageException {
         try {
@@ -37,16 +39,62 @@ public class LsmLogger<K extends Key, V extends Value> {
             this.file = new File(path);
             if (!file.exists()) {
                 file.createNewFile();
+                oldData = new TreeMap<>();
+                count = 0;
+            } else {
+                oldData = readLog();
             }
-            fileOutputStream = new FileOutputStream(file, true);
-            bos = new BufferedOutputStream(fileOutputStream);
         } catch (Exception exception) {
             throw new DataStorageException(exception.getMessage());
         }
     }
 
-    public void put(K key, V value) {
+    private synchronized TreeMap<K, V> readLog() {
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            if (fileInputStream.available() > 0) {
+                BufferedInputStream bis = new BufferedInputStream(fileInputStream);
+                byte[] bytes = bis.readAllBytes();
+                int offset = 0;
+
+                TreeMap<K, V> treeMap = new TreeMap<>();
+
+                while (offset < bytes.length) {
+                    count++;
+
+                    int keyLength = BytesUtil.bytesToInt(bytes, offset);
+                    offset += 4;
+
+                    K k = byteConverter.bytesToKey(bytes, offset);
+                    offset += keyLength;
+
+                    int valueLength = BytesUtil.bytesToInt(bytes, offset);
+                    offset += 4;
+
+                    V v = byteConverter.bytesToValue(bytes, offset);
+                    offset += valueLength;
+
+                    count++;
+                    treeMap.put(k, v);
+                }
+
+                return treeMap;
+            } else {
+                return new TreeMap<>();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new TreeMap<>();
+        }
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public synchronized void put(K key, V value) {
         try {
+            fileOutputStream = new FileOutputStream(file, true);
+            bos = new BufferedOutputStream(fileOutputStream);
             byte[] keyBytes = byteConverter.keyToBytes(key);
             byte[] valueToBytes = byteConverter.valueToBytes(value);
             int allocate = 4 + 4 + keyBytes.length + valueToBytes.length;
@@ -59,22 +107,16 @@ public class LsmLogger<K extends Key, V extends Value> {
             buff.putInt(valueToBytes.length);
             buff.put(valueToBytes);
 
-            bos.write(buff.array());
-            bos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+            count++;
 
-    public void close() {
-        try {
+            bos.write(buff.array());
             bos.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void delete() {
+    public synchronized void delete() {
         file.delete();
     }
 }

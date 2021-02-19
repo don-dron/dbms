@@ -24,9 +24,9 @@
   <component name="ChangeListManager">
     <list default="true" id="636cd115-ac8a-4ec5-bbf6-f87a6ec92e5a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmFileTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmStorage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmLogger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmLogger.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/SSTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/SSTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/DefaultKey.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/execute/interpreter/storage/memory/DefaultKey.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,15 +92,10 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver" />
-      <recent name="ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory" />
-      <recent name="ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage" />
-      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.engine.statement.select" />
-      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.compiler.translator" />
-    </key>
-    <key name="MoveInnerDialog.RECENTS_KEY">
-      <recent name="ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory" />
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm" />
+      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.memory" />
+      <recent name="ru.bmstu.iu9.db.zvoa.dbms.modules" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\dron\Desktop\dbms\src\main\java\ru\bmstu\iu9\db\zvoa\dbms\dsql\execute\interpreter\storage\driver" />
@@ -108,6 +103,9 @@
       <recent name="C:\Users\dron\Desktop\dbms\src\main\java\ru\bmstu\iu9\db\zvoa\dbms\dsql\execute\compiler\parser\feature" />
       <recent name="C:\Users\dron\Desktop\dbms\src\main\java\ru\bmstu\iu9\db\zvoa\dbms\dsql\execute\compiler\parser" />
       <recent name="C:\Users\dron\Desktop\dbms\src\main\java\ru\bmstu\iu9\db\zvoa\dbms\dsql\execute\compiler\semanter" />
+    </key>
+    <key name="MoveInnerDialog.RECENTS_KEY">
+      <recent name="ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="ru.bmstu.iu9.db.zvoa.dbms" />
@@ -122,10 +120,12 @@
     <key name="CreateBuilderDialog.RecentsKey">
       <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver" />
     </key>
-    <key name="CreateClassDialog.RecentsKey">
-      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm" />
-      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.storage.memory" />
-      <recent name="ru.bmstu.iu9.db.zvoa.dbms.modules" />
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver" />
+      <recent name="ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory" />
+      <recent name="ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage" />
+      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.engine.statement.select" />
+      <recent name="ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.compiler.translator" />
     </key>
   </component>
   <component name="RunManager" selected="JUnit.PipelinesTest">
@@ -229,11 +229,11 @@
     </configuration>
     <list>
       <item itemvalue="JUnit.PipelinesTest.concurrencyMostWriteSelectInsertPipelineTestWithAssertions" />
-      <item itemvalue="Maven.dbms" />
       <item itemvalue="JUnit.LsmStorageTest" />
       <item itemvalue="JUnit.SSTableTreeTest" />
       <item itemvalue="JUnit.ru.bmstu.iu9.db.zvoa.dbms in dbms" />
       <item itemvalue="JUnit.PipelinesTest" />
+      <item itemvalue="Maven.dbms" />
     </list>
     <recent_temporary>
       <list>
@@ -285,6 +285,7 @@
       <workItem from="1613299184441" duration="31189000" />
       <workItem from="1613499760053" duration="13916000" />
       <workItem from="1613584042543" duration="24840000" />
+      <workItem from="1613723794048" duration="4191000" />
     </task>
     <servers />
   </component>
@@ -347,38 +348,38 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="826" height="466" key="DebuggerActiveHint/0.0.1920.1040@0.0.1920.1040" timestamp="1613602437133" />
-    <state width="1876" height="423" key="GridCell.Tab.0.bottom" timestamp="1613689033490">
+    <state width="1876" height="317" key="GridCell.Tab.0.bottom" timestamp="1613727935342">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="423" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613689033490" />
-    <state width="1876" height="423" key="GridCell.Tab.0.center" timestamp="1613689033490">
+    <state width="1876" height="317" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613727935342" />
+    <state width="1876" height="317" key="GridCell.Tab.0.center" timestamp="1613727935342">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="423" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613689033490" />
-    <state width="1876" height="423" key="GridCell.Tab.0.left" timestamp="1613689033490">
+    <state width="1876" height="317" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613727935342" />
+    <state width="1876" height="317" key="GridCell.Tab.0.left" timestamp="1613727935341">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="423" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613689033490" />
-    <state width="1876" height="423" key="GridCell.Tab.0.right" timestamp="1613689033490">
+    <state width="1876" height="317" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613727935341" />
+    <state width="1876" height="317" key="GridCell.Tab.0.right" timestamp="1613727935342">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="423" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613689033490" />
-    <state width="1876" height="423" key="GridCell.Tab.1.bottom" timestamp="1613689033416">
+    <state width="1876" height="317" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613727935342" />
+    <state width="1876" height="317" key="GridCell.Tab.1.bottom" timestamp="1613727935262">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="423" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613689033416" />
-    <state width="1876" height="423" key="GridCell.Tab.1.center" timestamp="1613689033416">
+    <state width="1876" height="317" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613727935262" />
+    <state width="1876" height="317" key="GridCell.Tab.1.center" timestamp="1613727935262">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="423" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613689033416" />
-    <state width="1876" height="423" key="GridCell.Tab.1.left" timestamp="1613689033416">
+    <state width="1876" height="317" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613727935262" />
+    <state width="1876" height="317" key="GridCell.Tab.1.left" timestamp="1613727935262">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="423" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613689033416" />
-    <state width="1876" height="423" key="GridCell.Tab.1.right" timestamp="1613689033416">
+    <state width="1876" height="317" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613727935262" />
+    <state width="1876" height="317" key="GridCell.Tab.1.right" timestamp="1613727935262">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="423" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613689033416" />
+    <state width="1876" height="317" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613727935262" />
     <state x="775" y="454" key="ReplaceDuplicatesPrompt" timestamp="1613244422155">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

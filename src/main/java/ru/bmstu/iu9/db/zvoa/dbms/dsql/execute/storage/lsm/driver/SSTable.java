@@ -92,9 +92,6 @@ public class SSTable<K extends Key, V extends Value> {
 
     public void putAll(Record<K, V>[] records) throws DataStorageException {
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
-
             int size = records.length;
             int startData = 0 + 8;
             int allocate = 0 + 8;
@@ -153,6 +150,9 @@ public class SSTable<K extends Key, V extends Value> {
                 buff.put(values.get(i));
             }
 
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
+
             bos.write(buff.array());
             bos.close();
         } catch (Exception exception) {
@@ -168,6 +168,7 @@ public class SSTable<K extends Key, V extends Value> {
             if (fileInputStream.available() != 0) {
                 BufferedInputStream bis = new BufferedInputStream(fileInputStream);
                 byte[] bytes = bis.readAllBytes();
+                bis.close();
 
                 int offset = 0;
                 int startData = BytesUtil.bytesToInt(bytes, offset);
@@ -211,6 +212,7 @@ public class SSTable<K extends Key, V extends Value> {
             if (fileInputStream.available() != 0) {
                 BufferedInputStream bis = new BufferedInputStream(fileInputStream);
                 byte[] bytes = bis.readAllBytes();
+                bis.close();
 
                 int offset = 0;
                 int startData = BytesUtil.bytesToInt(bytes, offset);

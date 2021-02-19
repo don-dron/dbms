@@ -86,7 +86,7 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
             executorService.submit(() -> {
                 try {
                     while (isRunning()) {
-                        if (lsmMemory.size() >= 64) {
+                        if (lsmMemory.size() >= 64 || lsmLogger.getCount() >= 1024) {
                             pushToDrive();
                         } else {
                             Thread.yield();
@@ -148,7 +148,6 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
             Map<K, V> map = lsmMemory;
             lsmFileTree.putAll(map);
             lsmMemory = new TreeMap<>();
-            lsmLogger.close();
             lsmLogger.delete();
             lsmLogger = new LsmLogger<>(byteConverter, path + "/log");
         } finally {
