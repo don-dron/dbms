@@ -49,6 +49,10 @@ public class LsmLogger<K extends Key, V extends Value> {
         }
     }
 
+    public Map<K, V> getOldData() {
+        return oldData;
+    }
+
     private synchronized TreeMap<K, V> readLog() {
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             if (fileInputStream.available() > 0) {

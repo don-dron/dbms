@@ -26,7 +26,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/LsmStorage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmLogger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmLogger.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/SSTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/SSTable.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -285,7 +284,7 @@
       <workItem from="1613299184441" duration="31189000" />
       <workItem from="1613499760053" duration="13916000" />
       <workItem from="1613584042543" duration="24840000" />
-      <workItem from="1613723794048" duration="4191000" />
+      <workItem from="1613723794048" duration="5924000" />
     </task>
     <servers />
   </component>
@@ -348,38 +347,38 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="826" height="466" key="DebuggerActiveHint/0.0.1920.1040@0.0.1920.1040" timestamp="1613602437133" />
-    <state width="1876" height="317" key="GridCell.Tab.0.bottom" timestamp="1613727935342">
+    <state width="1876" height="317" key="GridCell.Tab.0.bottom" timestamp="1613733197908">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="317" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613727935342" />
-    <state width="1876" height="317" key="GridCell.Tab.0.center" timestamp="1613727935342">
+    <state width="1876" height="317" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613733197908" />
+    <state width="1876" height="317" key="GridCell.Tab.0.center" timestamp="1613733197908">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="317" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613727935342" />
-    <state width="1876" height="317" key="GridCell.Tab.0.left" timestamp="1613727935341">
+    <state width="1876" height="317" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613733197908" />
+    <state width="1876" height="317" key="GridCell.Tab.0.left" timestamp="1613733197908">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="317" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613727935341" />
-    <state width="1876" height="317" key="GridCell.Tab.0.right" timestamp="1613727935342">
+    <state width="1876" height="317" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613733197908" />
+    <state width="1876" height="317" key="GridCell.Tab.0.right" timestamp="1613733197908">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="317" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613727935342" />
-    <state width="1876" height="317" key="GridCell.Tab.1.bottom" timestamp="1613727935262">
+    <state width="1876" height="317" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613733197908" />
+    <state width="1876" height="317" key="GridCell.Tab.1.bottom" timestamp="1613733198889">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="317" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613727935262" />
-    <state width="1876" height="317" key="GridCell.Tab.1.center" timestamp="1613727935262">
+    <state width="1876" height="317" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613733198889" />
+    <state width="1876" height="317" key="GridCell.Tab.1.center" timestamp="1613733198889">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="317" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613727935262" />
-    <state width="1876" height="317" key="GridCell.Tab.1.left" timestamp="1613727935262">
+    <state width="1876" height="317" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613733198889" />
+    <state width="1876" height="317" key="GridCell.Tab.1.left" timestamp="1613733198889">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="317" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613727935262" />
-    <state width="1876" height="317" key="GridCell.Tab.1.right" timestamp="1613727935262">
+    <state width="1876" height="317" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613733198889" />
+    <state width="1876" height="317" key="GridCell.Tab.1.right" timestamp="1613733198889">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1876" height="317" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613727935262" />
+    <state width="1876" height="317" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613733198889" />
     <state x="775" y="454" key="ReplaceDuplicatesPrompt" timestamp="1613244422155">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -426,6 +425,21 @@
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/SSTable.java</url>
           <option name="timeStamp" value="245" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmLogger.java</url>
+          <line>44</line>
+          <option name="timeStamp" value="257" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmLogger.java</url>
+          <line>83</line>
+          <option name="timeStamp" value="258" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/ru/bmstu/iu9/db/zvoa/dbms/dsql/execute/storage/lsm/driver/LsmLogger.java</url>
+          <line>85</line>
+          <option name="timeStamp" value="259" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -52,8 +52,8 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
         this.path = storageProperties.getPath();
         this.byteConverter = storageProperties.getByteConverter();
         this.lsmFileTree = new LsmFileTree<K, V>(storageProperties.getByteConverter(), storageProperties.getPath());
-        this.lsmMemory = new TreeMap<>();
         this.lsmLogger = new LsmLogger<>(storageProperties.getByteConverter(), storageProperties.getPath() + "/log");
+        lsmMemory = lsmLogger.getOldData();
     }
 
     @Override
@@ -61,7 +61,6 @@ public class LsmStorage<K extends Key, V extends Value> extends AbstractDbModule
         if (isInit()) {
             return;
         }
-
         setInit();
         logInit();
         logger.debug("Init storage " + path);
