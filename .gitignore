@@ -6,6 +6,7 @@
 /logs
 /data
 /test_file*
+/.idea
 
 # BlueJ files
 *.ctxt
