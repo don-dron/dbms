@@ -15,13 +15,10 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.Key;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
 
-import java.util.Arrays;
-import java.util.List;
-
-public class DefaultKey extends Key {
+public class DefaultKey implements Key {
     private Type type;
     private Comparable comparable;
 

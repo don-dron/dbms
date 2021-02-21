@@ -15,8 +15,8 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.Key;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.Value;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.IDbModule;
 
@@ -28,5 +28,5 @@ public interface IKeyValueStorage<K extends Key, V extends Value> extends IDbMod
 
     public V get(K key) throws DataStorageException;
 
-    public Map<K, V> getValues(Predicate<Map.Entry<K, V>> predicate) throws DataStorageException;
+    public Map<K, V> getValues(Predicate<? super Map.Entry<K, V>> predicate) throws DataStorageException;
 }

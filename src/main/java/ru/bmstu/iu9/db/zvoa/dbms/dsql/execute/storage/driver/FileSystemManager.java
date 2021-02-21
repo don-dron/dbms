@@ -15,11 +15,13 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver;
 
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.IKeyValueStorage;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.SchemeConverter;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.TableConverter;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.converter.SchemeConverter;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.converter.TableConverter;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLSchema;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLTable;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.CreateSchemaSettings;
@@ -28,25 +30,45 @@ import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageExceptio
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Manager for connection virtual bases with drive storage.
+ *
+ * @author don-dron Zvorygin Andrey BMSTU IU-9
+ */
 public class FileSystemManager extends AbstractDbModule {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemManager.class);
     private final ExecutorService executorService;
-    private final Logger logger = LoggerFactory.getLogger(FileSystemManager.class);
     private final ConcurrentHashMap<FileItem, IKeyValueStorage> itemToStorage = new ConcurrentHashMap<>();
     private final StorageProperties rootDirectory;
     private final Function<StorageProperties, IKeyValueStorage> storageSupplier;
 
-    public FileSystemManager(FileSystemManagerConfig fileSystemManagerConfig) {
+    /**
+     * Constructor by config.
+     *
+     * @param fileSystemManagerConfig - config
+     */
+    public FileSystemManager(@NotNull FileSystemManagerConfig fileSystemManagerConfig) {
         rootDirectory = fileSystemManagerConfig.getStorageProperties();
         storageSupplier = fileSystemManagerConfig.getStorageSupplier();
         executorService = createExecutorService();
     }
 
-    public synchronized IKeyValueStorage createTableStorage(DSQLTable table, CreateTableSettings settings) throws DataStorageException, IOException {
+    public synchronized IKeyValueStorage createTableStorage(@NotNull DSQLTable table,
+                                                            @NotNull CreateTableSettings settings) throws DataStorageException, IOException {
         StorageProperties storageProperties = new StorageProperties(
                 new TableConverter(table, Arrays.asList(table.getKeyType()), table.getTypes()),
                 settings.getTableName(),
@@ -61,8 +83,11 @@ public class FileSystemManager extends AbstractDbModule {
         return storage;
     }
 
-    public synchronized IKeyValueStorage createSchemaStorage(DSQLSchema schema, CreateSchemaSettings settings) throws DataStorageException, IOException {
-        StorageProperties storageProperties = new StorageProperties(new SchemeConverter(), settings.getSchemaName(),
+    public synchronized IKeyValueStorage createSchemaStorage(DSQLSchema schema,
+                                                             CreateSchemaSettings settings) throws DataStorageException, IOException {
+        StorageProperties storageProperties = new StorageProperties(
+                new SchemeConverter(),
+                settings.getSchemaName(),
                 rootDirectory.getPath() + "/" + settings.getSchemaName());
         IKeyValueStorage storage = storageSupplier.apply(storageProperties);
         FileItem fileItem = new FileItem(settings.getSchemaName(), null, StorageProperties.StorageType.SCHEMA);
@@ -88,11 +113,11 @@ public class FileSystemManager extends AbstractDbModule {
                 .collect(Collectors.toConcurrentMap(i -> i.getKey().getSchema(), Map.Entry::getValue));
     }
 
-    public synchronized ConcurrentMap<String, IKeyValueStorage> getCurrentTables(String schemaName) {
+    public synchronized ConcurrentMap<String, IKeyValueStorage> getCurrentTables(@NonNls String schemaName) {
         return itemToStorage.entrySet().stream()
                 .filter(entry -> entry.getKey().getType() == StorageProperties.StorageType.TABLE
-                        && entry.getKey().schema != null
-                        && entry.getKey().schema.equals(schemaName))
+                        && entry.getKey().getSchema() != null
+                        && entry.getKey().getSchema().equals(schemaName))
                 .collect(Collectors.toConcurrentMap(i -> i.getKey().getTable(), Map.Entry::getValue));
     }
 
@@ -224,18 +249,16 @@ public class FileSystemManager extends AbstractDbModule {
     }
 
     @Override
-    public void close() throws Exception {
-        synchronized (this) {
-            if (isClosed()) {
-                return;
-            }
-
-            for (IKeyValueStorage storage : itemToStorage.values()) {
-                storage.close();
-            }
-            setClosed();
-            logClose();
+    public synchronized void close() throws Exception {
+        if (isClosed()) {
+            return;
         }
+
+        for (IKeyValueStorage storage : itemToStorage.values()) {
+            storage.close();
+        }
+        setClosed();
+        logClose();
     }
 
     private ExecutorService createExecutorService() {
@@ -256,17 +279,17 @@ public class FileSystemManager extends AbstractDbModule {
                     Thread.yield();
                 }
             } catch (InterruptedException exception) {
-                logger.warn(exception.getMessage());
+                LOGGER.warn(exception.getMessage());
             }
         }
     }
 
-    private class FileItem {
-        private StorageProperties.StorageType type;
-        private String schema;
-        private String table;
+    private static class FileItem {
+        private final StorageProperties.StorageType type;
+        private final String schema;
+        private final String table;
 
-        public FileItem(String schema, String table, StorageProperties.StorageType type) {
+        private FileItem(String schema, String table, StorageProperties.StorageType type) {
             this.schema = schema;
             this.table = table;
             this.type = type;

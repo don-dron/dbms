@@ -15,9 +15,7 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.ByteConverter;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.converter.ByteConverter;
 
 public class StorageProperties<K extends Key, V extends Value> {
     private String path;

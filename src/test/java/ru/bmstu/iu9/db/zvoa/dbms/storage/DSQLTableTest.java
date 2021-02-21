@@ -19,9 +19,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.StorageProperties;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.LsmStorage;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.TableConverter;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.Key;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.lsm.LSMStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.converter.TableConverter;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLTable;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.InsertSettings;
@@ -55,7 +55,7 @@ public class DSQLTableTest {
                 .setTypes(Arrays.asList(Type.INTEGER, Type.STRING, Type.INTEGER))
                 .setRowToKey(0)
                 .build();
-        LsmStorage<Key, Row> storage = new LsmStorage<>(new StorageProperties(new TableConverter(table,
+        LSMStorage<Key, Row> storage = new LSMStorage<>(new StorageProperties(new TableConverter(table,
                 Arrays.asList(table.getKeyType()),
                 table.getTypes()), "table", path));
 
@@ -89,7 +89,7 @@ public class DSQLTableTest {
                 .setRowToKey(0)
                 .setTypes(Arrays.asList(Type.INTEGER, Type.STRING, Type.INTEGER))
                 .build();
-        LsmStorage<Key, Row> storage = new LsmStorage<>(new StorageProperties(new TableConverter(table,
+        LSMStorage<Key, Row> storage = new LSMStorage<>(new StorageProperties(new TableConverter(table,
                 Arrays.asList(table.getKeyType()),
                 table.getTypes()), "table", path));
 

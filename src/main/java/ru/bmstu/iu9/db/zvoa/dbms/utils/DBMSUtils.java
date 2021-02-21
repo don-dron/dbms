@@ -22,8 +22,8 @@ import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.DBMSDataStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.FileSystemManager;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.FileSystemManagerConfig;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.StorageProperties;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.LsmStorage;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.RootConverter;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.lsm.LSMStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.converter.RootConverter;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.DBMSServer;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpRequestHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.HttpResponseHandler;
@@ -48,7 +48,7 @@ public final class DBMSUtils {
         PropertyConfigurator.configure(url);
     }
 
-    public static final DBMSConfig getDefaultConfig() {
+    public static DBMSConfig getDefaultConfig() {
         // TODO сделать нормально
         File file = new File("./");
         String path = file.getAbsolutePath();
@@ -60,23 +60,16 @@ public final class DBMSUtils {
                 .build();
     }
 
-    public static final DBMS createDefaultDBMS() throws IOException, DataStorageException {
+    public static DBMS createDefaultDBMS() throws IOException, DataStorageException {
         return createDBMS(getDefaultConfig());
     }
 
-    public static final DBMS createDBMS(DBMSConfig config) throws IOException, DataStorageException {
+    public static DBMS createDBMS(DBMSConfig config) throws IOException, DataStorageException {
         DBMSServer httpServer = new DBMSServer(config.getPort());
         FileSystemManager fileSystemManager = new FileSystemManager(
                 FileSystemManagerConfig.Builder.newBuilder()
                         .setStorageProperties(new StorageProperties(new RootConverter(), "Root", config.getMountPath()))
-                        .setStorageSupplier((properties) -> {
-                            try {
-                                return new LsmStorage(properties);
-                            } catch (DataStorageException dataStorageException) {
-                                dataStorageException.printStackTrace();
-                                return null;
-                            }
-                        })
+                        .setStorageSupplier(LSMStorage::new)
                         .build());
 
         DBMSDataStorage dataStorage = new DBMSDataStorage.Builder()
@@ -87,7 +80,7 @@ public final class DBMSUtils {
         QueryResponseStorage queryResponseStorage =
                 new QueryResponseStorage(config.getQueueSupplier().get(), config.getQueueSupplier().get());
 
-        DBMS dbms = DBMS.Builder.newBuilder()
+        return DBMS.Builder.newBuilder()
                 .setAdditionalModules(Arrays.asList(httpServer, dataStorage))
                 .setQueryModuleBuilder(QueryModule.Builder.newBuilder()
                         .setQueryHandler(new DSQLQueryHandler(new JSQLInterpreter(dataStorage)))
@@ -100,6 +93,5 @@ public final class DBMSUtils {
                         queryResponseStorage,
                         new HttpResponseHandler()))
                 .build();
-        return dbms;
     }
 }

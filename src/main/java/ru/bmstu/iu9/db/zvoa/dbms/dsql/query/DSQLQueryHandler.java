@@ -15,13 +15,12 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.query;
 
+import org.jetbrains.annotations.NotNull;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.CompilationError;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.IExecutor;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.RuntimeError;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbHandler;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * The type Query handler.
