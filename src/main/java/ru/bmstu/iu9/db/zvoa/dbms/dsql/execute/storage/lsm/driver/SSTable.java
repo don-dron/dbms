@@ -15,26 +15,59 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver;
 
+import com.google.common.base.Throwables;
+import org.jetbrains.annotations.NotNull;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.BytesUtil;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * SSTable implementation. SSTable can be written only once, but read as many as you want.
+ * <p>
+ * SSTable format:
+ * <p>
+ * start_data, size   - 8 bytes
+ * <p>
+ * int (4) int (4)  long (8)
+ * 0 offset, length, timestamp
+ * 1 offset, length, timestamp
+ * 2 offset, length, timestamp
+ * .........
+ * .........
+ * <p>
+ * offset 0    offset 1
+ * v           v
+ * key, value, key, value..........
+ * ^  ^
+ * length 0
+ *
+ * @param <K> - type of keys
+ * @param <V> - type of values
+ */
 public class SSTable<K extends Key, V extends Value> {
+    public static final String SSTABLE_FORMAT = "sstable_%d_%d";
+    private final ByteConverter<K, V> byteConverter;
     private final File file;
     private final int level;
     private final int index;
-    private final ByteConverter<K, V> byteConverter;
     private Meta<K, V> meta;
 
-    public SSTable(ByteConverter<K, V> byteConverter, String path, int level, int index) throws DataStorageException {
+    /**
+     * Constructor for new SSTable.
+     *
+     * @param byteConverter - byte converter for converting keys and values to/from bytes
+     * @param path          - mount path for SSTable
+     * @param level         - current level in LSM File Tree
+     * @param index         - index in LSM File Tree level
+     */
+    public SSTable(@NotNull ByteConverter<K, V> byteConverter, @NotNull String path, int level, int index) {
         try {
-            file = new File(path + "/" + "sstable_" + level + "_" + index);
+            file = new File(path + "/" + String.format(SSTABLE_FORMAT, level, index));
             this.index = index;
             this.level = level;
             this.byteConverter = byteConverter;
@@ -43,54 +76,56 @@ public class SSTable<K extends Key, V extends Value> {
                 file.createNewFile();
                 meta = new Meta<>((K[]) new Key[0]);
             } else {
-                try {
-                    meta = new Meta<>(readAllKey());
-                } catch (Exception exception) {
-                    throw new DataStorageException(exception.getMessage());
-                }
+                meta = new Meta<>(readAllKey());
             }
-        } catch (Exception exception) {
-            throw new DataStorageException(exception.getMessage());
+        } catch (IOException ioException) {
+            throw new LSMFileCreatingException("Cannot create SSTable file for path "
+                    + path + " : " + Throwables.getStackTraceAsString(ioException));
         }
     }
 
-    public Meta getMeta() {
+    /**
+     * Returns meta information about SSTable.
+     *
+     * @return meta information
+     */
+    public @NotNull Meta getMeta() {
         return meta;
     }
 
+    /**
+     * Gets index.
+     *
+     * @return the index
+     */
     public int getIndex() {
         return index;
     }
 
+    /**
+     * Gets level.
+     *
+     * @return the level
+     */
     public int getLevel() {
         return level;
     }
 
-    public File getFile() {
+    /**
+     * Gets file.
+     *
+     * @return the file
+     */
+    public @NotNull File getFile() {
         return file;
     }
 
-    /*
-
-    (len)types
-
-    start_data, key_num   - 8 bytes
-
-    int (4) int (4)  long (8)
-  0 offset, length, timestamp
-  1 offset, length, timestamp
-  2 offset, length, timestamp
-    .........
-    ....
-
-    offset 0    offset 1
-    v           v
-    key, value, key, value..........
-    ^  ^
-    length 2
+    /**
+     * Write records to SSTable.
+     *
+     * @param records - records for writing
      */
-
-    public void putAll(Record<K, V>[] records) throws DataStorageException {
+    public void putAll(@NotNull Record<K, V>[] records) {
         try {
             int size = records.length;
             int startData = 0 + 8;
@@ -155,14 +190,18 @@ public class SSTable<K extends Key, V extends Value> {
 
             bos.write(buff.array());
             bos.close();
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            throw new DataStorageException(exception.getMessage());
+        } catch (IOException exception) {
+            throw new WriteToFileException("Cannot write records to file: "
+                    + Throwables.getStackTraceAsString(exception));
         }
     }
 
-
-    public K[] readAllKey() throws DataStorageException {
+    /**
+     * Read all keys from SSTable.
+     *
+     * @return key's array
+     */
+    public @NotNull K[] readAllKey() {
         try {
             FileInputStream fileInputStream = new FileInputStream(file);
             if (fileInputStream.available() != 0) {
@@ -199,14 +238,17 @@ public class SSTable<K extends Key, V extends Value> {
             } else {
                 return (K[]) new Key[0];
             }
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            throw new DataStorageException(exception.getMessage());
+        } catch (IOException exception) {
+            throw new ReadFromFileException("Cannot read keys from file: " + exception.getMessage());
         }
     }
 
-
-    public Record<K, V>[] readAllRecords() throws DataStorageException {
+    /**
+     * Read all records(pairs key + value) from SSTable.
+     *
+     * @return records array
+     */
+    public @NotNull Record<K, V>[] readAllRecords() {
         try {
             FileInputStream fileInputStream = new FileInputStream(file);
             if (fileInputStream.available() != 0) {
@@ -259,13 +301,17 @@ public class SSTable<K extends Key, V extends Value> {
             } else {
                 return new Record[0];
             }
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            throw new DataStorageException(exception.getMessage());
+        } catch (IOException exception) {
+            throw new ReadFromFileException("Cannot read records from file: " + exception.getMessage());
         }
     }
 
-    public void delete() {
-        file.delete();
+    /**
+     * Delete useless log file.
+     */
+    public synchronized void delete() {
+        if (!file.delete()) {
+            throw new LSMFileDeletingException("Cannot delete log file: " + file.getAbsolutePath());
+        }
     }
 }

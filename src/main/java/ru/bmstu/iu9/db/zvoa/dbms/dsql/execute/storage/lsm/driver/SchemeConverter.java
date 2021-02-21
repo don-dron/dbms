@@ -15,6 +15,7 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver;
 
+import org.jetbrains.annotations.NotNull;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.BytesUtil;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLTable;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
@@ -27,17 +28,17 @@ import java.util.stream.Collectors;
 
 public class SchemeConverter implements ByteConverter<TableIdentification, Table> {
     @Override
-    public List<Type> getKeyTypes() {
+    public @NotNull List<Type> getKeyTypes() {
         return Arrays.asList(Type.STRING);
     }
 
     @Override
-    public List<Type> getValueTypes() {
+    public @NotNull List<Type> getValueTypes() {
         return Arrays.asList(Type.STRING, Type.STRING, Type.INTEGER, Type.STRING);
     }
 
     @Override
-    public Table bytesToValue(byte[] bytes, int offset) {
+    public @NotNull Table bytesToValue(byte[] bytes, int offset) {
         List<Object> objects = BytesUtil.listFromBytes(bytes, offset, getValueTypes());
         return new DSQLTable.Builder()
                 .setName((String) objects.get(0))
@@ -60,18 +61,18 @@ public class SchemeConverter implements ByteConverter<TableIdentification, Table
     }
 
     @Override
-    public TableIdentification bytesToKey(byte[] bytes, int offset) {
+    public @NotNull TableIdentification bytesToKey(byte @NotNull [] bytes, int offset) {
         List<Object> objects = BytesUtil.listFromBytes(bytes, offset, getKeyTypes());
         return new TableIdentification((String) objects.get(0));
     }
 
     @Override
-    public byte[] keyToBytes(TableIdentification key) {
+    public byte @NotNull [] keyToBytes(@NotNull TableIdentification key) {
         return BytesUtil.listObjectsToBytes(Arrays.asList(key.getTableName()), getKeyTypes());
     }
 
     @Override
-    public byte[] valueToBytes(Table value) {
+    public byte @NotNull [] valueToBytes(@NotNull Table value) {
         return BytesUtil.listObjectsToBytes(Arrays.asList(
                 value.getTableName(),
                 value.getTablePath(),

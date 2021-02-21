@@ -15,6 +15,7 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver;
 
+import org.jetbrains.annotations.NotNull;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.BytesUtil;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.DefaultKey;
@@ -24,10 +25,13 @@ import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * ByteConverter for converting Rows in tables.
+ */
 public class TableConverter implements ByteConverter<DefaultKey, Row> {
-    private Table table;
-    private List<Type> keyTypes;
-    private List<Type> valueTypes;
+    private final Table table;
+    private final List<Type> keyTypes;
+    private final List<Type> valueTypes;
 
     public TableConverter(Table table, List<Type> keyTypes, List<Type> valueTypes) {
         this.table = table;
@@ -36,34 +40,34 @@ public class TableConverter implements ByteConverter<DefaultKey, Row> {
     }
 
     @Override
-    public List<Type> getKeyTypes() {
+    public @NotNull List<Type> getKeyTypes() {
         return keyTypes;
     }
 
     @Override
-    public List<Type> getValueTypes() {
+    public @NotNull List<Type> getValueTypes() {
         return valueTypes;
     }
 
     @Override
-    public Row bytesToValue(byte[] bytes, int offset) {
+    public @NotNull Row bytesToValue(byte[] bytes, int offset) {
         List<Object> objects = BytesUtil.listFromBytes(bytes, offset, getValueTypes());
         return new Row(table, objects);
     }
 
     @Override
-    public DefaultKey bytesToKey(byte[] bytes, int offset) {
+    public @NotNull DefaultKey bytesToKey(byte @NotNull [] bytes, int offset) {
         List<Object> objects = BytesUtil.listFromBytes(bytes, offset, getKeyTypes());
         return new DefaultKey(getKeyTypes().get(0), (Comparable) objects.get(0));
     }
 
     @Override
-    public byte[] keyToBytes(DefaultKey key) {
+    public byte @NotNull [] keyToBytes(@NotNull DefaultKey key) {
         return BytesUtil.listObjectsToBytes(Arrays.asList(key.getComparable()), getKeyTypes());
     }
 
     @Override
-    public byte[] valueToBytes(Row value) {
+    public byte @NotNull [] valueToBytes(@NotNull Row value) {
         return BytesUtil.listObjectsToBytes(value.getValues(), getValueTypes());
     }
 }

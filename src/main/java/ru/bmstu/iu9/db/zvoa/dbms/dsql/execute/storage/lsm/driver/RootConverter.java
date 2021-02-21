@@ -15,6 +15,7 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver;
 
+import org.jetbrains.annotations.NotNull;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.BytesUtil;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLSchema;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
@@ -26,17 +27,17 @@ import java.util.List;
 
 public class RootConverter implements ByteConverter<SchemeIdentification, Schema> {
     @Override
-    public List<Type> getKeyTypes() {
+    public @NotNull List<Type> getKeyTypes() {
         return Arrays.asList(Type.STRING);
     }
 
     @Override
-    public List<Type> getValueTypes() {
+    public @NotNull List<Type> getValueTypes() {
         return Arrays.asList(Type.STRING, Type.STRING);
     }
 
     @Override
-    public Schema bytesToValue(byte[] bytes, int offset) {
+    public @NotNull Schema bytesToValue(byte[] bytes, int offset) {
         List<Object> objects = BytesUtil.listFromBytes(bytes, offset, getValueTypes());
         return new DSQLSchema.Builder()
                 .setSchemaName((String) objects.get(0))
@@ -45,18 +46,18 @@ public class RootConverter implements ByteConverter<SchemeIdentification, Schema
     }
 
     @Override
-    public SchemeIdentification bytesToKey(byte[] bytes, int offset) {
+    public @NotNull SchemeIdentification bytesToKey(byte @NotNull [] bytes, int offset) {
         List<Object> objects = BytesUtil.listFromBytes(bytes, offset, getKeyTypes());
         return new SchemeIdentification((String) objects.get(0));
     }
 
     @Override
-    public byte[] keyToBytes(SchemeIdentification key) {
+    public byte @NotNull [] keyToBytes(@NotNull SchemeIdentification key) {
         return BytesUtil.listObjectsToBytes(Arrays.asList(key.getName()), getKeyTypes());
     }
 
     @Override
-    public byte[] valueToBytes(Schema value) {
+    public byte @NotNull [] valueToBytes(@NotNull Schema value) {
         return BytesUtil.listObjectsToBytes(Arrays.asList(value.getSchemaName(), value.getSchemaPath()),getValueTypes());
     }
 }

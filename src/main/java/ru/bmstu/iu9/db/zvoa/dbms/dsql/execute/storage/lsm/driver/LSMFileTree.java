@@ -15,54 +15,62 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver;
 
+import org.jetbrains.annotations.NotNull;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.AbstractDbModule;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModule {
+/**
+ * Drive part for LSM Tree. Using for writing, merging and reading SSTables.
+ *
+ * @param <K> - type of keys
+ * @param <V> - type of values
+ */
+public class LSMFileTree<K extends Key, V extends Value> extends AbstractDbModule {
+    private static final int LSM_TREE_DEGREE = 4;
 
     private final File directory;
     private final ByteConverter<K, V> byteConverter;
     private final Map<Integer, ConcurrentLinkedDeque<SSTable<K, V>>> levelMap = new ConcurrentHashMap<>();
     private final ReadWriteLock fileTreeLock = new ReentrantReadWriteLock();
-    private static final int POW = 4;
 
-    public LsmFileTree(ByteConverter<K, V> byteConverter, String path) throws DataStorageException {
-        try {
-            this.byteConverter = byteConverter;
-            this.directory = new File(path);
-            if (!directory.exists()) {
-                directory.mkdir();
+    /**
+     * Constructor.
+     *
+     * @param byteConverter - byte converter for converting keys and values to/from bytes
+     * @param path          - mount path
+     */
+    public LSMFileTree(ByteConverter<K, V> byteConverter, String path) {
+        this.byteConverter = byteConverter;
+        this.directory = new File(path);
+        if (!directory.exists()) {
+            if (!directory.mkdir()) {
+                throw new LSMFileCreatingException("Cannot create directory for LSM Storage " + path);
             }
+        }
 
-            for (File file : Objects.requireNonNull(directory.listFiles(file -> file.getName().startsWith("sstable")))) {
-                String[] strings = file.getName().split("_");
-                int level = Integer.parseInt(strings[1]);
-                SSTable<K, V> ssTable = new SSTable<>(
-                        byteConverter,
-                        path,
-                        level,
-                        Integer.parseInt(strings[2]));
-                addTable(level, ssTable);
-            }
-        } catch (Exception exception) {
-            throw new DataStorageException(exception.getMessage());
+        for (File file : Objects.requireNonNull(directory.listFiles(file -> file.getName().startsWith("sstable")))) {
+            String[] strings = file.getName().split("_");
+            int level = Integer.parseInt(strings[1]);
+            SSTable<K, V> ssTable = new SSTable<>(
+                    byteConverter,
+                    path,
+                    level,
+                    Integer.parseInt(strings[2]));
+            addTable(level, ssTable);
         }
     }
 
     @Override
-    public synchronized void init() throws DataStorageException, IOException {
+    public synchronized void init() {
         if (isInit()) {
             return;
         }
@@ -95,7 +103,7 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         synchronized (this) {
             if (isClosed()) {
                 return;
@@ -105,88 +113,7 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
         }
     }
 
-    private void addTable(int level, SSTable<K, V> ssTable) {
-        if (!levelMap.containsKey(level)) {
-            levelMap.put(level, new ConcurrentLinkedDeque<>());
-        }
-
-        levelMap.get(level).add(ssTable);
-    }
-
-    private boolean tryMerge() {
-        boolean flag = false;
-        for (Map.Entry<Integer, ConcurrentLinkedDeque<SSTable<K, V>>> entry : levelMap.entrySet()) {
-            try {
-                if (entry.getValue().size() >= POW * POW) {
-                    merge(entry.getKey());
-                    flag = true;
-                }
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-        }
-        return flag;
-    }
-
-    private int range(int level) {
-        int i = POW;
-
-        while (level != 0) {
-            i *= POW;
-            level--;
-        }
-
-        return i;
-    }
-
-    private void merge(int level) throws DataStorageException {
-        List<SSTable<K, V>> tables = new ArrayList<>(levelMap.get(level));
-        List<Record> records = readAllKeys()
-                .entrySet()
-                .stream()
-                .map(entry -> new Record<K, V>(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
-
-        int i = 0;
-        while (true) {
-            int coef = range(level);
-            int shift = 64 * coef;
-            List<Record> recordList = records.stream().skip(i).limit(shift).collect(Collectors.toList());
-
-            if (recordList.isEmpty()) {
-                break;
-            }
-
-            try {
-                if (levelMap.get(level + 1) == null) {
-                    levelMap.put(level + 1, new ConcurrentLinkedDeque<>());
-                }
-
-                SSTable<K, V> ssTable = new SSTable<>(
-                        byteConverter,
-                        directory.getAbsolutePath(), level + 1,
-                        levelMap.get(level + 1)
-                                .stream()
-                                .map(SSTable::getIndex)
-                                .max(Integer::compareTo)
-                                .orElse(0) + 1);
-
-                ssTable.putAll(recordList.toArray(Record[]::new));
-                addTable(level + 1, ssTable);
-            } catch (DataStorageException dataStorageException) {
-                dataStorageException.printStackTrace();
-            }
-
-            i += shift;
-        }
-
-        tables.forEach(table -> {
-            levelMap.get(table.getLevel()).remove(table);
-            table.delete();
-        });
-    }
-
-    public void putAll(Map<K, V> map) throws DataStorageException {
+    public void putAll(Map<K, V> map) {
         try {
             fileTreeLock.writeLock().lock();
 
@@ -213,20 +140,12 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
         }
     }
 
-    public Map<K, V> readAllKeys() throws DataStorageException {
+    public Map<K, V> readAllKeys() {
         try {
             fileTreeLock.readLock().lock();
             return readAllKeys(levelMap.values().stream().flatMap(Collection::stream).collect(Collectors.toList()));
         } finally {
             fileTreeLock.readLock().unlock();
-        }
-    }
-
-    private void log(SSTable<K, V> ssTable) {
-        if (ssTable.getMeta().getKeys().length != 0) {
-            System.out.println("Range: " + ssTable.getLevel() + " " +
-                    ssTable.getMeta().getKeys()[0] + " "
-                    + ssTable.getMeta().getKeys()[ssTable.getMeta().getKeys().length - 1]);
         }
     }
 
@@ -236,7 +155,7 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
         return result;
     }
 
-    public Map<K, V> readKeyBlock(K startKey, int blockSize) throws DataStorageException {
+    public Map<K, V> readKeyBlock(K startKey, int blockSize) {
         try {
             fileTreeLock.readLock().lock();
             return readAllKeys(levelMap
@@ -250,18 +169,9 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
         }
     }
 
-    public Map<K, V> readAllKeys(Collection<SSTable<K, V>> tables) throws DataStorageException {
+    private @NotNull Map<K, V> readAllKeys(@NotNull Collection<SSTable<K, V>> tables) {
         return tables.stream()
-                .flatMap(ssTable -> {
-                            try {
-//                                log(ssTable);
-                                return Arrays.stream(ssTable.readAllRecords());
-                            } catch (DataStorageException dataStorageException) {
-                                dataStorageException.printStackTrace();
-                                return Stream.empty();
-                            }
-                        }
-                )
+                .flatMap(ssTable -> Arrays.stream(ssTable.readAllRecords()))
                 .sorted(Comparator.comparingLong(Record::getTimestamp))
                 .collect(Collectors.toMap(
                         Record::getKey,
@@ -270,10 +180,86 @@ public class LsmFileTree<K extends Key, V extends Value> extends AbstractDbModul
                         TreeMap::new));
     }
 
-    public class Merger extends Thread {
+    private void merge(int level) {
+        List<SSTable<K, V>> tables = new ArrayList<>(levelMap.get(level));
+        List<Record<K, V>> records = readAllKeys()
+                .entrySet()
+                .stream()
+                .map(entry -> new Record<K, V>(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+
+        int i = 0;
+        while (true) {
+            int shift = 64 * range(level);
+            List<Record<K, V>> recordList = records.stream().skip(i).limit(shift).collect(Collectors.toList());
+
+            if (recordList.isEmpty()) {
+                break;
+            }
+
+            if (levelMap.get(level + 1) == null) {
+                levelMap.put(level + 1, new ConcurrentLinkedDeque<>());
+            }
+
+            SSTable<K, V> ssTable = new SSTable<>(
+                    byteConverter,
+                    directory.getAbsolutePath(), level + 1,
+                    levelMap.get(level + 1)
+                            .stream()
+                            .map(SSTable::getIndex)
+                            .max(Integer::compareTo)
+                            .orElse(0) + 1);
+
+            ssTable.putAll(recordList.toArray(Record[]::new));
+            addTable(level + 1, ssTable);
+
+            i += shift;
+        }
+
+        tables.forEach(table -> {
+            levelMap.get(table.getLevel()).remove(table);
+            table.delete();
+        });
+    }
+
+    private void addTable(int level, @NotNull SSTable<K, V> ssTable) {
+        if (!levelMap.containsKey(level)) {
+            levelMap.put(level, new ConcurrentLinkedDeque<>());
+        }
+
+        levelMap.get(level).add(ssTable);
+    }
+
+    private boolean tryMerge() {
+        boolean flag = false;
+        for (Map.Entry<Integer, ConcurrentLinkedDeque<SSTable<K, V>>> entry : levelMap.entrySet()) {
+            try {
+                if (entry.getValue().size() >= LSM_TREE_DEGREE * LSM_TREE_DEGREE) {
+                    merge(entry.getKey());
+                    flag = true;
+                }
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+        }
+        return flag;
+    }
+
+    private int range(int level) {
+        int i = LSM_TREE_DEGREE;
+
+        while (level != 0) {
+            i *= LSM_TREE_DEGREE;
+            level--;
+        }
+
+        return i;
+    }
+
+    private class Merger extends Thread {
         @Override
         public void run() {
-            while (LsmFileTree.this.isRunning()) {
+            while (LSMFileTree.this.isRunning()) {
                 if (!tryMerge()) {
                     Thread.yield();
                 }

@@ -18,7 +18,7 @@ package ru.bmstu.iu9.db.zvoa.dbms.storage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.LsmFileTree;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.LSMFileTree;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver.TableConverter;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory.DSQLTable;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
@@ -61,7 +61,7 @@ public class SSTableTreeTest {
 
     @Test
     public void simpleWriteReadTest() throws DataStorageException, IOException {
-        LsmFileTree<DefaultKey, Row> lsmFileTree = new LsmFileTree<>(new TableConverter(table,
+        LSMFileTree<DefaultKey, Row> lsmFileTree = new LSMFileTree<>(new TableConverter(table,
                 Arrays.asList(Type.INTEGER),
                 table.getTypes()), path);
 
@@ -73,7 +73,7 @@ public class SSTableTreeTest {
 
     @Test
     public void writeTest() throws DataStorageException, IOException {
-        LsmFileTree<DefaultKey, Row> lsmFileTree = new LsmFileTree<>(new TableConverter(table,
+        LSMFileTree<DefaultKey, Row> lsmFileTree = new LSMFileTree<>(new TableConverter(table,
                 Arrays.asList(Type.INTEGER),
                         table.getTypes()), path);
 
@@ -93,7 +93,7 @@ public class SSTableTreeTest {
 
     @Test
     public void readAllTest() throws DataStorageException, IOException {
-        LsmFileTree<DefaultKey, Row> lsmFileTree = new LsmFileTree<>(new TableConverter(table,
+        LSMFileTree<DefaultKey, Row> lsmFileTree = new LSMFileTree<>(new TableConverter(table,
                 Arrays.asList(Type.INTEGER),
                 table.getTypes()), path);
 

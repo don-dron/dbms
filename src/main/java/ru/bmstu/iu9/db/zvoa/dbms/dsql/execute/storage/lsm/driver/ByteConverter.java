@@ -15,24 +15,68 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.driver;
 
+import org.jetbrains.annotations.NotNull;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
 
 import java.util.List;
 
+/**
+ * Class for converting keys and values to bytes and back.
+ *
+ * @param <K> - type of keys
+ * @param <V> - type of values
+ *
+ * @author don-dron Zvorygin Andrey BMSTU IU-9
+ */
 public interface ByteConverter<K extends Key, V extends Value> {
+    /**
+     * Returns list of types of key objects.
+     *
+     * @return list of types
+     */
+    public @NotNull List<Type> getKeyTypes();
 
-    public List<Type> getKeyTypes();
+    /**
+     * Returns list of types of value objects.
+     *
+     * @return list of types
+     */
+    public @NotNull List<Type> getValueTypes();
 
-    public List<Type> getValueTypes();
+    /**
+     * Convert bytes beginning with offset to key.
+     *
+     * @param bytes  - input bytes
+     * @param offset - start offset
+     * @return - new key
+     */
+    public @NotNull K bytesToKey(@NotNull byte[] bytes, int offset);
 
-    public V bytesToValue(byte[] bytes, int offset);
+    /**
+     * Convert bytes beginning with offset to value.
+     *
+     * @param bytes  - input bytes
+     * @param offset - start offset
+     * @return - new value
+     */
+    public @NotNull V bytesToValue(@NotNull byte[] bytes, int offset);
 
-    public K bytesToKey(byte[] bytes, int offset);
+    /**
+     * Convert key to bytes byte's array.
+     *
+     * @param key - input key
+     * @return generated array
+     */
+    public @NotNull byte[] keyToBytes(@NotNull K key);
 
-    public byte[] keyToBytes(K key);
-
-    public byte[] valueToBytes(V value);
+    /**
+     * Convert value to bytes byte's array.
+     *
+     * @param value - input value
+     * @return generated array
+     */
+    public @NotNull byte[] valueToBytes(@NotNull V value);
 }
 
