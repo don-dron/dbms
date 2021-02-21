@@ -15,13 +15,9 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.Key;
 
-import java.util.Arrays;
-import java.util.List;
-
-public class SchemeIdentification extends Key {
+public class SchemeIdentification implements Key {
     private String name;
 
     public SchemeIdentification(String name) {

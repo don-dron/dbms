@@ -50,4 +50,13 @@ public class DSQLWorker {
     private String executeStatement(Statement statement) throws RuntimeError {
         return new StatementEngine(dataStorage).execute(statement).toString();
     }
+
+    @Override
+    public String toString() {
+        return "DSQLWorker{" +
+                "statement=" + statement +
+                ", dataStorage=" + dataStorage +
+                ", result=" + result +
+                '}';
+    }
 }

@@ -15,7 +15,7 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http;
 
-import javax.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The type Http request.

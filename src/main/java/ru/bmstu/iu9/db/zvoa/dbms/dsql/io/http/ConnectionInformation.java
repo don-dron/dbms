@@ -18,8 +18,7 @@ package ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http;
 import java.util.Objects;
 
 import io.netty.channel.ChannelHandlerContext;
-
-import javax.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The Connection - information about Http Connection.

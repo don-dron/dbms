@@ -15,10 +15,9 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.query;
 
+import org.jetbrains.annotations.NotNull;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.io.http.ConnectionInformation;
 import ru.bmstu.iu9.db.zvoa.dbms.modules.Query;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * The DSQL Query.

@@ -15,15 +15,15 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.Key;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.Value;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class Table extends Value {
+public abstract class Table implements Value {
     private String tableName;
     private String tablePath;
     private Integer rowKeyFunction;

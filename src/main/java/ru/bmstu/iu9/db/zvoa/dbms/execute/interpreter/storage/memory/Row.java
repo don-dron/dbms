@@ -16,13 +16,12 @@
 package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory;
 
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Value;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.Key;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.Value;
 
 import java.util.List;
 
-public class Row extends Value {
+public class Row implements Value {
     private final transient Table table;
     private final List<Object> values;
 

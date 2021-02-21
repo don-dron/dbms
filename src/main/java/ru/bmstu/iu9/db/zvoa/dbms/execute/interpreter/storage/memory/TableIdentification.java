@@ -15,13 +15,9 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory;
 
-import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.lsm.Key;
-import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.Key;
 
-import java.util.Arrays;
-import java.util.List;
-
-public class TableIdentification extends Key {
+public class TableIdentification implements Key {
     private String name;
 
     public TableIdentification(String name) {

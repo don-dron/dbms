@@ -28,8 +28,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class DSQLSchema extends Schema {
-    private transient IKeyValueStorage<TableIdentification, Table> storage;
-    private transient ConcurrentSkipListSet<Table> tables;
+    private IKeyValueStorage<TableIdentification, Table> storage;
+    private ConcurrentSkipListSet<Table> tables;
 
     public DSQLSchema(Builder builder) {
         super(builder.schemaName, builder.schemaPath);
