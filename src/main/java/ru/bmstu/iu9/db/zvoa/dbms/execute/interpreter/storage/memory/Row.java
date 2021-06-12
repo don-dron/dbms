@@ -22,6 +22,7 @@ import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.Value;
 import java.util.List;
 
 public class Row implements Value {
+    public final static Row MARKER = new Row(null, null);
     private final transient Table table;
     private final List<Object> values;
 

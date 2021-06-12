@@ -15,10 +15,24 @@
  */
 package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.engine.statement.delete;
 
+import net.sf.jsqlparser.expression.LongValue;
+import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
+import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
+import net.sf.jsqlparser.expression.operators.relational.ItemsList;
+import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.delete.Delete;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.interpreter.engine.DSQLEngine;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.RuntimeError;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorage;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DataStorageException;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.DeleteSettings;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.InsertSettings;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.Type;
+import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.DefaultKey;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class DeleteEngine extends DSQLEngine<Delete> {
     public DeleteEngine(DataStorage dataStorage) {
@@ -26,6 +40,17 @@ public class DeleteEngine extends DSQLEngine<Delete> {
     }
 
     public Object execute(Delete delete) throws RuntimeError {
-        throw new RuntimeError("Unsupported ");
+        Table table = delete.getTable();
+        Long key = ((LongValue)((EqualsTo)delete.getWhere()).getRightExpression()).getValue();
+        try {
+            return dataStorage.deleteRows(
+                    DeleteSettings.Builder.newBuilder()
+                            .setSchemaName(table.getSchemaName())
+                            .setTableName(table.getName())
+                            .setKeys(List.of(new DefaultKey(Type.LONG, key)))
+                            .build());
+        } catch (DataStorageException dataStorageException) {
+            throw new RuntimeError(dataStorageException.getMessage());
+        }
     }
 }

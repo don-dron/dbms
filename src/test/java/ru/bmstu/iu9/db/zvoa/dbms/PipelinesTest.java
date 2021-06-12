@@ -350,12 +350,15 @@ public class PipelinesTest {
         HttpClientBuilder clientBuilder = HttpClients.custom().setConnectionManager(connManager);
         CloseableHttpClient httpClient = clientBuilder.build();
 
-        Set<Integer> startValues = getAllValues(httpClient);
+        ConcurrentSkipListSet<Integer> startValues = getAllValues(httpClient);
         List<Thread> threads = new ArrayList<>();
         for (int j = 0; j < CLIENTS_COUNT; j++) {
             Thread thread = new Thread(() -> {
+                Random random = new Random();
                 for (int i = 0; i < REQUEST_PER_CLIENT * REQUEST_PER_CLIENT; i++) {
-                    if (true) {
+                    int t = random.nextInt(2);
+//                    System.out.println(i);
+                    if (t == 0) {
                         int count = new Random().nextInt(RANGE);
                         startValues.add(count);
 
@@ -369,6 +372,25 @@ public class PipelinesTest {
                             EntityUtils.toString(entity);
                         } catch (IOException e) {
                             e.printStackTrace();
+                        }
+                    } else if (t == 1) {
+                        int count = new Random().nextInt(RANGE);
+
+                        synchronized (this) {
+                            if (startValues.remove(count)) {
+                                System.out.println(count);
+                                HttpPost httpPost = new HttpPost(getUri());
+                                String content = "" +
+                                        "delete from schema1.table1 where id=" + count + "\n";
+                                try {
+                                    httpPost.setEntity(new StringEntity(content));
+                                    CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpPost);
+                                    HttpEntity entity = closeableHttpResponse.getEntity();
+                                    EntityUtils.toString(entity);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                     } else {
                         try {
@@ -398,7 +420,7 @@ public class PipelinesTest {
         dbmsThread.join();
     }
 
-    private Set<Integer> getAllValues(CloseableHttpClient httpClient) throws IOException {
+    private ConcurrentSkipListSet<Integer> getAllValues(CloseableHttpClient httpClient) throws IOException {
         HttpPost scanTable = new HttpPost(getUri());
         String scanQuery = getSelectQuery();
         scanTable.setEntity(new StringEntity(scanQuery));
@@ -408,7 +430,7 @@ public class PipelinesTest {
         HttpEntity resultSet = scanResponse.getEntity();
         String values = EntityUtils.toString(resultSet);
 
-        return values.isEmpty() ? new TreeSet<>() : Arrays.stream(values.split("\n"))
+        return values.isEmpty() ? new ConcurrentSkipListSet<>() : Arrays.stream(values.split("\n"))
                 .filter(Predicate.not(Objects::isNull))
                 .map(Integer::parseInt).collect(Collectors.toCollection(ConcurrentSkipListSet::new));
     }

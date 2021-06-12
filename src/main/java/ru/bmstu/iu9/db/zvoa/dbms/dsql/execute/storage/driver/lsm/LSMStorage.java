@@ -222,13 +222,15 @@ public class LSMStorage<K extends Key, V extends Value> extends AbstractDbModule
                     (a, b) -> a,
                     TreeMap::new));
 
-            return inFile.entrySet()
-                    .stream()
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            Map.Entry::getValue,
-                            (v1, v2) -> v1,
-                            () -> new TreeMap<>(inMemory)));
+            Map<K, V> result = new TreeMap<>(inMemory);
+
+            for(Map.Entry<K,V> entry : inFile.entrySet()) {
+                if(!result.containsKey(entry.getKey())) {
+                    result.put(entry.getKey(), entry.getValue());
+                }
+            }
+
+            return result;
         } finally {
             fileTreeLock.readLock().unlock();
             memoryLock.readLock().unlock();

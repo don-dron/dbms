@@ -59,6 +59,9 @@ public class TableConverter implements ByteConverter<DefaultKey, Row> {
 
     @Override
     public @NotNull Row bytesToValue(byte[] bytes, int offset) {
+        if (bytes.length == 0) {
+            return Row.MARKER;
+        }
         List<Object> objects = BytesUtil.listFromBytes(bytes, offset, valueTypes);
         return new Row(table, objects);
     }
@@ -76,6 +79,9 @@ public class TableConverter implements ByteConverter<DefaultKey, Row> {
 
     @Override
     public byte @NotNull [] valueToBytes(@NotNull Row value) {
+        if (value == Row.MARKER) {
+            return new byte[0];
+        }
         return BytesUtil.listObjectsToBytes(value.getValues(), valueTypes);
     }
 

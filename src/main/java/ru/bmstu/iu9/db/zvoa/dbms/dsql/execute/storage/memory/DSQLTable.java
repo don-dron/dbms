@@ -17,10 +17,12 @@ package ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.memory;
 
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.IKeyValueStorage;
 import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.Key;
+import ru.bmstu.iu9.db.zvoa.dbms.dsql.execute.storage.driver.Value;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.*;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Row;
 import ru.bmstu.iu9.db.zvoa.dbms.execute.interpreter.storage.memory.Table;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +42,7 @@ public class DSQLTable extends Table {
         if (storage == null) {
             throw new DataStorageException("Driver store not connected");
         } else {
-            return storage.getValues(x -> true)
+            return storage.getValues(x -> x.getValue() != Row.MARKER)
                     .values()
                     .stream()
                     .collect(Collectors.toList());
@@ -63,9 +65,13 @@ public class DSQLTable extends Table {
         if (storage == null) {
             throw new DataStorageException("Driver store not connected");
         } else {
-            List<Row> rows = deleteSettings.getRows().stream().map(this::createRow).collect(Collectors.toList());
-            for (Row row : rows) {
-                storage.put(row.getKey(), null);
+            List<Row> rows = new ArrayList<>();
+            for (Key key : deleteSettings.getKeys()) {
+                Row row = storage.get(key);
+                if(row!=null) {
+                    rows.add(row);
+                    storage.put(key, Row.MARKER);
+                }
             }
             return rows;
         }
